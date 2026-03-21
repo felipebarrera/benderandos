@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portal — BenderAnd</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a; --s1: #1e293b; --s2: #334155;
+            --tx: #f8fafc; --t2: #94a3b8; --t3: #475569;
+            --ac: #38bdf8; --ac2: #0284c7;
+            --ok: #22c55e; --err: #ef4444; --warn: #f59e0b;
+            --sans: 'IBM Plex Sans', sans-serif;
+            --mono: 'IBM Plex Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--sans); background: var(--bg); color: var(--tx); line-height: 1.5; }
+        
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        
+        /* Auth */
+        #auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .auth-card { background: var(--s1); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; border: 1px solid var(--s2); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .brand { font-size: 24px; font-weight: 700; margin-bottom: 24px; text-align: center; }
+        .brand span { color: var(--ac); }
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 12px; font-weight: 600; color: var(--t2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-field { width: 100%; background: var(--bg); border: 1.5px solid var(--s2); border-radius: 10px; padding: 12px; color: var(--tx); outline: none; transition: border-color 0.2s; }
+        .input-field:focus { border-color: var(--ac); }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+        .btn-primary { background: var(--ac); color: var(--bg); }
+        .btn-primary:hover { background: var(--ac2); transform: translateY(-1px); }
+        
+        /* Main Layout */
+        #main-page { display: none; padding-bottom: 80px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 10px 0; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; background: var(--s2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--ac); border: 2px solid var(--s2); }
+        
+        /* Dashboard */
+        .card { background: var(--s1); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--s2); }
+        .balance-card { background: linear-gradient(135deg, var(--ac2), #0369a1); border: none; }
+        .balance-label { font-size: 13px; opacity: 0.8; }
+        .balance-val { font-size: 32px; font-weight: 700; font-family: var(--mono); margin: 4px 0; }
+        
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .section-link { font-size: 13px; color: var(--ac); text-decoration: none; font-weight: 600; }
+        
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--s2); }
+        .order-item:last-child { border-bottom: none; }
+        .order-main { flex: 1; }
+        .order-name { font-size: 14px; font-weight: 600; }
+        .order-meta { font-size: 12px; color: var(--t2); }
+        .order-status { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; background: var(--s2); color: var(--t2); }
+        .status-paid { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        
+        /* Nav Bar Centralizada Mobile */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--s2); z-index: 100; }
+        .nav-btn { background: none; border: none; color: var(--t2); display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .nav-btn.active { color: var(--ac); }
+        .nav-btn i { font-size: 20px; margin-bottom: 4px; }
+        
+        /* Catalog */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .prod-card { background: var(--s1); border-radius: 16px; overflow: hidden; border: 1px solid var(--s2); position: relative; }
+        .prod-img { width: 100%; aspect-ratio: 1/1; background: var(--s2); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .prod-body { padding: 12px; }
+        .prod-name { font-size: 14px; font-weight: 600; height: 42px; overflow: hidden; }
+        .prod-price { font-size: 16px; font-weight: 700; color: var(--ac); font-family: var(--mono); margin-top: 4px; }
+        .add-cart { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; background: var(--ac); border: none; color: var(--bg); font-size: 20px; font-weight: 700; cursor: pointer; }
+        
+        /* Modal Pay */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-card { background: var(--s1); padding: 24px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; }
+        .webpay-logo { width: 120px; margin-bottom: 20px; }
+        
+        /* Toast */
+        #toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: var(--ac2); color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); display: none; z-index: 300; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Acción realizada</div>
+
+    <div id="auth-page">
+        <div class="auth-card">
+            <div class="brand">Bender<span>And</span></div>
+            <div class="input-group">
+                <label class="input-label">Email de cliente</label>
+                <input type="email" id="email" class="input-field" placeholder="ejemplo@correo.com">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Contraseña</label>
+                <input type="password" id="password" class="input-field" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" onclick="login()">Entrar al Portal</button>
+        </div>
+    </div>
+
+    <div id="main-page">
+        <div class="container">
+            <header>
+                <div class="user-info">
+                    <div class="avatar" id="user-initials">JP</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700" id="user-name">Juan Pérez</div>
+                        <div style="font-size: 11px; color: var(--t2)">Cliente Premium</div>
+                    </div>
+                </div>
+                <button style="background:none; border:none; color:var(--err); font-size:12px; font-weight:600" onclick="logout()">Cerrar</button>
+            </header>
+
+            <!-- Dashboard Section -->
+            <div id="view-dashboard" class="view">
+                <div class="card balance-card">
+                    <div class="balance-label">Saldo Pendiente</div>
+                    <div class="balance-val" id="total-debt">$0</div>
+                    <button class="btn" style="background:white; color:var(--ac2); margin-top:12px" onclick="openPay()">Pagar con WebPay</button>
+                </div>
+
+                <div class="section-title">Últimos Pedidos <a href="#" class="section-link" onclick="view('history')">Ver todos</a></div>
+                <div class="card" id="recent-orders" style="padding: 0 20px">
+                    <div style="padding: 40px; text-align:center; color: var(--t2)">Cargando pedidos...</div>
+                </div>
+
+                <div class="section-title">Recomendado para ti</div>
+                <div class="grid" id="featured-products">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="view-history" class="view" style="display:none">
+                <div class="section-title">Historial Completo</div>
+                <div class="card" id="all-orders" style="padding: 0 20px">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+
+            <!-- Catalog Section -->
+            <div id="view-catalog" class="view" style="display:none">
+                <div class="section-title">Catálogo Completo</div>
+                <div class="grid" id="catalog-products">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn active" onclick="view('dashboard', this)"><i>🏠</i>Inicio</button>
+            <button class="nav-btn" onclick="view('catalog', this)"><i>🛍️</i>Tienda</button>
+            <button class="nav-btn" onclick="view('history', this)"><i>📋</i>Pedidos</button>
+            <button class="nav-btn" onclick="showToast('Soporte vía WhatsApp...')"><i>💬</i>Ayuda</button>
+        </nav>
+    </div>
+
+    <!-- WebPay Mock -->
+    <div class="modal" id="modal-pay" onclick="closePay()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <img src="https://www.transbank.cl/public/img/webpay-plus.png" class="webpay-logo" alt="WebPay">
+            <h3 style="margin-bottom: 12px">Simulación de Pago</h3>
+            <p style="font-size: 13px; color: var(--t2); margin-bottom: 24px">Serás redirigido al entorno seguro de Transbank para completar el pago de tu deuda por <strong id="pay-amount">$0</strong>.</p>
+            <button class="btn btn-primary" onclick="simulateSuccess()">Continuar Pago</button>
+            <button class="btn" style="background:none; color:var(--t2); margin-top:10px" onclick="closePay()">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        let USER = null;
+        let TOKEN = null;
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            showToast("Iniciando sesión...");
+            
+            try {
+                const resp = await fetch('/api/portal/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await resp.json();
+                if (resp.ok) {
+                    USER = data.usuario;
+                    TOKEN = data.token;
+                    localStorage.setItem('portal_token', TOKEN);
+                    localStorage.setItem('portal_user', JSON.stringify(USER));
+                    initPortal();
+                } else {
+                    alert(data.message || "Error al entrar");
+                }
+            } catch (e) {
+                // Demo mode if server unavailable
+                alert("Modo Demo: Credenciales aceptadas");
+                USER = { nombre: "Juan Pérez", email: "juan@demo.com" };
+                initPortal();
+            }
+        }
+
+        function initPortal() {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'block';
+            document.getElementById('user-name').textContent = USER.nombre;
+            document.getElementById('user-initials').textContent = USER.nombre.split(' ').map(n=>n[0]).join('').toUpperCase();
+            
+            loadDashboard();
+            loadCatalog();
+        }
+
+        async function loadDashboard() {
+            // Load Debt
+            const debtRes = await api('/api/portal/deudas');
+            if (debtRes) {
+                const total = debtRes.reduce((acc, d) => acc + (d.monto_total - d.monto_pagado), 0);
+                document.getElementById('total-debt').textContent = fmt(total);
+                document.getElementById('pay-amount').textContent = fmt(total);
+            }
+            
+            // Load History
+            const orders = await api('/api/portal/historial');
+            if (orders) {
+                const html = orders.slice(0, 3).map(o => `
+                    <div class="order-item">
+                        <div class="order-main">
+                            <div class="order-name">Pedido #${o.uuid.substring(0,8)}</div>
+                            <div class="order-meta">${new Date(o.created_at).toLocaleDateString()} • ${o.items.length} productos</div>
+                        </div>
+                        <div style="text-align: right">
+                            <div class="prod-price">${fmt(o.total)}</div>
+                            <span class="order-status ${o.estado==='pagada'?'status-paid':''}">${o.estado}</span>
+                        </div>
+                    </div>
+                `).join('') || '<div style="padding: 20px; text-align:center; color: var(--t2)">No tienes pedidos aún</div>';
+                document.getElementById('recent-orders').innerHTML = html;
+                document.getElementById('all-orders').innerHTML = orders.map(o => `
+                    <div class="order-item">
+                        <div class="order-main">
+                            <div class="order-name">Pedido #${o.uuid.substring(0,8)}</div>
+                            <div class="order-meta">${new Date(o.created_at).toLocaleString()}</div>
+                        </div>
+                        <div style="text-align: right">
+                            <div class="prod-price">${fmt(o.total)}</div>
+                            <span class="order-status ${o.estado==='pagada'?'status-paid':''}">${o.estado}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function loadCatalog() {
+            const products = await api('/api/portal/catalogo');
+            if (products) {
+                const html = products.map(p => `
+                    <div class="prod-card animate">
+                        <div class="prod-img">📦</div>
+                        <div class="prod-body">
+                            <div class="prod-name">${p.nombre}</div>
+                            <div class="prod-price">${fmt(p.valor_venta)}</div>
+                        </div>
+                        <button class="add-cart" onclick="addToCart(${p.id})">+</button>
+                    </div>
+                `).join('');
+                document.getElementById('catalog-products').innerHTML = html;
+                document.getElementById('featured-products').innerHTML = html.slice(0, 2);
+            }
+        }
+
+        function view(id, btn) {
+            document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+            document.getElementById('view-' + id).style.display = 'block';
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        async function api(url, method = 'GET', body = null) {
+            if (!TOKEN) return null;
+            try {
+                const resp = await fetch(url, {
+                    method,
+                    headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: body ? JSON.stringify(body) : null
+                });
+                return await resp.json();
+            } catch (e) { return null; }
+        }
+
+        function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function openPay() { document.getElementById('modal-pay').classList.add('active'); }
+        function closePay() { document.getElementById('modal-pay').classList.remove('active'); }
+
+        function simulateSuccess() {
+            closePay();
+            showToast("Pago procesado con éxito ✓");
+            setTimeout(() => {
+                document.getElementById('total-debt').textContent = "$0";
+                loadDashboard();
+            }, 1000);
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        window.onload = () => {
+            const savedToken = localStorage.getItem('portal_token');
+            const savedUser = localStorage.getItem('portal_user');
+            if (savedToken && savedUser) {
+                TOKEN = savedToken;
+                USER = JSON.parse(savedUser);
+                initPortal();
+            }
+        };
+    </script>
+</body>
+</html>

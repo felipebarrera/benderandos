@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Portal de Empleo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg: #0b0e14; --s1: #11151c; --s2: #1a1f28; --b1: #252b36; --t1: #eee; --t2: #94a3b8;
+  --ac: #f5c518; --ok: #00e5a0; --err: #ff3f5b; --r: 12px; --mono: 'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--t1); font-family: 'Inter', sans-serif; line-height:1.5; padding: 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+header { text-align:center; padding: 40px 0; }
+h1 { color:var(--ac); font-size: 2.5rem; }
+.grid { display:grid; gap:20px; margin-top:30px; }
+.card { background:var(--s1); border:1px solid var(--b1); border-radius:var(--r); padding:20px; transition:0.3s; }
+.card:hover { border-color:var(--ac); transform:translateY(-3px); }
+.badge { display:inline-block; padding:4px 8px; border-radius:6px; font-size:10px; font-weight:700; text-transform:uppercase; margin-bottom:10px; }
+.b-pres { background:rgba(245,197,24,.1); color:var(--ac); }
+h2 { font-size:1.2rem; margin-bottom:5px; }
+.meta { font-size:12px; color:var(--t2); margin-bottom:15px; }
+.desc { font-size:14px; color:var(--t1); margin-bottom:20px; }
+.btn { display:inline-block; padding:10px 20px; background:var(--ac); color:#000; text-decoration:none; border-radius:8px; font-weight:700; cursor:pointer; border:none; transition:0.2s; }
+.btn:hover { opacity:0.9; }
+
+/* Modal Postulación */
+#modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:100; align-items:center; justify-content:center; }
+.modal-content { background:var(--s2); padding:30px; border-radius:var(--r); width:90%; max-width:500px; border:1px solid var(--b1); }
+.modal-header { display:flex; justify-content:space-between; margin-bottom:20px; }
+.form-group { margin-bottom:15px; }
+label { display:block; font-size:12px; color:var(--t2); margin-bottom:5px; }
+input, textarea { width:100%; background:var(--bg); border:1px solid var(--b1); border-radius:8px; padding:10px; color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Únete a nuestro equipo</h1>
+    <p style="color:var(--t2)">Explora nuestras vacantes vigentes y postula hoy mismo.</p>
+  </header>
+
+  <div id="ofertasList" class="grid">
+    <div style="text-align:center;padding:100px;color:var(--t2)">Cargando vacantes...</div>
+  </div>
+</div>
+
+<div id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Postular cargo</h3>
+      <button onclick="cerrarModal()" style="background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px">×</button>
+    </div>
+    <form id="postularForm">
+      <input type="hidden" id="ofertaSlug">
+      <div class="form-group">
+        <label>Nombre Completo</label>
+        <input type="text" id="nombre" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label>WhatsApp / Teléfono</label>
+        <input type="text" id="telefono" placeholder="+56 9 1234 5678" required>
+      </div>
+      <div class="form-group">
+        <label>Pretensión Salarial (Opcional)</label>
+        <input type="number" id="pretension" placeholder="Ej: 700000">
+      </div>
+      <div class="form-group">
+        <label>Mensaje / Breve Resumen</label>
+        <textarea id="mensaje" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn" style="width:100%">Enviar Postulación</button>
+    </form>
+  </div>
+</div>
+
+<script>
+async function loadOfertas() {
+  try {
+    const res = await fetch('/api/empleo/ofertas');
+    const data = await res.json();
+    const list = document.getElementById('ofertasList');
+    list.innerHTML = '';
+
+    if (data.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:100px;color:var(--t2)">Actualmente no tenemos vacantes abiertas. Vuelve pronto!</div>';
+      return;
+    }
+
+    data.forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <span class="badge b-pres">${o.modalidad} · ${o.jornada}</span>
+        <h2>${o.titulo}</h2>
+        <div class="meta"><i class="fas fa-map-marker-alt"></i> ${o.ubicacion || 'Santiago'} · ${o.departamento || 'General'}</div>
+        <div class="desc">${o.descripcion.substring(0, 150)}...</div>
+        <button class="btn" onclick="abrirModal('${o.titulo}', '${o.slug}')">Postular Ahora</button>
+      `;
+      list.appendChild(card);
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function abrirModal(titulo, slug) {
+  document.getElementById('modalTitle').textContent = 'Postular: ' + titulo;
+  document.getElementById('ofertaSlug').value = slug;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function cerrarModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+document.getElementById('postularForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const slug = document.getElementById('ofertaSlug').value;
+  const payload = {
+    nombre: document.getElementById('nombre').value,
+    email: document.getElementById('email').value,
+    telefono: document.getElementById('telefono').value,
+    pretension_salarial: document.getElementById('pretension').value,
+    mensaje: document.getElementById('mensaje').value
+  };
+
+  try {
+    const res = await fetch(`/api/empleo/ofertas/${slug}/postular`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      alert("¡Postulación enviada con éxito! Te contactaremos pronto.");
+      cerrarModal();
+      document.getElementById('postularForm').reset();
+    } else {
+      const err = await res.json();
+      alert("Error: " + (err.message || "No se pudo enviar"));
+    }
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+loadOfertas();
+</script>
+</body>
+</html>

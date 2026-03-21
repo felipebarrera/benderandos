@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd POS — Casos de Uso</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080a;
+  --s1: #111115;
+  --s2: #18181e;
+  --s3: #1e1e26;
+  --b1: #252530;
+  --b2: #32323f;
+  --text: #e8e8f0;
+  --t2: #8888a0;
+  --t3: #4a4a60;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --r: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+/* NAV */
+.nav { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--b1); background: var(--s1); scrollbar-width: none; position: sticky; top: 0; z-index: 50; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0; padding: 0 20px; height: 54px; background: none; border: none;
+  color: var(--t2); font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text); background: var(--s2); }
+.nav-btn.active { color: var(--text); border-bottom-color: var(--accent, #fff); font-weight: 600; }
+.nav-emoji { font-size: 16px; }
+
+/* HERO */
+.hero {
+  padding: 40px 24px 0;
+  display: flex; align-items: flex-start; gap: 20px; flex-wrap: wrap;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 20px; font-family: var(--mono);
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.hero-title { font-size: clamp(22px, 4vw, 32px); font-weight: 700; line-height: 1.2; }
+.hero-sub { font-size: 14px; color: var(--t2); margin-top: 6px; line-height: 1.6; max-width: 540px; }
+
+/* GRID */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--b1); margin-top: 28px; }
+.grid-full { grid-template-columns: 1fr; }
+
+/* CARD */
+.card { background: var(--s1); padding: 22px; }
+.card-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+.card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.card-sub { font-size: 12px; color: var(--t2); margin-bottom: 16px; }
+
+/* FLOW STEPS */
+.flow { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid var(--b1); position: relative;
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  margin-top: 1px;
+}
+.step-body { flex: 1; }
+.step-actor { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.step-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+.step-note { font-size: 11px; color: var(--t2); margin-top: 4px; font-family: var(--mono); }
+
+/* TAGS */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 600;
+  font-family: var(--mono); margin: 2px;
+}
+
+/* PRODUCT LIST */
+.prod-list { display: flex; flex-direction: column; gap: 6px; }
+.prod-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; background: var(--s2); border-radius: var(--r);
+  border: 1px solid var(--b1);
+}
+.prod-name { font-size: 13px; font-weight: 500; }
+.prod-meta { font-size: 11px; color: var(--t2); margin-top: 2px; font-family: var(--mono); }
+.prod-price { font-family: var(--mono); font-size: 13px; font-weight: 700; text-align: right; }
+.prod-type { font-size: 10px; color: var(--t2); }
+
+/* ROLE MATRIX */
+.matrix { width: 100%; border-collapse: collapse; font-size: 12px; }
+.matrix th { text-align: left; padding: 8px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--t2); border-bottom: 1px solid var(--b2); }
+.matrix td { padding: 10px 10px; border-bottom: 1px solid var(--b1); vertical-align: top; }
+.matrix tr:last-child td { border-bottom: none; }
+.check { font-size: 14px; }
+
+/* SCHEDULE GRID */
+.sched { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px; }
+.sched-slot {
+  padding: 10px 6px; border-radius: 8px; text-align: center;
+  border: 1px solid var(--b2); cursor: pointer; transition: all 0.15s;
+}
+.sched-slot.libre { background: var(--s2); }
+.sched-slot.libre:hover { border-color: #00e5a0; background: rgba(0,229,160,0.08); }
+.sched-slot.ocupado { background: rgba(255,63,91,0.1); border-color: rgba(255,63,91,0.3); }
+.sched-slot.seleccionado { background: rgba(0,229,160,0.15); border-color: #00e5a0; }
+.slot-hora { font-family: var(--mono); font-size: 11px; font-weight: 600; }
+.slot-estado { font-size: 10px; color: var(--t2); margin-top: 2px; }
+.slot-precio { font-family: var(--mono); font-size: 10px; margin-top: 2px; }
+
+/* MOTEL DURATION */
+.duration-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.dur-pill {
+  padding: 8px 16px; border-radius: 20px; font-family: var(--mono); font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--b2); background: var(--s2); color: var(--t2);
+  transition: all 0.15s;
+}
+.dur-pill.active { background: rgba(255,107,53,0.15); border-color: #ff6b35; color: #ff6b35; }
+
+/* ROOM GRID */
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.room {
+  padding: 14px 10px; border-radius: var(--r); text-align: center;
+  border: 1.5px solid var(--b2); cursor: pointer; transition: all 0.15s;
+}
+.room.libre { background: var(--s2); }
+.room.libre:hover { border-color: #ff6b35; background: rgba(255,107,53,0.08); }
+.room.ocupado { background: rgba(255,63,91,0.08); border-color: rgba(255,63,91,0.25); }
+.room.limpieza { background: rgba(245,197,24,0.08); border-color: rgba(245,197,24,0.3); }
+.room-num { font-family: var(--mono); font-size: 18px; font-weight: 700; }
+.room-type { font-size: 10px; color: var(--t2); margin-top: 2px; }
+.room-info { font-size: 10px; margin-top: 6px; font-family: var(--mono); }
+
+/* TIMER */
+.timer-block { background: var(--s2); border: 1px solid var(--b2); border-radius: var(--r); padding: 14px; margin-top: 8px; }
+.timer-label { font-size: 10px; color: var(--t2); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.timer-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.timer-name { font-size: 12px; }
+.timer-val { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+.timer-bar { height: 4px; background: var(--b2); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.timer-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+
+/* SCAN INPUT */
+.scan-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.scan-input {
+  flex: 1; background: var(--s2); border: 1.5px solid var(--b2);
+  border-radius: var(--r); color: var(--text); font-family: var(--mono); font-size: 14px;
+  padding: 10px 14px; outline: none; transition: border-color 0.2s;
+}
+.scan-input:focus { border-color: var(--accent-color, #00e5a0); }
+.scan-btn {
+  padding: 10px 16px; border-radius: var(--r); border: none;
+  font-family: var(--sans); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s; white-space: nowrap;
+}
+
+/* SECTION */
+.section { padding: 0 0 32px; }
+.section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); margin-bottom: 12px; padding-top: 20px; }
+
+/* BILL */
+.bill { background: var(--s2); border: 1px solid var(--b1); border-radius: var(--r); overflow: hidden; }
+.bill-row { display: flex; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--b1); font-size: 13px; }
+.bill-row:last-child { border-bottom: none; }
+.bill-row.total { font-weight: 700; font-size: 15px; }
+.bill-row.total .bill-val { font-family: var(--mono); }
+
+/* MAIN LAYOUT */
+.cases { display: none; }
+.cases.active { display: block; }
+.content { max-width: 1100px; margin: 0 auto; padding: 0 16px 60px; }
+
+/* STATUS DOTS */
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .hero { padding: 24px 16px 0; }
+  .content { padding: 0 12px 60px; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <button class="nav-btn active" onclick="showCase(0)" style="--accent:#5b8dee">
+    <span class="nav-emoji">⚖️</span> Abogado
+  </button>
+  <button class="nav-btn" onclick="showCase(1)" style="--accent:#00e5a0">
+    <span class="nav-emoji">🎾</span> Pádel
+  </button>
+  <button class="nav-btn" onclick="showCase(2)" style="--accent:#ff6b35">
+    <span class="nav-emoji">🏨</span> Motel
+  </button>
+  <button class="nav-btn" onclick="showCase(3)" style="--accent:#f5c518">
+    <span class="nav-emoji">🛒</span> Abarrotes
+  </button>
+  <button class="nav-btn" onclick="showCase(4)" style="--accent:#c084fc">
+    <span class="nav-emoji">🔧</span> Ferretería
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CASO 1: ABOGADO -->
+<!-- ══════════════════════════════════════ -->
+<div class="cases active" id="case-0">
+<div class="content">
+  <div class="hero">
+    <div>
+      <div class="hero-badge" style="background:rgba(91,141,238,0.12);color:#5b8dee;">
+        ⚖️ ESTUDIO JURÍDICO
+      </div>
+      <div class="hero-title">Bufete / Abogado</div>
+      <div class="hero-sub">Sin stock físico. Los "productos" son servicios profesionales: consultas, redacción, representación. El cliente es un "caso". El abogado es el "operario". La recepcionista es el "cajero".</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;">
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">Sin stock</span>
+      <span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">Honorarios</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">Por hora / Por caso</span>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:28px;">
+    <!-- Roles -->
+    <div class="card">
+      <div class="card-label" style="color:#5b8dee;">Roles en este rubro</div>
+      <table class="matrix">
+        <tr>
+          <th>Rol sistema</th><th>Nombre en bufete</th><th>Hace qué</th>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">admin</span></td>
+          <td>Socio director</td>
+          <td style="color:var(--t2)">Dashboard, facturación, ver todos los casos</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">operario</span></td>
+          <td>Abogado / Paralegal</td>
+          <td style="color:var(--t2)">Carga servicios a un caso/cliente</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">cajero</span></td>
+          <td>Recepcionista</td>
+          <td style="color:var(--t2)">Cobra honorarios, emite documento</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">cliente</span></td>
+          <td>Cliente / Caso</td>
+          <td style="color:var(--t2)">Ve su historial, paga remotamente</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Servicios/Productos -->
+    <div class="card">
+      <div class="card-label" style="color:#5b8dee;">Catálogo de servicios (tipo: servicio)</div>
+      <div class="prod-list">
+        <div class="prod-item">
+          <div>
+            <div class="prod-name">Consulta inicial</div>
+            <div class="prod-meta">TIPO: servicio · Sin stock</div>
+          </div>
+          <div class="prod-price" style="color:#5b8dee;">$50.000<div class="prod-type">por sesión</div></div>
+        </div>
+        <div class="prod-item">
+          <div>
+            <div class="prod-name">Hora profesional</div>
+            <div class="prod-meta">TIPO: servicio · Fraccionable (0.5h)</div>
+          </div>
+          <div class="prod-price" style="color:#5b8dee;">$85.000<div class="prod-type">por hora</div></div>
+        </div>
+        <div class="prod-item">
+          <div>
+            <div class="prod-name">Redacción contrato</div>
+            <div class="prod-meta">TIPO: servicio · Precio fijo</div>
+          </div>
+          <div class="prod-price" style="color:#5b8dee;">$180.000<div class="prod-type">por documento</div></div>
+        </div>
+        <div class="prod-item">
+          <div>
+            <div class="prod-name">Representación audiencia</div>
+            <div class="prod-meta">TIPO: servicio · Por diligencia</div>
+          </div>
+          <div class="prod-price" style="color:#5b8dee;">$250.000<div class="prod-type">por diligencia</div></div>
+        </div>
+        <div class="prod-item">
+          <div>
+            <div class="prod-name">Gastos operacionales</div>
+            <div class="prod-meta">TIPO: stock_fisico · Fotocopias, timbre</div>
+          </div>
+          <div class="prod-price" style="color:#5b8dee;">Variable<div class="prod-type">costo real</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flujo de caso -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#5b8dee;">Flujo de un caso — "Juicio laboral Señora Martínez"</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);">
+      <div style="background:var(--s1);padding:16px;">
+        <div class="section-title">El abogado carga servicios</div>
+        <div class="flow">
+          <div class="step">
+            <div class="step-num" style="background:rgba(91,141,238,0.15);color:#5b8dee;">1</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#5b8dee;">Abogado (Operario)</div>
+              <div class="step-text">Busca a la cliente por RUT: <span style="font-family:var(--mono);color:#5b8dee;">12.345.678-9</span> o código rápido <span style="font-family:var(--mono);color:#5b8dee;">#4421</span></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(91,141,238,0.15);color:#5b8dee;">2</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#5b8dee;">Sistema</div>
+              <div class="step-text">Abre venta activa del caso o crea una nueva. Muestra historial de servicios cobrados.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(91,141,238,0.15);color:#5b8dee;">3</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#5b8dee;">Abogado</div>
+              <div class="step-text">Agrega: "2.5 horas profesionales" + "Representación audiencia 14/03" + notas del caso (campo protegido)</div>
+              <div class="step-note">→ fraccionado: 2.5 × $85.000 = $212.500</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(91,141,238,0.15);color:#5b8dee;">4</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#5b8dee;">Abogado</div>
+              <div class="step-text">Deja la venta en estado <span style="color:#f5c518">abierta</span> para que la recepcionista cobre cuando la cliente llegue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--s1);padding:16px;">
+        <div class="section-title">La recepcionista cobra</div>
+        <div class="flow">
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">5</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#00e5a0;">Recepcionista (Cajero)</div>
+              <div class="step-text">Cliente llega. Recepcionista busca por RUT y ve venta preparada por el abogado.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">6</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#00e5a0;">Recepcionista</div>
+              <div class="step-text">Puede agregar: gastos operacionales (fotocopias, etc.) o ajustar descuento acordado.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">7</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#00e5a0;">Recepcionista</div>
+              <div class="step-text">Cobra por transferencia. Emite <strong>Boleta de Honorarios</strong> (configurado en rubro legal).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">8</div>
+            <div class="step-body">
+              <div class="step-actor" style="color:#00e5a0;">Sistema</div>
+              <div class="step-text">Sin descuento de stock (tipo: servicio). Envía comprobante por WhatsApp a la cliente.</div>
+              <div class="step-note">✓ Stock no se modifica nunca en este rubro</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bill -->
+    <div style="padding:16px;background:var(--s1);border-top:1px solid var(--b1);">
+      <div class="section-title">Boleta generada</div>
+      <div class="bill" style="max-width:400px;">
+        <div class="bill-row"><span>2.5h Hora profesional</span><span style="font-family:var(--mono);color:#5b8dee;">$212.500</span></div>
+        <div class="bill-row"><span>Representación audiencia</span><span style="font-family:var(--mono);color:#5b8dee;">$250.000</span></div>
+        <div class="bill-row"><span>Fotocopias y gastos</span><span style="font-family:var(--mono);color:#5b8dee;">$8.500</span></div>
+        <div class="bill-row total" style="background:var(--s3);"><span>Total Honorarios</span><span class="bill-val" style="color:#5b8dee;">$471.000</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config especial -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#5b8dee;">Configuración especial del rubro LEGAL</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">tiene_stock_fisico: NO</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">tiene_renta: NO</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">requiere_rut: SÍ</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">documento_fiscal: Honorarios</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">etiqueta_cliente: Caso</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">etiqueta_operario: Abogado</span>
+      <span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">notas_cliente: CIFRADAS (privilegio abogado-cliente)</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">NO tiene operario de bodega</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CASO 2: PÁDEL -->
+<!-- ══════════════════════════════════════ -->
+<div class="cases" id="case-1">
+<div class="content">
+  <div class="hero">
+    <div>
+      <div class="hero-badge" style="background:rgba(0,229,160,0.1);color:#00e5a0;">
+        🎾 CANCHAS DE PÁDEL
+      </div>
+      <div class="hero-title">Club / Centro de Pádel</div>
+      <div class="hero-sub">Canchas como producto de tipo <strong>renta</strong>. Reservas por hora. También puede vender pelotas, grips, bebidas (stock_fisico). El horario es la joya del sistema.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;">
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">Renta por hora</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">Stock físico</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">Reserva anticipada</span>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:28px;">
+    <div class="card">
+      <div class="card-label" style="color:#00e5a0;">Catálogo</div>
+      <div class="prod-list">
+        <div class="prod-item">
+          <div><div class="prod-name">Cancha 1 — Hora punta</div><div class="prod-meta">TIPO: renta · 60 min · Lun-Vie 18-22h / Fin semana</div></div>
+          <div class="prod-price" style="color:#00e5a0;">$18.000<div class="prod-type">por hora</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Cancha 1 — Hora normal</div><div class="prod-meta">TIPO: renta · 60 min · Lun-Vie antes 18h</div></div>
+          <div class="prod-price" style="color:#00e5a0;">$12.000<div class="prod-type">por hora</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Raqueta préstamo</div><div class="prod-meta">TIPO: renta · Control devolución</div></div>
+          <div class="prod-price" style="color:#00e5a0;">$3.000<div class="prod-type">por sesión</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Tubo pelotas Head x3</div><div class="prod-meta">TIPO: stock_fisico · 48 unidades</div></div>
+          <div class="prod-price" style="color:#00e5a0;">$5.900<div class="prod-type">unidad</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Agua 500ml</div><div class="prod-meta">TIPO: stock_fisico · 120 unidades</div></div>
+          <div class="prod-price" style="color:#00e5a0;">$1.200<div class="prod-type">unidad</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:#00e5a0;">Vista de horarios — Cancha 1 · Hoy</div>
+      <div class="sched" id="padel-sched"></div>
+      <div style="display:flex;gap:12px;margin-top:12px;font-size:11px;color:var(--t2);">
+        <span><span class="dot" style="background:#00e5a0;box-shadow:0 0 4px #00e5a0;"></span>Libre</span>
+        <span><span class="dot" style="background:#ff3f5b;"></span>Ocupado</span>
+        <span><span class="dot" style="background:#5b8dee;"></span>Seleccionado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#00e5a0;">Flujo de reserva y cobro</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);">
+      <div style="background:var(--s1);padding:16px;">
+        <div class="section-title">Reserva anticipada (WhatsApp/Web)</div>
+        <div class="flow">
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">1</div>
+            <div class="step-body"><div class="step-actor" style="color:#00e5a0;">Cliente</div><div class="step-text">Reserva por WhatsApp: "Quiero cancha 1, mañana 19h"</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">2</div>
+            <div class="step-body"><div class="step-actor" style="color:#00e5a0;">Bot / Sistema</div><div class="step-text">Crea venta tipo renta con fecha_inicio y fecha_fin. Estado: <span style="color:#f5c518">reservada_pendiente</span>. Pide abono o pago completo.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(0,229,160,0.12);color:#00e5a0;">3</div>
+            <div class="step-body"><div class="step-actor" style="color:#00e5a0;">Sistema</div><div class="step-text">Bloquea el slot en el horario. Nadie más puede reservar ese horario.</div><div class="step-note">→ Stock "rentado" = no disponible temporalmente</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--s1);padding:16px;">
+        <div class="section-title">Llegada y cobro en cancha</div>
+        <div class="flow">
+          <div class="step">
+            <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">4</div>
+            <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero</div><div class="step-text">Cliente llega. Busca por RUT o nombre. Ve su reserva activa.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">5</div>
+            <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero</div><div class="step-text">Puede agregar ítems extra: raqueta préstamo, pelotas, agua.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">6</div>
+            <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero</div><div class="step-text">Cobra total (menos abono si ya pagó). Confirma. Sistema registra hora inicio real.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">7</div>
+            <div class="step-body"><div class="step-actor" style="color:#f5c518;">Sistema</div><div class="step-text">A los 55 min manda WhatsApp: "Tu hora termina en 5 minutos". Al finalizar, cancha vuelve a disponible.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px;background:var(--s1);border-top:1px solid var(--b1);">
+      <div class="bill" style="max-width:400px;">
+        <div class="bill-row"><span>Cancha 1 — Hora punta (19:00-20:00)</span><span style="font-family:var(--mono);color:#00e5a0;">$18.000</span></div>
+        <div class="bill-row"><span>Raqueta préstamo x2</span><span style="font-family:var(--mono);color:#00e5a0;">$6.000</span></div>
+        <div class="bill-row"><span>Agua 500ml x4</span><span style="font-family:var(--mono);color:#00e5a0;">$4.800</span></div>
+        <div class="bill-row"><span style="color:var(--t2)">(-) Abono anticipado</span><span style="font-family:var(--mono);color:#ff3f5b;">-$10.000</span></div>
+        <div class="bill-row total" style="background:var(--s3);"><span>Saldo a pagar</span><span class="bill-val" style="color:#00e5a0;">$18.800</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#00e5a0;">Config rubro DEPORTE/RENTA</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">tiene_stock_fisico: SÍ (tienda)</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">tiene_renta: SÍ</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">tiene_envio: NO</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">requiere_rut: NO (opcional)</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">documento_fiscal: Boleta</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">etiqueta_cliente: Socio</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">alertas_renta: SÍ (5 min antes)</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CASO 3: MOTEL -->
+<!-- ══════════════════════════════════════ -->
+<div class="cases" id="case-2">
+<div class="content">
+  <div class="hero">
+    <div>
+      <div class="hero-badge" style="background:rgba(255,107,53,0.12);color:#ff6b35;">
+        🏨 MOTEL / HOSPEDAJE POR HORAS
+      </div>
+      <div class="hero-title">Motel con tarifas por duración</div>
+      <div class="hero-sub">Habitaciones como renta. Duración variable: 1h, 3h, 12h. El sistema trackea en tiempo real cuánto tiempo lleva cada pieza ocupada y cuánto falta.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;">
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">Renta por duración</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">Timer en tiempo real</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">Extensión de estadía</span>
+    </div>
+  </div>
+
+  <!-- Duration selector -->
+  <div class="card" style="margin-top:28px;">
+    <div class="card-label" style="color:#ff6b35;">Tarifas y duración</div>
+    <div class="duration-pills">
+      <div class="dur-pill active" onclick="selectDur(this,'1h')">1 hora — $15.000</div>
+      <div class="dur-pill" onclick="selectDur(this,'3h')">3 horas — $28.000</div>
+      <div class="dur-pill" onclick="selectDur(this,'12h')">12 horas — $55.000</div>
+      <div class="dur-pill" onclick="selectDur(this,'24h')">24 horas — $80.000</div>
+    </div>
+    <div class="prod-list">
+      <div class="prod-item">
+        <div><div class="prod-name">Habitación Estándar — 1 hora</div><div class="prod-meta">TIPO: renta · auto-extensión disponible</div></div>
+        <div class="prod-price" style="color:#ff6b35;">$15.000</div>
+      </div>
+      <div class="prod-item">
+        <div><div class="prod-name">Habitación Suite — 3 horas</div><div class="prod-meta">TIPO: renta · Incluye amenities</div></div>
+        <div class="prod-price" style="color:#ff6b35;">$45.000</div>
+      </div>
+      <div class="prod-item">
+        <div><div class="prod-name">Servicio a la pieza — Snacks</div><div class="prod-meta">TIPO: stock_fisico · Se agrega a la cuenta</div></div>
+        <div class="prod-price" style="color:#ff6b35;">Variable</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room grid -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#ff6b35;">Panel de habitaciones — Tiempo real</div>
+    <div class="rooms" id="motel-rooms"></div>
+    <div style="display:flex;gap:16px;margin-top:14px;font-size:11px;color:var(--t2);">
+      <span><span class="dot" style="background:#00e5a0;"></span>Libre</span>
+      <span><span class="dot" style="background:#ff3f5b;"></span>Ocupada</span>
+      <span><span class="dot" style="background:#f5c518;"></span>En limpieza</span>
+    </div>
+  </div>
+
+  <!-- Timers -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#ff6b35;">Timers activos — Habitaciones ocupadas</div>
+    <div id="motel-timers"></div>
+  </div>
+
+  <!-- Flujo -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#ff6b35;">Flujo de registro y cobro</div>
+    <div class="flow">
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">1</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Cajero / Recepción</div>
+          <div class="step-text">Cliente llega. Recepcionista selecciona habitación disponible en el panel.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">2</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Cajero</div>
+          <div class="step-text">Elige duración: 1h / 3h / 12h. Sistema calcula precio automáticamente. RUT es opcional (configurable).</div>
+          <div class="step-note">→ Crea ítem de renta con fecha_inicio = AHORA y fecha_fin = AHORA + duración</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">3</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Sistema</div>
+          <div class="step-text">Cobra al ingreso. Habitación pasa a <span style="color:#ff3f5b">ocupada</span>. Inicia timer visible en panel.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">4</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Sistema — 10 min antes</div>
+          <div class="step-text">Alerta en panel de recepción: "Pieza 5 vence en 10 minutos".</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">5a</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Cajero — Extensión</div>
+          <div class="step-text">Si el cliente quiere más tiempo: cobra la diferencia, extiende fecha_fin. Timer se actualiza.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">5b</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Cajero — Servicios extra</div>
+          <div class="step-text">Agrega servicio a la pieza (snacks, amenities) a la cuenta existente. Se cobra al salir o inmediatamente.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(255,107,53,0.15);color:#ff6b35;">6</div>
+        <div class="step-body">
+          <div class="step-actor" style="color:#ff6b35;">Cajero — Checkout</div>
+          <div class="step-text">Confirma salida. Habitación pasa a <span style="color:#f5c518">limpieza</span>. Camarera la marca como libre al terminar.</div>
+          <div class="step-note">→ El rol "bodega" o un rol custom "camarera" puede cambiar estado de habitación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#ff6b35;">Config rubro MOTEL</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">tiene_renta: SÍ (core del negocio)</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">tiene_stock_fisico: SÍ (minibar)</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">requiere_rut: OPCIONAL</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">cobro_al_ingreso: SÍ</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">alerta_vencimiento: 10 min</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">estado_extra: limpieza</span>
+      <span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">sin_envio: OBVIO</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">documento_fiscal: Boleta s/detalle</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CASO 4: ABARROTES -->
+<!-- ══════════════════════════════════════ -->
+<div class="cases" id="case-3">
+<div class="content">
+  <div class="hero">
+    <div>
+      <div class="hero-badge" style="background:rgba(245,197,24,0.1);color:#f5c518;">
+        🛒 ALMACÉN / ABARROTES
+      </div>
+      <div class="hero-title">Tienda de Abarrotes</div>
+      <div class="hero-sub">El caso más clásico. Stock físico puro. Venta rápida en caja. Algunos productos fraccionados (azúcar, harina, embutidos). Deudas frecuentes de clientes habituales del barrio.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;">
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">Stock físico</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">Fraccionado (kg)</span>
+      <span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">Deudas / Fiado</span>
+    </div>
+  </div>
+
+  <!-- Scan quick -->
+  <div class="card" style="margin-top:28px;">
+    <div class="card-label" style="color:#f5c518;">Caja rápida — Escanear o buscar</div>
+    <div class="scan-row">
+      <input type="text" class="scan-input" id="abarScan" placeholder="Código de barras o nombre..." oninput="abarSearch(this.value)" style="--accent-color:#f5c518">
+      <button class="scan-btn" style="background:#f5c518;color:#000;" onclick="abarAdd()">+ Agregar</button>
+    </div>
+    <div id="abar-results" style="display:none;"></div>
+    <div style="margin-top:12px;">
+      <div class="section-title">Carrito actual</div>
+      <div id="abar-cart"></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:1px;">
+    <div class="card">
+      <div class="card-label" style="color:#f5c518;">Flujo de venta con fiado</div>
+      <div class="flow">
+        <div class="step">
+          <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">1</div>
+          <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero</div><div class="step-text">Escanea productos con lector de código o busca por nombre. Agrega al carrito.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">2</div>
+          <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero — Fraccionado</div><div class="step-text">Para azúcar: ingresa "0.500 kg". Sistema calcula: 0.5 × $900/kg = $450. Descuenta del lote.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">3</div>
+          <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cliente</div><div class="step-text">"Me lo anota, doña". Cajero busca cliente por código rápido (#31) o nombre.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">4</div>
+          <div class="step-body"><div class="step-actor" style="color:#f5c518;">Cajero</div><div class="step-text">Activa toggle "Registrar como deuda (fiado)". Confirma venta. Stock se descuenta igual.</div><div class="step-note">→ Deuda queda asociada al cliente, visible en módulo Deudas</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(245,197,24,0.12);color:#f5c518;">5</div>
+          <div class="step-body"><div class="step-actor" style="color:#f5c518;">Sistema</div><div class="step-text">Cuando el cliente paga el fiado, cajero lo marca como pagado con tipo de pago. Genera historial.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:#f5c518;">Productos tipo</div>
+      <div class="prod-list">
+        <div class="prod-item">
+          <div><div class="prod-name">Azúcar granulada</div><div class="prod-meta">TIPO: fraccionado · Por kg · Lote 25kg</div></div>
+          <div class="prod-price" style="color:#f5c518;">$900<div class="prod-type">por kg</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Leche Colún 1L</div><div class="prod-meta">TIPO: stock_fisico · 48 unidades</div></div>
+          <div class="prod-price" style="color:#f5c518;">$1.190<div class="prod-type">unidad</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Jamón de pierna</div><div class="prod-meta">TIPO: fraccionado · Por 100g · Operario: Juan</div></div>
+          <div class="prod-price" style="color:#f5c518;">$890<div class="prod-type">por 100g</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Gas licuado 15kg</div><div class="prod-meta">TIPO: stock_fisico · 8 unidades</div></div>
+          <div class="prod-price" style="color:#f5c518;">$14.500<div class="prod-type">unidad</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Recarga celular</div><div class="prod-meta">TIPO: servicio · Sin stock</div></div>
+          <div class="prod-price" style="color:#f5c518;">Variable<div class="prod-type">monto cliente</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fiados activos -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#f5c518;">Fiados activos del barrio</div>
+    <table class="matrix">
+      <tr><th>Cliente</th><th>Código</th><th>Deuda total</th><th>Última vez</th><th>Estado</th></tr>
+      <tr>
+        <td>María González</td>
+        <td><span style="font-family:var(--mono);color:#f5c518;">#31</span></td>
+        <td><span style="font-family:var(--mono);color:#ff3f5b;">$23.450</span></td>
+        <td style="color:var(--t2)">Hace 2 días</td>
+        <td><span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">Pendiente</span></td>
+      </tr>
+      <tr>
+        <td>Don Pedro R.</td>
+        <td><span style="font-family:var(--mono);color:#f5c518;">#07</span></td>
+        <td><span style="font-family:var(--mono);color:#ff3f5b;">$8.200</span></td>
+        <td style="color:var(--t2)">Hoy</td>
+        <td><span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">Pendiente</span></td>
+      </tr>
+      <tr>
+        <td>Familia Soto</td>
+        <td><span style="font-family:var(--mono);color:#f5c518;">#22</span></td>
+        <td><span style="font-family:var(--mono);color:#00e5a0;">$0</span></td>
+        <td style="color:var(--t2)">Ayer</td>
+        <td><span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">Saldado ✓</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#f5c518;">Config rubro ABARROTES</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">tiene_stock_fisico: SÍ</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">tiene_fraccionado: SÍ</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">tiene_fiado: SÍ</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">requiere_rut: NO</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">codigo_rapido: SÍ (clave del negocio)</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">documento_fiscal: Boleta</span>
+      <span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">etiqueta_cliente: Vecino</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">operario_por_producto: SÍ (jamón)</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- CASO 5: FERRETERÍA -->
+<!-- ══════════════════════════════════════ -->
+<div class="cases" id="case-4">
+<div class="content">
+  <div class="hero">
+    <div>
+      <div class="hero-badge" style="background:rgba(192,132,252,0.1);color:#c084fc;">
+        🔧 FERRETERÍA
+      </div>
+      <div class="hero-title">Ferretería / Materiales</div>
+      <div class="hero-sub">El rubro más complejo en stock: miles de SKUs, ventas a constructoras con factura, mezclas fraccionadas (pintura por litro, cable por metro), y servicios de corte o instalación.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;">
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">Miles de SKUs</span>
+      <span class="tag" style="background:rgba(255,107,53,0.1);color:#ff6b35;">Fraccionado (m, L, kg)</span>
+      <span class="tag" style="background:rgba(91,141,238,0.1);color:#5b8dee;">Factura empresa</span>
+      <span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">Servicio de corte</span>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:28px;">
+    <div class="card">
+      <div class="card-label" style="color:#c084fc;">Catálogo multi-tipo</div>
+      <div class="prod-list">
+        <div class="prod-item">
+          <div><div class="prod-name">Pintura látex blanca</div><div class="prod-meta">TIPO: fraccionado · Por litro · 20L en bodega</div></div>
+          <div class="prod-price" style="color:#c084fc;">$4.200<div class="prod-type">por litro</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Cable THHN 12 AWG</div><div class="prod-meta">TIPO: fraccionado · Por metro · Rollo 100m</div></div>
+          <div class="prod-price" style="color:#c084fc;">$890<div class="prod-type">por metro</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Tornillo 1/4" x 1" (unidad)</div><div class="prod-meta">TIPO: stock_fisico · 5.000 unidades</div></div>
+          <div class="prod-price" style="color:#c084fc;">$25<div class="prod-type">unidad</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Corte de vidrio</div><div class="prod-meta">TIPO: servicio · Sin stock · Operario: Bodega</div></div>
+          <div class="prod-price" style="color:#c084fc;">$1.500<div class="prod-type">por corte</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Cerradura Schlage B60</div><div class="prod-meta">TIPO: stock_fisico · 3 unidades · STOCK CRÍTICO</div></div>
+          <div class="prod-price" style="color:#c084fc;">$38.900<div class="prod-type">unidad</div></div>
+        </div>
+        <div class="prod-item">
+          <div><div class="prod-name">Puerta PVC 80x200</div><div class="prod-meta">TIPO: renta · Muestra en sala (no stock de venta)</div></div>
+          <div class="prod-price" style="color:#c084fc;">—<div class="prod-type">solo exhibición</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:#c084fc;">Flujo venta a empresa con factura</div>
+      <div class="flow">
+        <div class="step">
+          <div class="step-num" style="background:rgba(192,132,252,0.12);color:#c084fc;">1</div>
+          <div class="step-body"><div class="step-actor" style="color:#c084fc;">Vendedor (Operario)</div><div class="step-text">Constructor llega con lista. Vendedor busca cada producto. Cable: ingresa "47.5 metros".</div><div class="step-note">→ 47.5 × $890 = $42.275</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(192,132,252,0.12);color:#c084fc;">2</div>
+          <div class="step-body"><div class="step-actor" style="color:#c084fc;">Bodeguero (Bodega)</div><div class="step-text">Agrega servicio de corte de vidrio a la misma venta desde su terminal.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(192,132,252,0.12);color:#c084fc;">3</div>
+          <div class="step-body"><div class="step-actor" style="color:#c084fc;">Cajero</div><div class="step-text">Busca la venta por RUT empresa: <span style="font-family:var(--mono);color:#c084fc;">76.543.210-K</span>. Ve todos los ítems.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(192,132,252,0.12);color:#c084fc;">4</div>
+          <div class="step-body"><div class="step-actor" style="color:#c084fc;">Cajero</div><div class="step-text">Aplica 5% descuento cliente empresa. Selecciona "Factura" como documento. Cobra por transferencia.</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:rgba(192,132,252,0.12);color:#c084fc;">5</div>
+          <div class="step-body"><div class="step-actor" style="color:#c084fc;">Sistema</div><div class="step-text">Descuenta: 47.5m del rollo de cable, 5L del tarro de pintura, 1 unidad corte. Genera factura.</div><div class="step-note">→ Stock fraccionado se descuenta en decimales del lote</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi operario diagram -->
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#c084fc;">Venta multi-operario en ferretería</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--b1);">
+      <div style="background:var(--s2);padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🛒</div>
+        <div style="font-size:12px;font-weight:700;color:#c084fc;margin-bottom:4px;">CLIENTE</div>
+        <div style="font-size:11px;color:var(--t2)">RUT empresa<br>o código #42</div>
+        <div style="font-size:24px;margin-top:12px;color:var(--t3)">↓</div>
+      </div>
+      <div style="background:var(--s2);padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🖥️</div>
+        <div style="font-size:12px;font-weight:700;color:#c084fc;margin-bottom:4px;">VENDEDOR MOSTRADOR</div>
+        <div style="font-size:11px;color:var(--t2)">Agrega pinturas,<br>herramientas, tornillos</div>
+        <div style="font-size:10px;font-family:var(--mono);color:#c084fc;margin-top:8px;">→ venta #1042 abierta</div>
+      </div>
+      <div style="background:var(--s2);padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">⚙️</div>
+        <div style="font-size:12px;font-weight:700;color:#c084fc;margin-bottom:4px;">BODEGUERO</div>
+        <div style="font-size:11px;color:var(--t2)">Agrega cable cortado,<br>servicio de corte</div>
+        <div style="font-size:10px;font-family:var(--mono);color:#c084fc;margin-top:8px;">→ misma venta #1042</div>
+      </div>
+      <div style="background:var(--s2);padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">💳</div>
+        <div style="font-size:12px;font-weight:700;color:#00e5a0;margin-bottom:4px;">CAJERO</div>
+        <div style="font-size:11px;color:var(--t2)">Busca #1042 por RUT,<br>aplica descuento, cobra</div>
+        <div style="font-size:10px;font-family:var(--mono);color:#00e5a0;margin-top:8px;">→ Factura emitida ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#c084fc;">Gestión de stock crítico</div>
+    <table class="matrix">
+      <tr><th>Producto</th><th>Stock actual</th><th>Mínimo</th><th>Estado</th><th>Acción</th></tr>
+      <tr>
+        <td>Cerradura Schlage B60</td>
+        <td><span style="font-family:var(--mono);">3</span></td>
+        <td><span style="font-family:var(--mono);color:var(--t2);">5</span></td>
+        <td><span class="tag" style="background:rgba(255,63,91,0.1);color:#ff3f5b;">⚠️ Crítico</span></td>
+        <td><span style="font-size:11px;color:#5b8dee;cursor:pointer;">→ Crear encargo</span></td>
+      </tr>
+      <tr>
+        <td>Pintura látex 20L</td>
+        <td><span style="font-family:var(--mono);">2.5L</span></td>
+        <td><span style="font-family:var(--mono);color:var(--t2);">5L</span></td>
+        <td><span class="tag" style="background:rgba(245,197,24,0.1);color:#f5c518;">⚡ Bajo</span></td>
+        <td><span style="font-size:11px;color:#5b8dee;cursor:pointer;">→ Pedir a proveedor</span></td>
+      </tr>
+      <tr>
+        <td>Cable THHN 12 AWG</td>
+        <td><span style="font-family:var(--mono);">52.5m</span></td>
+        <td><span style="font-family:var(--mono);color:var(--t2);">20m</span></td>
+        <td><span class="tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">✓ OK</span></td>
+        <td>—</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:1px;">
+    <div class="card-label" style="color:#c084fc;">Config rubro FERRETERÍA</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">tiene_stock_fisico: SÍ</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">tiene_fraccionado: SÍ (m, L, kg, unidad)</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">tiene_servicios: SÍ (corte, instalación)</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">requiere_rut: PARA FACTURA</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">descuento_por_cliente: SÍ (empresa)</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">documento_fiscal: Boleta o Factura</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">alerta_stock_critico: SÍ + WhatsApp admin</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">multi_operario: SÍ (vendedor + bodeguero)</span>
+      <span class="tag" style="background:rgba(192,132,252,0.1);color:#c084fc;">etiqueta_bodega: Bodeguero / Despachador</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// NAV
+function showCase(n) {
+  document.querySelectorAll('.cases').forEach((el,i) => el.classList.toggle('active', i===n));
+  document.querySelectorAll('.nav-btn').forEach((el,i) => el.classList.toggle('active', i===n));
+}
+
+// PÁDEL SCHEDULE
+const slots = [];
+const hours = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+const ocupados = ['10:00','11:00','14:00','15:00','19:00','20:00'];
+function initPadel() {
+  const sched = document.getElementById('padel-sched');
+  if (!sched) return;
+  sched.innerHTML = hours.map(h => {
+    const isOcupado = ocupados.includes(h);
+    return `<div class="sched-slot ${isOcupado?'ocupado':'libre'}" onclick="selectSlot(this,'${h}')">
+      <div class="slot-hora" style="color:${isOcupado?'#ff3f5b':'#e8e8f0'}">${h}</div>
+      <div class="slot-estado" style="color:${isOcupado?'#ff3f5b':'var(--t2)'}">${isOcupado?'Ocupado':'Libre'}</div>
+      <div class="slot-precio" style="color:${isOcupado?'var(--t3)':h>='18:00'?'#f5c518':'#00e5a0'}">${isOcupado?'—':h>='18:00'?'$18.000':'$12.000'}</div>
+    </div>`;
+  }).join('');
+}
+function selectSlot(el, h) {
+  if (el.classList.contains('ocupado')) return;
+  document.querySelectorAll('#padel-sched .sched-slot').forEach(s => s.classList.remove('seleccionado'));
+  el.classList.add('seleccionado');
+}
+
+// MOTEL ROOMS
+const rooms_data = [
+  {num:'1',type:'Estándar',state:'ocupado',info:'1h — 42 min',price:'$15.000',pct:70},
+  {num:'2',type:'Suite',state:'libre',info:'Disponible',price:''},
+  {num:'3',type:'Estándar',state:'ocupado',info:'3h — 1h 20min',price:'$28.000',pct:44},
+  {num:'4',type:'Estándar',state:'limpieza',info:'Lista en 5 min',price:''},
+  {num:'5',type:'Suite',state:'ocupado',info:'3h — 2h 55min',price:'$28.000',pct:97},
+  {num:'6',type:'Estándar',state:'libre',info:'Disponible',price:''},
+  {num:'7',type:'Estándar',state:'libre',info:'Disponible',price:''},
+  {num:'8',type:'VIP',state:'ocupado',info:'12h — 3h 10min',price:'$55.000',pct:26},
+  {num:'9',type:'Estándar',state:'limpieza',info:'Lista en 12 min',price:''},
+  {num:'10',type:'Suite',state:'libre',info:'Disponible',price:''},
+];
+function initMotel() {
+  const rooms = document.getElementById('motel-rooms');
+  if (!rooms) return;
+  rooms.innerHTML = rooms_data.map(r => {
+    const col = r.state==='ocupado'?'#ff3f5b':r.state==='limpieza'?'#f5c518':'#00e5a0';
+    return `<div class="room ${r.state}" onclick="selectRoom(${r.num})">
+      <div class="room-num" style="color:${col}">${r.num}</div>
+      <div class="room-type" style="color:var(--t2)">${r.type}</div>
+      <div class="room-info" style="color:${col}">${r.info}</div>
+      ${r.price?`<div style="font-family:var(--mono);font-size:11px;color:var(--t3);margin-top:4px">${r.price}</div>`:''}
+    </div>`;
+  }).join('');
+
+  const timers = document.getElementById('motel-timers');
+  if (!timers) return;
+  const ocupadas = rooms_data.filter(r=>r.state==='ocupado');
+  timers.innerHTML = ocupadas.map(r => {
+    const fillColor = r.pct>80?'#ff3f5b':r.pct>50?'#f5c518':'#00e5a0';
+    return `<div class="timer-block" style="margin-bottom:8px;">
+      <div class="timer-label">Habitación ${r.num} — ${r.type} — ${r.price}</div>
+      <div class="timer-row">
+        <span class="timer-name">${r.info}</span>
+        <span class="timer-val" style="color:${fillColor}">${r.pct}% usado</span>
+      </div>
+      <div class="timer-bar">
+        <div class="timer-fill" style="width:${r.pct}%;background:${fillColor}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function selectRoom(n) {}
+function selectDur(el, dur) {
+  document.querySelectorAll('.dur-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ABARROTES
+const abar_prods = [
+  {id:1,nombre:'Leche Colún 1L',codigo:'7802380001',precio:1190,stock:48,tipo:'stock'},
+  {id:2,nombre:'Azúcar granulada (kg)',codigo:'7801000002',precio:900,stock:18.5,tipo:'frac',unidad:'kg'},
+  {id:3,nombre:'Pan de molde',codigo:'7803000003',precio:1490,stock:12,tipo:'stock'},
+  {id:4,nombre:'Jamón de pierna (100g)',codigo:'7804000004',precio:890,stock:2.3,tipo:'frac',unidad:'100g'},
+  {id:5,nombre:'Nescafé 200g',codigo:'7805000005',precio:4290,stock:8,tipo:'stock'},
+  {id:6,nombre:'Arroz 1kg',codigo:'7806000006',precio:1190,stock:34,tipo:'stock'},
+];
+let abar_cart = [];
+function abarSearch(q) {
+  const res = document.getElementById('abar-results');
+  if (!q) { res.style.display='none'; return; }
+  const found = abar_prods.filter(p=>p.nombre.toLowerCase().includes(q.toLowerCase())||p.codigo.includes(q));
+  if (!found.length) { res.style.display='none'; return; }
+  res.style.display='block';
+  res.innerHTML = `<div style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;">` +
+    found.map(p=>`<div onclick="abarAddItem(${p.id})" style="padding:10px 14px;border-bottom:1px solid var(--b1);cursor:pointer;display:flex;justify-content:space-between;font-size:13px;" onmouseover="this.style.background='var(--s3)'" onmouseout="this.style.background=''">
+      <span>${p.nombre} <span style="color:var(--t3);font-family:var(--mono);font-size:10px">${p.codigo}</span></span>
+      <span style="font-family:var(--mono);color:#f5c518;font-weight:700">$${p.precio.toLocaleString('es-CL')}</span>
+    </div>`).join('') + '</div>';
+}
+function abarAddItem(id) {
+  const p = abar_prods.find(x=>x.id===id);
+  if (!p) return;
+  document.getElementById('abar-results').style.display='none';
+  document.getElementById('abarScan').value='';
+  const ex = abar_cart.find(i=>i.id===id);
+  if (ex) ex.qty++;
+  else abar_cart.push({...p,qty:1});
+  renderAbarCart();
+}
+function abarAdd() { const v=document.getElementById('abarScan').value; abarSearch(v); }
+function renderAbarCart() {
+  const el = document.getElementById('abar-cart');
+  if (!abar_cart.length) { el.innerHTML=`<div style="color:var(--t3);font-size:12px;padding:12px 0">Carrito vacío</div>`; return; }
+  const total = abar_cart.reduce((s,i)=>s+i.precio*i.qty,0);
+  el.innerHTML = abar_cart.map(i=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b1);">
+      <span style="font-size:13px;">${i.nombre}</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;color:var(--t2)">×${i.qty}</span>
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:#f5c518">$${(i.precio*i.qty).toLocaleString('es-CL')}</span>
+        <span onclick="abarRemove(${i.id})" style="color:var(--t3);cursor:pointer;font-size:16px;line-height:1">×</span>
+      </div>
+    </div>`).join('') +
+    `<div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:700;">
+      <span>Total</span>
+      <span style="font-family:var(--mono);font-size:16px;color:#f5c518">$${total.toLocaleString('es-CL')}</span>
+    </div>`;
+}
+function abarRemove(id) { abar_cart=abar_cart.filter(i=>i.id!==id); renderAbarCart(); }
+
+// INIT
+window.addEventListener('DOMContentLoaded', () => {
+  initPadel();
+  initMotel();
+  renderAbarCart();
+});
+</script>
+</body>
+</html>

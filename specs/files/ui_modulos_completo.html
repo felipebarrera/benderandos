@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Módulos Completos UI</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080a;--s1:#111115;--s2:#18181e;--s3:#1e1e26;
+  --b1:#252530;--b2:#32323f;
+  --tx:#e8e8f0;--t2:#8888a0;--t3:#4a4a60;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--r:10px;
+  --ok:#00e5a0;--warn:#f5c518;--err:#ff3f5b;--info:#4488ff;
+  --ac-admin:#e040fb;--ac-delivery:#00c4ff;--ac-rest:#ff6b35;
+  --ac-rrhh:#3dd9eb;--ac-rec:#f5c518;--ac-qr:#00e5a0;
+  --ac-sii:#5b8dee;--ac-wa:#25d366;--ac-pos:#c084fc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);min-height:100vh}
+/* NAV */
+.topnav{position:sticky;top:0;z-index:100;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.brand{font-family:var(--mono);font-weight:700;font-size:15px;padding:0 18px;letter-spacing:-1px;flex-shrink:0;height:52px;display:flex;align-items:center;border-right:1px solid var(--b1);gap:8px}
+.brand-sub{font-size:10px;color:var(--t2);font-weight:400}
+.nb{flex-shrink:0;height:52px;padding:0 14px;display:flex;align-items:center;gap:6px;background:none;border:none;border-bottom:2px solid transparent;color:var(--t2);font-family:var(--sans);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nb:hover{color:var(--tx);background:var(--s2)}
+.nb.on{color:var(--tx);font-weight:600;border-bottom-color:var(--nav-ac,#fff)}
+.nb .em{font-size:14px}
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--b1);background:var(--s1);overflow-x:auto;scrollbar-width:none;position:sticky;top:52px;z-index:50}
+.tabs::-webkit-scrollbar{display:none}
+.tb{flex-shrink:0;padding:9px 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--t2);font-family:var(--sans);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tb:hover{color:var(--tx);background:var(--s3)}
+.tb.on{color:var(--tx);font-weight:600;border-bottom-color:var(--ac,#fff)}
+/* LAYOUT */
+.sect{display:none}.sect.on{display:block}
+.panel{display:none}.panel.on{display:block}
+.content{max-width:1160px;margin:0 auto;padding:0 16px 60px}
+/* HERO */
+.hero{padding:28px 0 0;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:20px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.htitle{font-size:clamp(18px,3vw,26px);font-weight:700;line-height:1.2}
+.hsub{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.6;max-width:560px}
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--b1);margin-top:20px}
+.grid3{grid-template-columns:repeat(3,1fr)}
+/* CARD */
+.card{background:var(--s1);padding:18px}
+.clabel{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+/* FLOWS */
+.flow{display:flex;flex-direction:column}
+.step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--b1)}
+.step:last-child{border-bottom:none}
+.snum{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;margin-top:1px}
+.sactor{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.stext{font-size:11px;line-height:1.5}
+.snote{font-size:10px;color:var(--t2);margin-top:2px;font-family:var(--mono)}
+/* TABLES */
+.mx{width:100%;border-collapse:collapse;font-size:11px}
+.mx th{text-align:left;padding:6px 8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t2);border-bottom:1px solid var(--b2)}
+.mx td{padding:8px 8px;border-bottom:1px solid var(--b1);vertical-align:top}
+.mx tr:last-child td{border-bottom:none}
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600;font-family:var(--mono);margin:2px}
+/* ADMIN LAYOUT */
+.admin-wrap{display:grid;grid-template-columns:200px 1fr;min-height:480px;gap:0;background:var(--b1)}
+.admin-side{background:var(--s1);padding:12px 0}
+.asi{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:11px;color:var(--t2);cursor:pointer;border-left:2px solid transparent;transition:all .15s}
+.asi:hover{color:var(--tx);background:var(--s2)}
+.asi.on{color:var(--tx);font-weight:600;border-left-color:var(--ac,#fff);background:var(--s2)}
+.asi .ai{font-size:14px}
+.asi-sect{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:1.5px;padding:12px 14px 4px;text-transform:uppercase}
+.admin-main{background:var(--s2);padding:18px;overflow:auto}
+/* KPI row */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.kpi{background:var(--s1);border-radius:var(--r);padding:12px;border:1px solid var(--b1)}
+.kpi-val{font-family:var(--mono);font-size:20px;font-weight:700;margin-bottom:2px}
+.kpi-lbl{font-size:10px;color:var(--t2)}
+.kpi-sub{font-size:10px;margin-top:2px;font-family:var(--mono)}
+/* POS WRAP */
+.pos-wrap{display:grid;grid-template-columns:1fr 280px;gap:1px;background:var(--b1)}
+.pos-l{background:var(--s1);padding:14px;display:flex;flex-direction:column;gap:8px}
+.pos-r{background:var(--s1);padding:14px;display:flex;flex-direction:column;gap:8px}
+.pos-in{width:100%;background:var(--s2);border:1.5px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--mono);font-size:13px;padding:9px 11px;outline:none}
+.pos-in:focus{border-color:var(--ac,#fff)}
+.cartrow{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--b1);font-size:11px}
+.cartrow:last-child{border-bottom:none}
+.cr-name{flex:1;font-size:11px}
+.cr-qty{font-family:var(--mono);color:var(--t2);font-size:10px}
+.cr-price{font-family:var(--mono);font-weight:700}
+.paybtn{padding:8px;border-radius:var(--r);border:1.5px solid var(--b2);background:var(--s2);color:var(--t2);font-family:var(--sans);font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.paybtn:hover,.paybtn.on{border-color:var(--ac,#fff);color:var(--ac,#fff);background:rgba(255,255,255,.04)}
+.paygrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:auto}
+.cfbtn{width:100%;padding:12px;border-radius:var(--r);border:none;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;margin-top:7px}
+.total-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-top:1px solid var(--b1);margin-top:3px}
+.tl{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:1px}
+.tv{font-family:var(--mono);font-size:20px;font-weight:700}
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:7px}
+.kc{background:var(--s2);border-radius:var(--r);padding:9px}
+.kh{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:flex;justify-content:space-between}
+.kcard{background:var(--s1);border-radius:7px;padding:8px 9px;margin-bottom:5px;border:1px solid var(--b1);font-size:11px}
+.kt{font-weight:600;margin-bottom:2px}
+.kv{font-family:var(--mono);font-size:10px;color:var(--t2)}
+/* OT KANBAN */
+.ot-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.ot-col{background:var(--s2);border-radius:var(--r);padding:8px}
+.ot-head{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.ot-card{background:var(--s1);border-radius:6px;padding:7px 8px;margin-bottom:4px;border:1px solid var(--b1)}
+/* STATUS dots */
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+/* LABEL */
+.slbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);margin-bottom:8px;padding-top:14px}
+/* DELIVERY map placeholder */
+.map-ph{background:var(--s3);border-radius:var(--r);height:200px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:11px;border:1px solid var(--b1)}
+/* BAR */
+.bar-wrap{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.bar-lbl{width:100px;color:var(--t2)}
+.bar-track{flex:1;background:var(--b2);height:5px;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{font-family:var(--mono);font-size:10px;width:56px;text-align:right}
+/* Nota area */
+.nota{width:100%;background:var(--s2);border:1.5px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sans);font-size:11px;padding:9px;outline:none;resize:none;min-height:60px}
+.nota:focus{border-color:var(--info)}
+/* TIMER */
+.tblock{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:11px;margin-bottom:6px}
+.tbar{height:4px;background:var(--b2);border-radius:2px;overflow:hidden;margin-top:4px}
+.tfill{height:100%;border-radius:2px}
+/* PILL TOGGLE */
+.pill-row{display:flex;gap:5px;flex-wrap:wrap}
+.pill{padding:5px 11px;border-radius:20px;font-family:var(--mono);font-size:10px;font-weight:600;border:1.5px solid var(--b2);background:var(--s2);color:var(--t2);cursor:pointer;transition:all .15s}
+.pill.on{background:rgba(255,255,255,.06);border-color:var(--ac,#fff);color:var(--ac,#fff)}
+/* CHAT BUBBLES */
+.chat{display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--s3);border-radius:var(--r)}
+.msg{max-width:85%;font-size:11px;line-height:1.5;padding:8px 11px;border-radius:10px}
+.msg.in{background:var(--s2);align-self:flex-start;border-bottom-left-radius:3px}
+.msg.out{background:rgba(37,211,102,.12);border:1px solid rgba(37,211,102,.2);align-self:flex-end;border-bottom-right-radius:3px;color:var(--tx)}
+.msg-who{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+/* QR PREVIEW */
+.qr-box{width:100px;height:100px;background:var(--s3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:32px;border:1px solid var(--b1)}
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--b1)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;margin-top:2px}
+.tl-body{flex:1}
+.tl-title{font-size:11px;font-weight:600}
+.tl-sub{font-size:10px;color:var(--t2);margin-top:2px}
+/* INPUT SELECT */
+.sel{width:100%;background:var(--s2);border:1.5px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sans);font-size:11px;padding:8px 10px;outline:none}
+.sel:focus{border-color:var(--ac,#fff)}
+/* RESPONSIVE */
+@media(max-width:700px){
+  .admin-wrap{grid-template-columns:1fr}
+  .admin-side{display:none}
+  .pos-wrap{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .kanban{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav" id="nav">
+  <div class="brand">B&amp; <span class="brand-sub">MÓDULOS</span></div>
+  <button class="nb on"  onclick="S(0)"  style="--nav-ac:var(--ac-admin)"><span class="em">🏢</span>Admin</button>
+  <button class="nb"     onclick="S(1)"  style="--nav-ac:var(--ac-pos)"><span class="em">💳</span>POS Avanzado</button>
+  <button class="nb"     onclick="S(2)"  style="--nav-ac:var(--ac-delivery)"><span class="em">🚚</span>Delivery</button>
+  <button class="nb"     onclick="S(3)"  style="--nav-ac:var(--ac-rest)"><span class="em">🍽️</span>Restaurante</button>
+  <button class="nb"     onclick="S(4)"  style="--nav-ac:var(--ac-rrhh)"><span class="em">👥</span>RRHH</button>
+  <button class="nb"     onclick="S(5)"  style="--nav-ac:var(--ac-rec)"><span class="em">💼</span>Reclutamiento</button>
+  <button class="nb"     onclick="S(6)"  style="--nav-ac:var(--ac-qr)"><span class="em">📱</span>Marketing QR</button>
+  <button class="nb"     onclick="S(7)"  style="--nav-ac:var(--ac-sii)"><span class="em">📄</span>SII / DTE</button>
+  <button class="nb"     onclick="S(8)"  style="--nav-ac:var(--ac-wa)"><span class="em">💬</span>WhatsApp Bot</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     0 — ADMIN PANEL COMPLETO
+══════════════════════════════════════════════════════════ -->
+<div class="sect on" id="s0" style="--ac:var(--ac-admin)">
+<div class="tabs">
+  <button class="tb on" onclick="P(0,0)" style="--ac:var(--ac-admin)">Dashboard</button>
+  <button class="tb" onclick="P(0,1)" style="--ac:var(--ac-admin)">Ventas</button>
+  <button class="tb" onclick="P(0,2)" style="--ac:var(--ac-admin)">Productos</button>
+  <button class="tb" onclick="P(0,3)" style="--ac:var(--ac-admin)">Clientes</button>
+  <button class="tb" onclick="P(0,4)" style="--ac:var(--ac-admin)">Compras</button>
+  <button class="tb" onclick="P(0,5)" style="--ac:var(--ac-admin)">Config</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(224,64,251,.1);color:var(--ac-admin)">🏢 PANEL ADMIN</div>
+    <div class="htitle">Panel administrador — dinámico por módulos</div>
+    <div class="hsub">El menú lateral se construye desde <code>rubros_config.modulos_activos</code>. Solo aparecen los módulos que la empresa tiene activos.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="panel on" id="s0p0">
+<div class="admin-wrap" style="margin-top:16px">
+  <div class="admin-side">
+    <div class="asi-sect">PRINCIPAL</div>
+    <div class="asi on" style="--ac:var(--ac-admin)"><span class="ai">📊</span>Dashboard</div>
+    <div class="asi"><span class="ai">💳</span>Ventas</div>
+    <div class="asi"><span class="ai">👥</span>Clientes</div>
+    <div class="asi-sect">INVENTARIO</div>
+    <div class="asi"><span class="ai">📦</span>Productos</div>
+    <div class="asi"><span class="ai">🛒</span>Compras</div>
+    <div class="asi"><span class="ai">🏢</span>Proveedores</div>
+    <div class="asi-sect">MÓDULOS</div>
+    <div class="asi"><span class="ai">📅</span>Agenda</div>
+    <div class="asi"><span class="ai">🍽️</span>Recetas</div>
+    <div class="asi"><span class="ai">🚚</span>Delivery</div>
+    <div class="asi"><span class="ai">👷</span>RRHH</div>
+    <div class="asi"><span class="ai">📱</span>Marketing QR</div>
+    <div class="asi"><span class="ai">📄</span>SII / DTE</div>
+    <div class="asi-sect">SISTEMA</div>
+    <div class="asi"><span class="ai">⚙️</span>Configuración</div>
+  </div>
+  <div class="admin-main">
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-admin)">$234.500</div><div class="kpi-lbl">Ventas hoy</div><div class="kpi-sub" style="color:var(--ok)">↑12% vs ayer</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-admin)">34</div><div class="kpi-lbl">Tickets hoy</div><div class="kpi-sub" style="color:var(--t2)">Prom $6.897</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--warn)">8</div><div class="kpi-lbl">Pedidos WA</div><div class="kpi-sub" style="color:var(--ok)">Conv. 72%</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--err)">$124.300</div><div class="kpi-lbl">Deudas</div><div class="kpi-sub" style="color:var(--err)">$23k vencidas</div></div>
+    </div>
+    <!-- Actividad en vivo -->
+    <div style="font-size:10px;color:var(--t2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">🟢 Actividad en vivo</div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+      <div style="padding:7px 10px;background:var(--s1);border-radius:7px;font-size:11px;border-left:2px solid var(--ac-admin)">Juan agregó "Cable THHN 47.5m" a venta #1042</div>
+      <div style="padding:7px 10px;background:var(--s1);border-radius:7px;font-size:11px;border-left:2px solid var(--ac-wa)">Cliente 9...K pidió hora Dra. Pérez por WA</div>
+      <div style="padding:7px 10px;background:var(--s1);border-radius:7px;font-size:11px;border-left:2px solid var(--warn)">Habitación 5 vence en 10 min</div>
+    </div>
+    <!-- Alertas dinámicas por módulo -->
+    <div style="font-size:10px;color:var(--t2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">⚠️ Alertas (módulos activos)</div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div style="padding:7px 10px;background:rgba(255,63,91,.07);border-radius:7px;font-size:11px;border:1px solid rgba(255,63,91,.2)">M03 — 3 productos bajo stock mínimo <span style="float:right;font-size:10px;cursor:pointer;color:var(--info)">Ver →</span></div>
+      <div style="padding:7px 10px;background:rgba(255,107,53,.07);border-radius:7px;font-size:11px;border:1px solid rgba(255,107,53,.2)">M06 — 2 rentas por vencer hoy <span style="float:right;font-size:10px;cursor:pointer;color:var(--info)">Ver →</span></div>
+      <div style="padding:7px 10px;background:rgba(245,197,24,.07);border-radius:7px;font-size:11px;border:1px solid rgba(245,197,24,.2)">M18 — OC-1045 requiere autorización <span style="float:right;font-size:10px;cursor:pointer;color:var(--info)">Ver →</span></div>
+      <div style="padding:7px 10px;background:rgba(61,217,235,.07);border-radius:7px;font-size:11px;border:1px solid rgba(61,217,235,.2)">M08 — 2 citas sin confirmar hoy <span style="float:right;font-size:10px;cursor:pointer;color:var(--info)">Ver →</span></div>
+    </div>
+    <!-- Ventas 7 días -->
+    <div style="font-size:10px;color:var(--t2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px">📈 Ventas últimos 7 días</div>
+    <div class="bar-wrap">
+      <div class="bar-row"><span class="bar-lbl">Lun 11</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--ac-admin)"></div></div><span class="bar-val" style="color:var(--ac-admin)">$189.400</span></div>
+      <div class="bar-row"><span class="bar-lbl">Mar 12</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--ac-admin)"></div></div><span class="bar-val" style="color:var(--ac-admin)">$156.800</span></div>
+      <div class="bar-row"><span class="bar-lbl">Mié 13</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:var(--ac-admin)"></div></div><span class="bar-val" style="color:var(--ac-admin)">$218.500</span></div>
+      <div class="bar-row"><span class="bar-lbl">Jue 14</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--ac-admin)"></div></div><span class="bar-val" style="color:var(--ac-admin)">$174.200</span></div>
+      <div class="bar-row"><span class="bar-lbl">Vie 15</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--ac-admin)"></div></div><span class="bar-val" style="color:var(--ac-admin)">$241.900</span></div>
+      <div class="bar-row"><span class="bar-lbl">Sáb 16</span><div class="bar-track"><div class="bar-fill" style="width:85%;background:var(--warn)"></div></div><span class="bar-val" style="color:var(--warn)">$205.600</span></div>
+      <div class="bar-row"><span class="bar-lbl">Dom 17</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--t2)"></div></div><span class="bar-val" style="color:var(--t2)">$108.400</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- VENTAS -->
+<div class="panel" id="s0p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Historial de ventas — hoy</div>
+    <table class="mx">
+      <tr><th>#</th><th>Cliente</th><th>Total</th><th>Tipo pago</th><th>Doc.</th><th>Estado</th></tr>
+      <tr><td style="font-family:var(--mono)">1042</td><td>Constructora Andes</td><td style="font-family:var(--mono);color:var(--ac-admin)">$66.286</td><td>Transf.</td><td><span class="tag" style="background:rgba(91,141,238,.1);color:var(--ac-sii)">FAC</span></td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✓</span></td></tr>
+      <tr><td style="font-family:var(--mono)">1041</td><td>María González #31</td><td style="font-family:var(--mono);color:var(--ac-admin)">$4.320</td><td>Efectivo</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">BOL</span></td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✓</span></td></tr>
+      <tr><td style="font-family:var(--mono)">1040</td><td>Pedro Soto #42</td><td style="font-family:var(--mono);color:var(--warn)">$8.200</td><td>Fiado</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">BOL</span></td><td><span class="tag" style="background:rgba(255,63,91,.1);color:var(--err)">Deuda</span></td></tr>
+      <tr><td style="font-family:var(--mono)">1039</td><td>Ana López — WA</td><td style="font-family:var(--mono);color:var(--ac-admin)">$12.500</td><td>WebPay</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">BOL</span></td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✓</span></td></tr>
+    </table>
+    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+      <button style="padding:6px 12px;border-radius:var(--r);border:none;background:rgba(224,64,251,.15);color:var(--ac-admin);font-size:11px;cursor:pointer;font-weight:600">📥 Exportar CSV</button>
+      <button style="padding:6px 12px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:11px;cursor:pointer">Filtrar fechas</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Detalle venta #1042</div>
+    <div style="font-size:11px;display:flex;flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Cliente</span><span>Constructora Andes · RUT 76.543.210-K</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Cajero</span><span>Juan Méndez</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Fecha</span><span style="font-family:var(--mono)">18/03/2026 14:35</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Documento</span><span style="color:var(--ac-sii)">Factura #101</span></div>
+    </div>
+    <div style="margin-top:8px;background:var(--s2);border-radius:var(--r);overflow:hidden">
+      <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Cable THHN 12 AWG 47.5m</span><span style="font-family:var(--mono);color:var(--ac-admin)">$42.275</span></div>
+      <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Pintura látex 5L</span><span style="font-family:var(--mono);color:var(--ac-admin)">$21.000</span></div>
+      <div style="padding:7px 10px;display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Total</span><span style="font-family:var(--mono);color:var(--ac-admin)">$66.286</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <button style="padding:5px 10px;border-radius:6px;border:none;background:rgba(91,141,238,.15);color:var(--ac-sii);font-size:10px;cursor:pointer;font-weight:600">📄 Ver DTE</button>
+      <button style="padding:5px 10px;border-radius:6px;border:1px solid var(--b2);background:none;color:var(--t2);font-size:10px;cursor:pointer">Anular</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRODUCTOS -->
+<div class="panel" id="s0p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Catálogo de productos</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input class="pos-in" placeholder="Buscar producto..." style="flex:1">
+      <button style="padding:6px 12px;border-radius:var(--r);border:none;background:var(--ac-admin);color:#fff;font-size:11px;cursor:pointer;font-weight:600">+ Nuevo</button>
+    </div>
+    <table class="mx">
+      <tr><th>Producto</th><th>Tipo</th><th>Stock</th><th>Precio</th><th>Margen</th><th></th></tr>
+      <tr><td>Cable THHN 12 AWG</td><td><span class="tag" style="background:rgba(255,107,53,.1);color:var(--ac-rest)">frac.</span></td><td style="font-family:var(--mono)">52.5m</td><td style="font-family:var(--mono);color:var(--ac-admin)">$890/m</td><td style="font-family:var(--mono);color:var(--ok)">39%</td><td><span style="font-size:10px;color:var(--info);cursor:pointer">Editar</span></td></tr>
+      <tr><td>Cerradura Schlage B60</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">stock</span></td><td style="font-family:var(--mono);color:var(--err)">3</td><td style="font-family:var(--mono);color:var(--ac-admin)">$38.900</td><td style="font-family:var(--mono);color:var(--ok)">34%</td><td><span style="font-size:10px;color:var(--info);cursor:pointer">Editar</span></td></tr>
+      <tr><td>Corte de vidrio</td><td><span class="tag" style="background:rgba(61,217,235,.1);color:var(--ac-rrhh)">serv.</span></td><td style="font-family:var(--mono);color:var(--t2)">—</td><td style="font-family:var(--mono);color:var(--ac-admin)">$1.500</td><td style="font-family:var(--mono);color:var(--ok)">85%</td><td><span style="font-size:10px;color:var(--info);cursor:pointer">Editar</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Ajuste de stock — Cable THHN</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px">Stock actual: <strong style="font-family:var(--mono)">52.5 metros</strong></div>
+      <div class="pill-row">
+        <div class="pill on" style="--ac:var(--ok)">Entrada</div>
+        <div class="pill" style="--ac:var(--err)">Salida</div>
+        <div class="pill" style="--ac:var(--warn)">Merma</div>
+      </div>
+      <input class="pos-in" placeholder="Cantidad (metros)..." type="number">
+      <textarea class="nota" placeholder="Motivo del ajuste..."></textarea>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-admin);color:#fff;font-size:12px;cursor:pointer;font-weight:600">Registrar movimiento</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CLIENTES -->
+<div class="panel" id="s0p3">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Lista de clientes</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input class="pos-in" placeholder="Buscar por RUT o nombre..." style="flex:1">
+      <select class="sel" style="width:120px"><option>Todos</option><option>Con deuda</option><option>VIP</option></select>
+    </div>
+    <table class="mx">
+      <tr><th>Cliente</th><th>Código</th><th>Deuda</th><th>Segmento</th><th>Última compra</th></tr>
+      <tr><td>María González</td><td style="font-family:var(--mono)">#31</td><td style="font-family:var(--mono);color:var(--err)">$23.450</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">🏆</span></td><td style="font-family:var(--mono);color:var(--t2)">hace 3d</td></tr>
+      <tr><td>Constructora Andes</td><td style="font-family:var(--mono)">RUT</td><td style="font-family:var(--mono);color:var(--ok)">$0</td><td><span class="tag" style="background:rgba(91,141,238,.1);color:var(--ac-sii)">💎</span></td><td style="font-family:var(--mono);color:var(--t2)">hoy</td></tr>
+      <tr><td>Pedro Soto</td><td style="font-family:var(--mono)">#42</td><td style="font-family:var(--mono);color:var(--warn)">$8.200</td><td><span class="tag" style="background:rgba(255,63,91,.1);color:var(--err)">⚠️</span></td><td style="font-family:var(--mono);color:var(--t2)">hace 42d</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Deudas pendientes</div>
+    <div style="padding:8px;background:rgba(255,63,91,.06);border:1px solid rgba(255,63,91,.15);border-radius:var(--r);font-size:12px;margin-bottom:8px">
+      Total pendiente: <strong style="font-family:var(--mono);color:var(--err)">$44.450</strong> en 3 clientes
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:9px;background:var(--s2);border-radius:var(--r);font-size:11px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-weight:600">María González #31</div><div style="color:var(--t2)">Vencida hace 3 días</div></div>
+        <div style="display:flex;gap:5px;align-items:center"><span style="font-family:var(--mono);color:var(--err)">$23.450</span><button style="padding:4px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">Pagar</button></div>
+      </div>
+      <div style="padding:9px;background:var(--s2);border-radius:var(--r);font-size:11px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-weight:600">Pedro Soto #42</div><div style="color:var(--t2)">Registrada hoy</div></div>
+        <div style="display:flex;gap:5px;align-items:center"><span style="font-family:var(--mono);color:var(--warn)">$8.200</span><button style="padding:4px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">Pagar</button></div>
+      </div>
+    </div>
+    <button style="margin-top:8px;width:100%;padding:7px;border-radius:var(--r);border:none;background:rgba(0,229,160,.12);color:var(--ok);font-size:11px;cursor:pointer;font-weight:600">📱 Recordar por WA a todos</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPRAS -->
+<div class="panel" id="s0p4">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Órdenes de compra recientes</div>
+    <table class="mx">
+      <tr><th>N° OC</th><th>Proveedor</th><th>Total</th><th>Estado</th><th>Fecha req.</th></tr>
+      <tr><td style="font-family:var(--mono)">OC-1049</td><td>Cementos Melón</td><td style="font-family:var(--mono);color:var(--ac-admin)">$797.003</td><td><span class="tag" style="background:rgba(68,136,255,.1);color:var(--info)">📤 Enviada</span></td><td style="font-family:var(--mono)">23/03</td></tr>
+      <tr><td style="font-family:var(--mono)">OC-1048</td><td>Dist. Eléctrica</td><td style="font-family:var(--mono);color:var(--ac-admin)">$234.560</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✅ Recibida</span></td><td style="font-family:var(--mono)">17/03</td></tr>
+      <tr><td style="font-family:var(--mono)">OC-1047</td><td>Ferret. Mayorista</td><td style="font-family:var(--mono);color:var(--ac-admin)">$567.800</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">⏳ Pendiente</span></td><td style="font-family:var(--mono)">16/03</td></tr>
+      <tr><td style="font-family:var(--mono)">OC-1046</td><td>Pinturas Sherwin</td><td style="font-family:var(--mono);color:var(--ac-admin)">$123.450</td><td><span class="tag" style="background:rgba(255,63,91,.1);color:var(--err)">❌ Diferencias</span></td><td style="font-family:var(--mono)">14/03</td></tr>
+    </table>
+    <button style="margin-top:8px;padding:7px 14px;border-radius:var(--r);border:none;background:var(--ac-admin);color:#fff;font-size:11px;cursor:pointer;font-weight:600">+ Nueva OC</button>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Recepción OC-1047</div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:8px">Proveedor: Ferretería Mayorista San Borja</div>
+    <table class="mx">
+      <tr><th>Producto</th><th>Ped.</th><th>Recib.</th><th>Acept.</th><th>Estado</th></tr>
+      <tr><td>Cable THHN 12 AWG</td><td style="font-family:var(--mono)">100m</td><td style="font-family:var(--mono)">100m</td><td style="font-family:var(--mono)">100m</td><td><span style="color:var(--ok)">✅</span></td></tr>
+      <tr><td>Cerradura Schlage</td><td style="font-family:var(--mono)">10</td><td style="font-family:var(--mono)">8</td><td style="font-family:var(--mono)">8</td><td><span style="color:var(--warn)">⚠️ -2</span></td></tr>
+      <tr><td>Tornillo 1/4" x1"</td><td style="font-family:var(--mono)">1000</td><td style="font-family:var(--mono)">1000</td><td style="font-family:var(--mono)">980</td><td><span style="color:var(--err)">❌ 20 dan.</span></td></tr>
+    </table>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button style="padding:6px 12px;border-radius:var(--r);border:none;background:var(--ok);color:#000;font-size:11px;cursor:pointer;font-weight:700">✅ Confirmar recepción</button>
+      <button style="padding:6px 12px;border-radius:var(--r);border:1px solid rgba(255,63,91,.3);background:rgba(255,63,91,.08);color:var(--err);font-size:11px;cursor:pointer;font-weight:600">⚠️ Nota de crédito</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CONFIG -->
+<div class="panel" id="s0p5">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Configuración de la empresa</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Nombre empresa</label><input class="pos-in" value="Ferretería Don Pedro" style="width:100%"></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Rubro activo</label><select class="sel"><option>Ferretería / Mayorista</option><option>Retail / Abarrotes</option><option>Médico / Clínica</option></select></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Documento fiscal por defecto</label><select class="sel"><option>Boleta</option><option>Factura</option><option>Honorarios</option></select></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Mensaje pie de ticket</label><textarea class="nota">Gracias por su compra. Ferretería Don Pedro · Av. Principal 1234</textarea></div>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-admin);color:#fff;font-size:12px;cursor:pointer;font-weight:700">💾 Guardar configuración</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-admin)">Módulos activos</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M01 Venta</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M02 Multi-op</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M03 Stock</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M04 Fracc.</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M07 Servicios</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M11 Fiado</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M18 Compras</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M20 SII</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M24 QR</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M26 Vol. desc.</span>
+      <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ M32 CRM</span>
+      <span class="tag" style="background:rgba(136,136,160,.12);color:var(--t2)">○ M13 Delivery</span>
+      <span class="tag" style="background:rgba(136,136,160,.12);color:var(--t2)">○ M21 RRHH</span>
+      <span class="tag" style="background:rgba(136,136,160,.12);color:var(--t2)">○ M23 Reclutar</span>
+    </div>
+    <div style="margin-top:10px">
+      <div class="clabel" style="color:var(--ac-admin)">Métodos de pago habilitados</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ Efectivo</span>
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ Débito</span>
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ Crédito</span>
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ Transferencia</span>
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ WebPay</span>
+        <span class="tag" style="background:rgba(0,229,160,.12);color:var(--ok)">✓ Fiado/Crédito</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s0 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     1 — POS AVANZADO: OT, Comandas, Check-in, Recursos
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s1" style="--ac:var(--ac-pos)">
+<div class="tabs">
+  <button class="tb on" onclick="P(1,0)" style="--ac:var(--ac-pos)">OT Taller (M28)</button>
+  <button class="tb" onclick="P(1,1)" style="--ac:var(--ac-pos)">Comandas (M15)</button>
+  <button class="tb" onclick="P(1,2)" style="--ac:var(--ac-pos)">Check-in Gym (M30)</button>
+  <button class="tb" onclick="P(1,3)" style="--ac:var(--ac-pos)">Recursos Genérico</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(192,132,252,.1);color:var(--ac-pos)">💳 POS AVANZADO</div>
+    <div class="htitle">Vistas especializadas del POS</div>
+    <div class="hsub">Pantallas que se activan según los módulos del rubro: órdenes de trabajo, comandas de cocina, check-in de socios, mapa de recursos genérico.</div>
+  </div>
+</div>
+
+<!-- OT -->
+<div class="panel on" id="s1p0">
+<div class="slbl" style="padding-top:16px">M28 — Órdenes de trabajo · Taller mecánico / Técnico</div>
+<div class="ot-wrap" style="margin-top:0">
+  <div class="ot-col">
+    <div class="ot-head" style="color:var(--t2)">DIAGNÓSTICO</div>
+    <div class="ot-card" style="border-left:2px solid var(--info)"><div style="font-size:10px;font-weight:700;color:var(--ac-pos)">OT-045</div><div style="font-size:10px;font-weight:600;margin-top:2px">ABCD12 · Toyota</div><div style="font-size:10px;color:var(--t2)">No parte + ruidos</div><button style="margin-top:5px;padding:3px 8px;border-radius:5px;border:none;background:var(--ac-pos);color:#fff;font-size:9px;cursor:pointer;font-weight:700">→ Presupuesto</button></div>
+    <div class="ot-card"><div style="font-size:10px;font-weight:700;color:var(--ac-pos)">OT-044</div><div style="font-size:10px;font-weight:600;margin-top:2px">XYWZ98 · Suzuki</div><div style="font-size:10px;color:var(--t2)">Aceite + revisión</div></div>
+  </div>
+  <div class="ot-col">
+    <div class="ot-head" style="color:var(--warn)">PRESUPUESTO</div>
+    <div class="ot-card" style="border-left:2px solid var(--warn)"><div style="font-size:10px;font-weight:700;color:var(--warn)">OT-043</div><div style="font-size:10px;font-weight:600;margin-top:2px">FGHJ56 · Honda</div><div style="font-size:10px;font-family:var(--mono);color:var(--warn)">$73.000</div><button style="margin-top:5px;padding:3px 8px;border-radius:5px;border:none;background:rgba(245,197,24,.15);color:var(--warn);font-size:9px;cursor:pointer;font-weight:700;border:1px solid rgba(245,197,24,.3)">📱 Enviar WA</button></div>
+  </div>
+  <div class="ot-col">
+    <div class="ot-head" style="color:var(--ok)">APROBADA</div>
+    <div class="ot-card" style="border-left:2px solid var(--ok)"><div style="font-size:10px;font-weight:700;color:var(--ok)">OT-041</div><div style="font-size:10px;font-weight:600;margin-top:2px">MNOP34 · VW</div><div style="font-size:10px;color:var(--t2)">Frenos completos</div><button style="margin-top:5px;padding:3px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:9px;cursor:pointer;font-weight:700">→ Ejecución</button></div>
+  </div>
+  <div class="ot-col">
+    <div class="ot-head" style="color:var(--ac-pos)">EJECUCIÓN</div>
+    <div class="ot-card" style="border-left:2px solid var(--ac-pos)"><div style="font-size:10px;font-weight:700;color:var(--ac-pos)">OT-039</div><div style="font-size:10px;font-weight:600;margin-top:2px">QRST12 · Mazda</div><div style="font-size:10px;color:var(--t2)">Pedro → Mecánico</div><button style="margin-top:5px;padding:3px 8px;border-radius:5px;border:none;background:var(--ac-pos);color:#fff;font-size:9px;cursor:pointer;font-weight:700">→ Listo</button></div>
+  </div>
+  <div class="ot-col">
+    <div class="ot-head" style="color:var(--info)">LISTA</div>
+    <div class="ot-card" style="border-left:2px solid var(--info)"><div style="font-size:10px;font-weight:700;color:var(--info)">OT-037</div><div style="font-size:10px;font-weight:600;margin-top:2px">UVWX90 · Kia</div><div style="font-size:10px;color:var(--t2)">Cliente avisado ✅</div><button style="margin-top:5px;padding:3px 8px;border-radius:5px;border:none;background:var(--info);color:#fff;font-size:9px;cursor:pointer;font-weight:700">Entregar →</button></div>
+  </div>
+</div>
+<!-- OT Detalle -->
+<div class="grid" style="margin-top:1px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-pos)">OT-045 · Toyota Corolla ABCD12</div>
+    <div style="font-size:11px;display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Cliente</span><span>Pedro Soto #42</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Vehículo</span><span>Toyota Corolla 2019 · Plata · ABCD12</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Problema</span><span>No parte, ruidos al frenar</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">Historial</span><span style="color:var(--info)">3 visitas anteriores →</span></div>
+    </div>
+    <div class="slbl">Servicios y repuestos</div>
+    <div style="background:var(--s2);border-radius:var(--r);overflow:hidden">
+      <div style="padding:8px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Diagnóstico eléctrico <span class="tag" style="background:rgba(61,217,235,.1);color:var(--ac-rrhh)">serv</span></span><span style="font-family:var(--mono);color:var(--ac-pos)">$25.000</span></div>
+      <div style="padding:8px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Pastillas freno del. <span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">stock</span></span><span style="font-family:var(--mono);color:var(--ac-pos)">$48.000</span></div>
+      <div style="padding:8px 10px;display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Total OT</span><span style="font-family:var(--mono);color:var(--ac-pos)">$73.000</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button style="padding:6px 12px;border-radius:var(--r);border:none;background:var(--ac-pos);color:#fff;font-size:11px;cursor:pointer;font-weight:700">+ Agregar ítem</button>
+      <button style="padding:6px 12px;border-radius:var(--r);border:none;background:rgba(37,211,102,.15);color:var(--ac-wa);font-size:11px;cursor:pointer;font-weight:600">📱 Enviar presupuesto WA</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-pos)">Nueva OT</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <input class="pos-in" placeholder="Buscar cliente por RUT o nombre...">
+      <input class="pos-in" placeholder="Patente del vehículo...">
+      <select class="sel"><option>Toyota</option><option>Chevrolet</option><option>Hyundai</option><option>Kia</option></select>
+      <textarea class="nota" placeholder="Descripción del problema que reporta el cliente..."></textarea>
+      <select class="sel"><option>Pedro (Mecánico)</option><option>Carlos (Eléctrico)</option><option>Sin asignar</option></select>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-pos);color:#fff;font-size:12px;cursor:pointer;font-weight:700">Crear OT</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- COMANDAS -->
+<div class="panel" id="s1p1">
+<div class="slbl" style="padding-top:16px">M15 — Comandas · Restaurante / Café</div>
+<div class="kanban" style="margin-top:0;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+  <div class="kc">
+    <div class="kh" style="color:var(--warn)">NUEVA <span style="background:rgba(245,197,24,.15);padding:1px 6px;border-radius:10px">3</span></div>
+    <div class="kcard" style="border-left:3px solid var(--warn)"><div class="kt">Mesa 5</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Lomo x2 · Cerveza x3<br>Papas x2</div><button style="width:100%;margin-top:5px;padding:4px;border-radius:5px;border:none;background:var(--warn);color:#000;font-size:10px;cursor:pointer;font-weight:700">🍳 Iniciar</button></div>
+    <div class="kcard"><div class="kt">Delivery D45</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Combo x1 · Refresco x2</div><button style="width:100%;margin-top:5px;padding:4px;border-radius:5px;border:none;background:var(--warn);color:#000;font-size:10px;cursor:pointer;font-weight:700">🍳 Iniciar</button></div>
+    <div class="kcard"><div class="kt">Mesa 2</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Pasta x2 · Ensalada x1</div><button style="width:100%;margin-top:5px;padding:4px;border-radius:5px;border:none;background:var(--warn);color:#000;font-size:10px;cursor:pointer;font-weight:700">🍳 Iniciar</button></div>
+  </div>
+  <div class="kc">
+    <div class="kh" style="color:var(--ac-rest)">EN COCINA <span style="background:rgba(255,107,53,.15);padding:1px 6px;border-radius:10px">2</span></div>
+    <div class="kcard" style="border-left:3px solid var(--ac-rest)"><div class="kt">Mesa 3</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Pasta x1 · Ensalada x2</div><div style="font-family:var(--mono);font-size:11px;color:var(--warn);margin-top:4px">⏱ 8 min</div><div class="tbar" style="margin-top:4px"><div class="tfill" style="width:53%;background:var(--warn)"></div></div><button style="width:100%;margin-top:5px;padding:4px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">✅ Lista</button></div>
+    <div class="kcard"><div class="kt">Bar · Orden B12</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Mojito x2 · Pisco x1</div><div style="font-family:var(--mono);font-size:11px;color:var(--ok);margin-top:4px">⏱ 2 min</div><div class="tbar" style="margin-top:4px"><div class="tfill" style="width:80%;background:var(--ok)"></div></div></div>
+  </div>
+  <div class="kc">
+    <div class="kh" style="color:var(--ok)">LISTA <span style="background:rgba(0,229,160,.15);padding:1px 6px;border-radius:10px">1</span></div>
+    <div class="kcard" style="border-left:3px solid var(--ok)"><div class="kt">Delivery D44</div><div style="font-size:10px;color:var(--t2);margin:3px 0">Combo familiar<br>🚚 Repartidor: Juan</div><button style="width:100%;margin-top:5px;padding:4px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">📦 Despachar</button></div>
+  </div>
+  <div class="kc">
+    <div class="kh" style="color:var(--info)">ENTREGADA <span style="font-family:var(--mono);color:var(--t2)">12 hoy</span></div>
+    <div class="kcard"><div class="kt">Mesa 1</div><div class="kv">$23.500 · 14:12</div></div>
+    <div class="kcard"><div class="kt">Mesa 7</div><div class="kv">$18.900 · 14:08</div></div>
+  </div>
+</div>
+<!-- Pos mesas -->
+<div class="grid" style="margin-top:1px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Mapa de mesas</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ok)">1</div><div style="font-size:9px;color:var(--ok)">Libre</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(255,63,91,.07);border:1px solid rgba(255,63,91,.2)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--err)">2</div><div style="font-size:9px;color:var(--err)">3 ítems</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.2)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ac-rest)">3</div><div style="font-size:9px;color:var(--ac-rest)">En cocina</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:var(--s2);border:1px solid var(--b1)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--t2)">4</div><div style="font-size:9px;color:var(--t3)">Reservada</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(255,63,91,.07);border:1.5px solid var(--err)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--err)">5</div><div style="font-size:9px;color:var(--warn)">⏱ Nueva</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ok)">6</div><div style="font-size:9px;color:var(--ok)">Libre</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:var(--s2);border:1px solid var(--b1)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--t2)">7</div><div style="font-size:9px;color:var(--t3)">Libre</div></div>
+      <div style="padding:10px;border-radius:var(--r);text-align:center;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2)"><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--ok)">T</div><div style="font-size:9px;color:var(--ok)">Terraza</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Métricas del turno · Almuerzo</div>
+    <div class="kpis" style="grid-template-columns:1fr 1fr">
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-rest)">$345.200</div><div class="kpi-lbl">Ventas turno</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-rest)">47</div><div class="kpi-lbl">Comandas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ok)">12 min</div><div class="kpi-lbl">Tiempo prom.</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--warn)">2</div><div class="kpi-lbl">En proceso</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CHECK-IN GYM -->
+<div class="panel" id="s1p2">
+<div class="slbl" style="padding-top:16px">M30 — Check-in de socios · Gimnasio / Centro deportivo</div>
+<div class="grid" style="margin-top:0">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Escanear QR o buscar socio</div>
+    <div style="display:flex;gap:7px;margin-bottom:10px">
+      <input class="pos-in" placeholder="RUT o código de socio..." style="flex:1">
+      <button style="padding:9px 14px;border-radius:var(--r);border:none;background:var(--ac-qr);color:#000;font-size:12px;cursor:pointer;font-weight:700">Buscar</button>
+    </div>
+    <!-- Resultado -->
+    <div style="padding:12px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:var(--r)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,229,160,.15);display:flex;align-items:center;justify-content:center;font-size:16px">💪</div>
+        <div><div style="font-size:13px;font-weight:700">Juan Pérez</div><div style="font-size:10px;color:var(--t2)">#89 · Membresía MENSUAL PRO</div></div>
+        <span class="tag" style="background:rgba(0,229,160,.15);color:var(--ok);margin-left:auto">✅ Vigente</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+        <div><div style="color:var(--t2)">Vence</div><div style="font-family:var(--mono);font-weight:600">30/04/2026</div></div>
+        <div><div style="color:var(--t2)">Ingresos este mes</div><div style="font-family:var(--mono);font-weight:600;color:var(--ac-qr)">12</div></div>
+        <div><div style="color:var(--t2)">Reserva hoy</div><div style="font-family:var(--mono);font-weight:600;color:var(--warn)">15:00 Cancha 2</div></div>
+      </div>
+      <button style="width:100%;margin-top:8px;padding:10px;border-radius:var(--r);border:none;background:var(--ac-qr);color:#000;font-size:13px;cursor:pointer;font-weight:700">✅ Confirmar Check-in</button>
+    </div>
+    <!-- Membresía vencida -->
+    <div style="margin-top:8px;padding:10px;background:rgba(255,63,91,.06);border:1px solid rgba(255,63,91,.2);border-radius:var(--r)">
+      <div style="font-size:11px;font-weight:600;color:var(--err)">Pedro Soto — Membresía vencida</div>
+      <div style="font-size:10px;color:var(--t2);margin-top:2px">Venció el 01/03/2026 · 17 días vencida</div>
+      <button style="margin-top:6px;padding:6px 12px;border-radius:6px;border:none;background:var(--warn);color:#000;font-size:11px;cursor:pointer;font-weight:700">💳 Renovar membresía</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Check-ins de hoy</div>
+    <div style="font-size:20px;font-weight:700;font-family:var(--mono);color:var(--ac-qr);margin-bottom:4px">34</div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:10px">Socios que ingresaron hoy</div>
+    <table class="mx">
+      <tr><th>Socio</th><th>Hora</th><th>Plan</th></tr>
+      <tr><td>Juan Pérez #89</td><td style="font-family:var(--mono)">14:32</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Pro</span></td></tr>
+      <tr><td>María López #34</td><td style="font-family:var(--mono)">13:15</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">8h</span></td></tr>
+      <tr><td>Carlos Soto #12</td><td style="font-family:var(--mono)">11:50</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Pro</span></td></tr>
+    </table>
+    <div style="margin-top:10px">
+      <div class="clabel" style="color:var(--ac-qr)">Membresías por vencer (7 días)</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="padding:7px 9px;background:rgba(245,197,24,.07);border-radius:7px;font-size:10px;display:flex;justify-content:space-between"><span>Ana Pérez #22</span><span style="font-family:var(--mono);color:var(--warn)">vence 25/03</span></div>
+        <div style="padding:7px 9px;background:rgba(245,197,24,.07);border-radius:7px;font-size:10px;display:flex;justify-content:space-between"><span>Roberto Gil #67</span><span style="font-family:var(--mono);color:var(--warn)">vence 26/03</span></div>
+      </div>
+      <button style="margin-top:6px;width:100%;padding:7px;border-radius:var(--r);border:none;background:rgba(37,211,102,.12);color:var(--ac-wa);font-size:11px;cursor:pointer;font-weight:600">📱 WA recordatorio a ambos</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- RECURSOS GENÉRICO -->
+<div class="panel" id="s1p3">
+<div class="slbl" style="padding-top:16px">M14 + M06 — Mapa de recursos genérico (canchas, habitaciones, salas...)</div>
+<div class="grid" style="margin-top:0">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-pos)">Recursos — vista de mapa</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px">
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ok)">1</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso A</div><div style="font-size:10px;color:var(--ok);margin-top:3px">Libre</div></div>
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(255,63,91,.07);border:1.5px solid rgba(255,63,91,.3);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--err)">2</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso B</div><div style="font-size:10px;color:var(--err);font-family:var(--mono);margin-top:3px">45min/3h</div></div>
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(255,63,91,.07);border:1px solid rgba(255,63,91,.2);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--err)">3</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso C</div><div style="font-size:10px;color:var(--warn);font-family:var(--mono);margin-top:3px">⚠️ 8min</div></div>
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.2);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--warn)">4</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso D</div><div style="font-size:10px;color:var(--warn);margin-top:3px">Limpieza</div></div>
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(68,136,255,.07);border:1px solid rgba(68,136,255,.2);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--info)">5</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso E</div><div style="font-size:10px;color:var(--info);margin-top:3px">Reservado</div></div>
+      <div style="padding:12px 8px;border-radius:var(--r);text-align:center;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);cursor:pointer"><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ok)">6</div><div style="font-size:9px;color:var(--t2);margin-top:2px">Recurso F</div><div style="font-size:10px;color:var(--ok);margin-top:3px">Libre</div></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:10px;font-size:10px;color:var(--t2)">
+      <span><span class="dot" style="background:var(--ok)"></span>Libre</span>
+      <span><span class="dot" style="background:var(--err)"></span>Ocupado</span>
+      <span><span class="dot" style="background:var(--warn)"></span>Limpieza</span>
+      <span><span class="dot" style="background:var(--info)"></span>Reservado</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-pos)">Recurso 2 — Seleccionado</div>
+    <div class="tblock"><div style="font-size:10px;color:var(--t2);font-weight:700;letter-spacing:1px;margin-bottom:4px">RECURSO 2 · 3 horas · $28.000</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">45 min transcurridos</span><span style="font-family:var(--mono);font-size:11px;color:var(--warn);font-weight:700">25%</span></div><div class="tbar"><div class="tfill" style="width:25%;background:var(--ok)"></div></div></div>
+    <div style="background:var(--s2);border-radius:var(--r);overflow:hidden;margin-top:6px">
+      <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Renta 3 horas</span><span style="font-family:var(--mono)">$28.000</span></div>
+      <div style="padding:7px 10px;display:flex;justify-content:space-between;font-size:11px"><span>Snacks agregados</span><span style="font-family:var(--mono)">$4.500</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+      <button style="padding:8px;border-radius:var(--r);border:none;background:rgba(245,197,24,.15);color:var(--warn);font-size:11px;cursor:pointer;font-weight:700">⏱ +30 min</button>
+      <button style="padding:8px;border-radius:var(--r);border:none;background:rgba(255,63,91,.12);color:var(--err);font-size:11px;cursor:pointer;font-weight:700">✅ Checkout</button>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s1 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     2 — DELIVERY
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s2" style="--ac:var(--ac-delivery)">
+<div class="tabs">
+  <button class="tb on" onclick="P(2,0)" style="--ac:var(--ac-delivery)">Dashboard en vivo</button>
+  <button class="tb" onclick="P(2,1)" style="--ac:var(--ac-delivery)">Repartidores</button>
+  <button class="tb" onclick="P(2,2)" style="--ac:var(--ac-delivery)">Seguimiento cliente</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(0,196,255,.1);color:var(--ac-delivery)">🚚 DELIVERY M13</div>
+    <div class="htitle">Delivery y logística</div>
+    <div class="hsub">Gestión de entregas en tiempo real. Asignación a repartidores. Tracking por GPS. Notificación WA al cliente en cada estado.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s2p0">
+<div class="kpis" style="margin-top:16px">
+  <div class="kpi"><div class="kpi-val" style="color:var(--warn)">8</div><div class="kpi-lbl">Pendientes</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-delivery)">5</div><div class="kpi-lbl">En ruta</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ok)">23</div><div class="kpi-lbl">Completadas</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-delivery)">4/6</div><div class="kpi-lbl">Repartidores</div></div>
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Mapa de repartidores</div>
+    <div class="map-ph">🗺️ Mapa GPS en tiempo real (integración SSE)</div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px;font-size:11px">
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;display:flex;justify-content:space-between;align-items:center"><div><span class="dot" style="background:var(--ok)"></span><strong>Juan</strong> · Moto · 3 entregas</div><div style="font-family:var(--mono);color:var(--ok)">ETA 23 min</div></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;display:flex;justify-content:space-between;align-items:center"><div><span class="dot" style="background:var(--ok)"></span><strong>María</strong> · Bici · 2 entregas</div><div style="font-family:var(--mono);color:var(--ok)">ETA 15 min</div></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;display:flex;justify-content:space-between;align-items:center"><div><span class="dot" style="background:var(--ac-delivery)"></span><strong>Pedro</strong> · Auto · 5 entregas</div><div style="font-family:var(--mono);color:var(--warn)">ETA 45 min</div></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;display:flex;justify-content:space-between;align-items:center"><div><span class="dot" style="background:var(--t2)"></span><strong>Carlos</strong> · Moto · Inactivo</div><div style="color:var(--t3);font-size:10px">Fuera de turno</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Próximas entregas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:9px 10px;background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.2);border-radius:var(--r);font-size:11px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><strong>María González</strong><span style="font-family:var(--mono)">15:30</span></div>
+        <div style="color:var(--t2)">Av. Siempre Viva 123 · Peñalolén</div>
+        <div style="display:flex;gap:5px;margin-top:5px">
+          <span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">⏳ Sin asignar</span>
+          <button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ac-delivery);color:#000;font-size:10px;cursor:pointer;font-weight:700">Asignar</button>
+        </div>
+      </div>
+      <div style="padding:9px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.2);border-radius:var(--r);font-size:11px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><strong>Juan Pérez</strong><span style="font-family:var(--mono)">15:45</span></div>
+        <div style="color:var(--t2)">Calle 2 #456 · La Florida</div>
+        <div style="margin-top:5px"><span class="tag" style="background:rgba(0,196,255,.1);color:var(--ac-delivery)">🚚 Juan · ETA 23 min</span></div>
+      </div>
+      <div style="padding:9px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);font-size:11px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><strong>Constructora Pérez</strong><span style="font-family:var(--mono)">16:00</span></div>
+        <div style="color:var(--t2)">Los Industriales 789 · Pudahuel</div>
+        <div style="margin-top:5px"><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">⏳ Pendiente</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s2p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Flota de repartidores</div>
+    <table class="mx">
+      <tr><th>Repartidor</th><th>Vehículo</th><th>Estado</th><th>Entregas hoy</th><th>Calif.</th></tr>
+      <tr><td>Juan Pérez</td><td>🏍️ Moto</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">En ruta</span></td><td style="font-family:var(--mono)">8</td><td style="font-family:var(--mono);color:var(--warn)">★ 4.8</td></tr>
+      <tr><td>María González</td><td>🚲 Bicicleta</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">En ruta</span></td><td style="font-family:var(--mono)">5</td><td style="font-family:var(--mono);color:var(--warn)">★ 4.9</td></tr>
+      <tr><td>Pedro Soto</td><td>🚗 Auto</td><td><span class="tag" style="background:rgba(0,196,255,.1);color:var(--ac-delivery)">Disponible</span></td><td style="font-family:var(--mono)">12</td><td style="font-family:var(--mono);color:var(--warn)">★ 4.7</td></tr>
+      <tr><td>Carlos López</td><td>🏍️ Moto</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">Inactivo</span></td><td style="font-family:var(--mono)">0</td><td style="font-family:var(--mono);color:var(--t2)">★ 4.5</td></tr>
+    </table>
+    <button style="margin-top:8px;padding:7px 14px;border-radius:var(--r);border:none;background:var(--ac-delivery);color:#000;font-size:11px;cursor:pointer;font-weight:700">+ Nuevo repartidor</button>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Métricas del día</div>
+    <div class="kpis" style="grid-template-columns:1fr 1fr">
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-delivery)">36</div><div class="kpi-lbl">Total entregas</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ok)">94%</div><div class="kpi-lbl">Tasa éxito</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--warn)">28 min</div><div class="kpi-lbl">Tiempo prom.</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-delivery)">$72.000</div><div class="kpi-lbl">Ingresos envío</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s2p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Vista pública — Seguimiento cliente</div>
+    <div style="padding:16px;background:rgba(0,196,255,.04);border:1px solid rgba(0,196,255,.15);border-radius:var(--r)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">🚚 Tu pedido está en camino</div>
+      <div style="font-size:11px;color:var(--t2);margin-bottom:10px">Pedido #ENT-2026-1042</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot" style="background:rgba(0,229,160,.15)">✅</div><div class="tl-body"><div class="tl-title" style="color:var(--ok)">Pedido confirmado</div><div class="tl-sub">14:32 · Pago recibido</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:rgba(0,229,160,.15)">📦</div><div class="tl-body"><div class="tl-title" style="color:var(--ok)">Preparando tu pedido</div><div class="tl-sub">14:45 · En preparación</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:rgba(0,196,255,.15)">🚚</div><div class="tl-body"><div class="tl-title" style="color:var(--ac-delivery)">En camino → Juan (Moto)</div><div class="tl-sub">15:02 · ETA 12 minutos</div></div></div>
+        <div class="tl-item"><div class="tl-dot" style="background:var(--b2)">📍</div><div class="tl-body"><div class="tl-title" style="color:var(--t2)">Entregado</div><div class="tl-sub" style="color:var(--t3)">Pendiente</div></div></div>
+      </div>
+      <div style="margin-top:10px;background:var(--s2);border-radius:var(--r);overflow:hidden">
+        <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Leche Colún x2</span><span style="font-family:var(--mono)">$2.380</span></div>
+        <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Pan de molde x1</span><span style="font-family:var(--mono)">$1.490</span></div>
+        <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Delivery</span><span style="font-family:var(--mono)">$2.000</span></div>
+        <div style="padding:7px 10px;display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Total</span><span style="font-family:var(--mono);color:var(--ac-delivery)">$5.870</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button style="flex:1;padding:8px;border-radius:var(--r);border:none;background:rgba(37,211,102,.15);color:var(--ac-wa);font-size:11px;cursor:pointer;font-weight:600">📞 Llamar a Juan</button>
+        <button style="flex:1;padding:8px;border-radius:var(--r);border:none;background:rgba(0,229,160,.15);color:var(--ok);font-size:11px;cursor:pointer;font-weight:600">✅ Confirmar entrega</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-delivery)">Notificaciones WA automáticas</div>
+    <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;border-left:3px solid var(--ac-wa)">
+        <div style="font-weight:600;color:var(--ac-wa)">📱 Al confirmar pedido</div>
+        <div style="color:var(--t2);margin-top:2px">"Tu pedido fue recibido. Prepararemos en ~20 min. Seguimiento: benderand.cl/e/1042"</div>
+      </div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;border-left:3px solid var(--ac-delivery)">
+        <div style="font-weight:600;color:var(--ac-delivery)">🚚 Al asignar repartidor</div>
+        <div style="color:var(--t2);margin-top:2px">"Juan ya viene a tu casa. ETA: 28 min. Puedes llamarlo al +56 9..."</div>
+      </div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:8px;border-left:3px solid var(--ok)">
+        <div style="font-weight:600;color:var(--ok)">✅ Al entregar</div>
+        <div style="color:var(--t2);margin-top:2px">"¡Entregado! ¿Cómo calificarías el servicio? Responde del 1 al 5."</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s2 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     3 — RESTAURANTE: RECETAS
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s3" style="--ac:var(--ac-rest)">
+<div class="tabs">
+  <button class="tb on" onclick="P(3,0)" style="--ac:var(--ac-rest)">Recetas</button>
+  <button class="tb" onclick="P(3,1)" style="--ac:var(--ac-rest)">Producción</button>
+  <button class="tb" onclick="P(3,2)" style="--ac:var(--ac-rest)">Costeo</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(255,107,53,.1);color:var(--ac-rest)">🍽️ RESTAURANTE M16</div>
+    <div class="htitle">Recetas e ingredientes</div>
+    <div class="hsub">Costeo automático por plato. Producción descuenta ingredientes del inventario. Alertas de ingredientes faltantes.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s3p0">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Receta — Lomo a lo pobre</div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:8px">Fondo · 4 porciones · 45 min total</div>
+    <table class="mx">
+      <tr><th>Ingrediente</th><th>Cantidad</th><th>Merma%</th><th>Costo</th><th>Stock</th></tr>
+      <tr><td>Posta rosada</td><td style="font-family:var(--mono)">1.2 kg</td><td style="font-family:var(--mono);color:var(--t2)">5%</td><td style="font-family:var(--mono);color:var(--ac-rest)">$8.400</td><td style="font-family:var(--mono);color:var(--ok)">8.2kg</td></tr>
+      <tr><td>Papas</td><td style="font-family:var(--mono)">1.5 kg</td><td style="font-family:var(--mono);color:var(--t2)">10%</td><td style="font-family:var(--mono);color:var(--ac-rest)">$1.350</td><td style="font-family:var(--mono);color:var(--ok)">12.5kg</td></tr>
+      <tr><td>Cebollas</td><td style="font-family:var(--mono)">0.5 kg</td><td style="font-family:var(--mono);color:var(--t2)">5%</td><td style="font-family:var(--mono);color:var(--ac-rest)">$450</td><td style="font-family:var(--mono);color:var(--ok)">5.0kg</td></tr>
+      <tr><td>Huevos</td><td style="font-family:var(--mono)">4 uni</td><td style="font-family:var(--mono);color:var(--t2)">0%</td><td style="font-family:var(--mono);color:var(--ac-rest)">$800</td><td style="font-family:var(--mono);color:var(--ok)">32</td></tr>
+      <tr><td>Aceite</td><td style="font-family:var(--mono)">0.1 L</td><td style="font-family:var(--mono);color:var(--t2)">0%</td><td style="font-family:var(--mono);color:var(--ac-rest)">$150</td><td style="font-family:var(--mono);color:var(--ok)">2.5L</td></tr>
+    </table>
+    <div style="background:var(--s2);border-radius:var(--r);padding:10px;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:var(--t2)">Costo ingredientes</span><span style="font-family:var(--mono)">$11.150</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:var(--t2)">Mano de obra est.</span><span style="font-family:var(--mono)">$2.000</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:var(--t2)">Otros costos</span><span style="font-family:var(--mono)">$300</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;border-top:1px solid var(--b1);padding-top:5px;margin-top:5px"><span>Costo / porción</span><span style="font-family:var(--mono);color:var(--ac-rest)">$14.010</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Precio de venta</span><span style="font-family:var(--mono);color:var(--ok)">$19.800</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--t2)">Margen</span><span style="font-family:var(--mono);color:var(--ok)">29.2%</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button style="padding:7px 12px;border-radius:var(--r);border:none;background:var(--ac-rest);color:#fff;font-size:11px;cursor:pointer;font-weight:700">🍳 Producir</button>
+      <button style="padding:7px 12px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:11px;cursor:pointer">✏️ Editar receta</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Catálogo de recetas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;cursor:pointer;border:1px solid var(--b1)"><div><div style="font-size:11px;font-weight:600">Lomo a lo pobre</div><div style="font-size:10px;color:var(--t2)">Fondo · Costo $14.010 · Margen 29%</div></div><span style="font-family:var(--mono);font-size:11px;color:var(--ac-rest)">$19.800</span></div>
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;cursor:pointer;border:1px solid var(--b1)"><div><div style="font-size:11px;font-weight:600">Pasta con salsa</div><div style="font-size:10px;color:var(--t2)">Fondo · Costo $8.200 · Margen 38%</div></div><span style="font-family:var(--mono);font-size:11px;color:var(--ac-rest)">$13.200</span></div>
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between;align-items:center;cursor:pointer;border:1px solid var(--b1)"><div><div style="font-size:11px;font-weight:600">Ceviche clásico</div><div style="font-size:10px;color:var(--t2)">Entrada · Costo $9.500 · Margen 42%</div></div><span style="font-family:var(--mono);font-size:11px;color:var(--ac-rest)">$16.500</span></div>
+      <button style="padding:7px;border-radius:var(--r);border:none;background:rgba(255,107,53,.15);color:var(--ac-rest);font-size:11px;cursor:pointer;font-weight:600">+ Nueva receta</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s3p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Producción — Lomo a lo pobre x12</div>
+    <table class="mx">
+      <tr><th>Ingrediente</th><th>Requerido</th><th>Stock</th><th>A comprar</th><th></th></tr>
+      <tr><td>Posta rosada</td><td style="font-family:var(--mono)">15.1 kg</td><td style="font-family:var(--mono);color:var(--err)">8.2 kg</td><td style="font-family:var(--mono);color:var(--err)">6.9 kg</td><td><span style="color:var(--err)">🔴</span></td></tr>
+      <tr><td>Papas</td><td style="font-family:var(--mono)">19.8 kg</td><td style="font-family:var(--mono);color:var(--warn)">12.5 kg</td><td style="font-family:var(--mono);color:var(--warn)">7.3 kg</td><td><span style="color:var(--warn)">🟡</span></td></tr>
+      <tr><td>Cebollas</td><td style="font-family:var(--mono)">6.3 kg</td><td style="font-family:var(--mono);color:var(--ok)">5.0 kg</td><td style="font-family:var(--mono);color:var(--ok)">OK</td><td><span style="color:var(--ok)">🟢</span></td></tr>
+      <tr><td>Huevos</td><td style="font-family:var(--mono)">48 uni</td><td style="font-family:var(--mono);color:var(--ok)">32</td><td style="font-family:var(--mono);color:var(--warn)">16 uni</td><td><span style="color:var(--warn)">🟡</span></td></tr>
+    </table>
+    <div style="margin-top:8px;padding:8px 10px;background:rgba(255,63,91,.06);border-radius:var(--r);font-size:11px;border:1px solid rgba(255,63,91,.15)">
+      ⚠️ 2 ingredientes con stock insuficiente. Se generará OC por $68.500.
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button style="padding:7px 12px;border-radius:var(--r);border:none;background:var(--ac-rest);color:#fff;font-size:11px;cursor:pointer;font-weight:700">✅ Confirmar producción</button>
+      <button style="padding:7px 12px;border-radius:var(--r);border:none;background:rgba(255,107,53,.15);color:var(--ac-rest);font-size:11px;cursor:pointer;font-weight:600">📝 Generar OC faltantes</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rest)">Menú semanal y plan de compras</div>
+    <div style="display:flex;flex-direction:column;gap:4px;font-size:11px">
+      <div style="padding:7px 9px;background:var(--s2);border-radius:7px;display:flex;justify-content:space-between"><span><strong>Lunes</strong> · Lomo a lo pobre</span><span style="color:var(--t2)">35 porciones</span></div>
+      <div style="padding:7px 9px;background:var(--s2);border-radius:7px;display:flex;justify-content:space-between"><span><strong>Martes</strong> · Pasta con salsa</span><span style="color:var(--t2)">40 porciones</span></div>
+      <div style="padding:7px 9px;background:var(--s2);border-radius:7px;display:flex;justify-content:space-between"><span><strong>Miércoles</strong> · Ceviche clásico</span><span style="color:var(--t2)">30 porciones</span></div>
+    </div>
+    <div style="margin-top:8px;padding:8px;background:rgba(0,229,160,.06);border-radius:var(--r);border:1px solid rgba(0,229,160,.15)">
+      <div style="font-size:10px;color:var(--t2);margin-bottom:5px">Plan de compras automático para la semana</div>
+      <div style="font-size:11px">Carne: 12.5 kg · Pasta: 8 kg · Pescado: 9 kg</div>
+      <div style="font-family:var(--mono);color:var(--ac-rest);font-size:12px;font-weight:700;margin-top:3px">Total estimado OC: $285.400</div>
+    </div>
+    <button style="margin-top:8px;width:100%;padding:8px;border-radius:var(--r);border:none;background:rgba(255,107,53,.15);color:var(--ac-rest);font-size:11px;cursor:pointer;font-weight:600">📋 Generar órdenes de compra</button>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s3p2">
+<div class="card" style="margin-top:16px">
+  <div class="clabel" style="color:var(--ac-rest)">Comparativa de márgenes</div>
+  <div class="bar-wrap" style="margin-top:8px">
+    <div class="bar-row"><span class="bar-lbl">Ceviche</span><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--ok)"></div></div><span class="bar-val" style="color:var(--ok)">42%</span></div>
+    <div class="bar-row"><span class="bar-lbl">Pasta</span><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--ok)"></div></div><span class="bar-val" style="color:var(--ok)">38%</span></div>
+    <div class="bar-row"><span class="bar-lbl">Lomo</span><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--warn)"></div></div><span class="bar-val" style="color:var(--warn)">29%</span></div>
+    <div class="bar-row"><span class="bar-lbl">Chorrillana</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--err)"></div></div><span class="bar-val" style="color:var(--err)">22%</span></div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s3 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     4 — RRHH
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s4" style="--ac:var(--ac-rrhh)">
+<div class="tabs">
+  <button class="tb on" onclick="P(4,0)" style="--ac:var(--ac-rrhh)">Dashboard</button>
+  <button class="tb" onclick="P(4,1)" style="--ac:var(--ac-rrhh)">Asistencia</button>
+  <button class="tb" onclick="P(4,2)" style="--ac:var(--ac-rrhh)">Vacaciones</button>
+  <button class="tb" onclick="P(4,3)" style="--ac:var(--ac-rrhh)">Liquidaciones</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(61,217,235,.1);color:var(--ac-rrhh)">👥 RRHH M21+M22</div>
+    <div class="htitle">Recursos humanos</div>
+    <div class="hsub">Asistencia, vacaciones, permisos y liquidaciones con descuentos legales chilenos (AFP, ISAPRE, SIS, Impuesto Único).</div>
+  </div>
+</div>
+
+<div class="panel on" id="s4p0">
+<div class="kpis" style="margin-top:16px">
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-rrhh)">24</div><div class="kpi-lbl">Total empleados</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ok)">18</div><div class="kpi-lbl">Presentes hoy</div><div class="kpi-sub" style="color:var(--ok)">75%</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--warn)">3</div><div class="kpi-lbl">En vacaciones</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--err)">3</div><div class="kpi-lbl">Solicitudes pend.</div></div>
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Asistencia de hoy</div>
+    <table class="mx">
+      <tr><th>Empleado</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr>
+      <tr><td>Juan Pérez</td><td style="font-family:var(--mono)">09:03</td><td style="font-family:var(--mono)">18:15</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✅ Presente</span></td></tr>
+      <tr><td>María González</td><td style="font-family:var(--mono)">08:55</td><td style="font-family:var(--mono)">17:30</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✅ Presente</span></td></tr>
+      <tr><td>Carlos López</td><td style="font-family:var(--mono)">09:30</td><td style="font-family:var(--mono);color:var(--t3)">—</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">⚠️ Atraso 30m</span></td></tr>
+      <tr><td>Ana Rodríguez</td><td style="font-family:var(--mono);color:var(--t3)">—</td><td style="font-family:var(--mono);color:var(--t3)">—</td><td><span class="tag" style="background:rgba(255,63,91,.1);color:var(--err)">❌ Ausente</span></td></tr>
+      <tr><td>Pedro Soto</td><td style="font-family:var(--mono);color:var(--t3)">—</td><td style="font-family:var(--mono);color:var(--t3)">—</td><td><span class="tag" style="background:rgba(61,217,235,.1);color:var(--ac-rrhh)">🌴 Vacaciones</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Solicitudes pendientes</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="padding:9px 10px;background:rgba(61,217,235,.06);border:1px solid rgba(61,217,235,.2);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600;margin-bottom:2px">🌴 Vacaciones — Ana Rodríguez</div>
+        <div style="color:var(--t2)">20/03 al 25/03 · 5 días hábiles</div>
+        <div style="display:flex;gap:5px;margin-top:6px">
+          <button style="padding:4px 10px;border-radius:6px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">✅ Aprobar</button>
+          <button style="padding:4px 10px;border-radius:6px;border:1px solid rgba(255,63,91,.3);background:rgba(255,63,91,.08);color:var(--err);font-size:10px;cursor:pointer">❌ Rechazar</button>
+        </div>
+      </div>
+      <div style="padding:9px 10px;background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.2);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600;margin-bottom:2px">📋 Permiso médico — Carlos López</div>
+        <div style="color:var(--t2)">19/03 · 1 día · Con goce de sueldo</div>
+        <div style="display:flex;gap:5px;margin-top:6px">
+          <button style="padding:4px 10px;border-radius:6px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">✅ Aprobar</button>
+          <button style="padding:4px 10px;border-radius:6px;border:1px solid rgba(255,63,91,.3);background:rgba(255,63,91,.08);color:var(--err);font-size:10px;cursor:pointer">❌ Rechazar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s4p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Marcación — Juan Pérez</div>
+    <div style="padding:14px;background:rgba(61,217,235,.06);border:1px solid rgba(61,217,235,.2);border-radius:var(--r);text-align:center;margin-bottom:10px">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px">Hora actual</div>
+      <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--ac-rrhh)" id="horaActual">15:23:08</div>
+      <div style="font-size:11px;color:var(--t2);margin-top:4px">Última marcación: Entrada 09:03</div>
+      <button style="margin-top:10px;padding:10px 20px;border-radius:var(--r);border:none;background:var(--err);color:#fff;font-size:13px;cursor:pointer;font-weight:700">🔴 Marcar Salida</button>
+    </div>
+    <div class="slbl">Registro del día</div>
+    <table class="mx">
+      <tr><th>Hora</th><th>Tipo</th><th>Estado</th></tr>
+      <tr><td style="font-family:var(--mono)">09:03</td><td>Entrada</td><td><span style="color:var(--ok)">✅</span></td></tr>
+      <tr><td style="font-family:var(--mono)">13:00</td><td>Inicio colación</td><td><span style="color:var(--ok)">✅</span></td></tr>
+      <tr><td style="font-family:var(--mono)">14:00</td><td>Fin colación</td><td><span style="color:var(--ok)">✅</span></td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--t2)">15:23</td><td style="color:var(--t2)">Salida</td><td><span style="color:var(--warn)">⏳ Pendiente</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Resumen de asistencia — Marzo</div>
+    <div style="font-size:11px;display:flex;flex-direction:column;gap:5px">
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between"><span>Días trabajados</span><span style="font-family:var(--mono);color:var(--ok)">14/18</span></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between"><span>Atrasos</span><span style="font-family:var(--mono);color:var(--warn)">2 días · 45 min total</span></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between"><span>Horas extra</span><span style="font-family:var(--mono);color:var(--ac-rrhh)">4.5 horas</span></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);display:flex;justify-content:space-between"><span>Ausencias</span><span style="font-family:var(--mono);color:var(--ok)">0 sin justificar</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s4p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Solicitud de vacaciones</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font-size:12px">Empleado: <strong>Ana Rodríguez</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--t2)">Días disponibles</span><strong style="font-family:var(--mono);color:var(--ac-rrhh)">15 días</strong></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Fecha inicio</label><input type="date" class="pos-in" style="width:100%" value="2026-03-20"></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Fecha término</label><input type="date" class="pos-in" style="width:100%" value="2026-03-25"></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);font-size:11px">
+        <div style="display:flex;justify-content:space-between"><span>Días solicitados</span><span style="font-family:var(--mono);font-weight:700">5</span></div>
+        <div style="display:flex;justify-content:space-between"><span>Días restantes</span><span style="font-family:var(--mono);font-weight:700;color:var(--ok)">10</span></div>
+      </div>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-rrhh);color:#000;font-size:12px;cursor:pointer;font-weight:700">Solicitar vacaciones</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Estado vacaciones del equipo</div>
+    <table class="mx">
+      <tr><th>Empleado</th><th>Tipo</th><th>Período</th><th>Estado</th></tr>
+      <tr><td>Ana Rodríguez</td><td>Vacaciones</td><td style="font-family:var(--mono)">20-25/03</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">Pendiente</span></td></tr>
+      <tr><td>Pedro Soto</td><td>Vacaciones</td><td style="font-family:var(--mono)">22-30/03</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">Pendiente</span></td></tr>
+      <tr><td>Carlos López</td><td>Permiso méd.</td><td style="font-family:var(--mono)">19/03</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Aprobado</span></td></tr>
+      <tr><td>María González</td><td>Vacaciones</td><td style="font-family:var(--mono)">05-10/04</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Aprobado</span></td></tr>
+    </table>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s4p3">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Liquidación — Juan Pérez · Marzo 2026</div>
+    <div style="background:var(--s2);border-radius:var(--r);overflow:hidden">
+      <div style="padding:8px 12px;background:rgba(61,217,235,.07);font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ac-rrhh)">HABERES</div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Sueldo base</span><span style="font-family:var(--mono)">$600.000</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Horas extra (4.5h)</span><span style="font-family:var(--mono)">$28.125</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Colación</span><span style="font-family:var(--mono)">$55.000</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b2);display:flex;justify-content:space-between;font-size:11px;font-weight:700"><span>Total haberes</span><span style="font-family:var(--mono);color:var(--ac-rrhh)">$683.125</span></div>
+      <div style="padding:8px 12px;background:rgba(255,63,91,.06);font-size:10px;font-weight:700;letter-spacing:1px;color:var(--err)">DESCUENTOS LEGALES</div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>AFP Cuprum (10.5%)</span><span style="font-family:var(--mono);color:var(--err)">-$63.000</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Salud Fonasa (7%)</span><span style="font-family:var(--mono);color:var(--err)">-$42.000</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Mutual (0.93%)</span><span style="font-family:var(--mono);color:var(--err)">-$5.580</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>SIS (1.7%)</span><span style="font-family:var(--mono);color:var(--err)">-$10.200</span></div>
+      <div style="padding:7px 12px;border-bottom:1px solid var(--b2);display:flex;justify-content:space-between;font-size:11px;font-weight:700"><span>Total descuentos</span><span style="font-family:var(--mono);color:var(--err)">-$120.780</span></div>
+      <div style="padding:10px 12px;display:flex;justify-content:space-between;font-size:14px;font-weight:700;background:rgba(0,229,160,.06)"><span>LÍQUIDO A PAGAR</span><span style="font-family:var(--mono);color:var(--ok)">$562.345</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button style="flex:1;padding:8px;border-radius:var(--r);border:none;background:var(--ac-rrhh);color:#000;font-size:11px;cursor:pointer;font-weight:700">💾 Aprobar liquidación</button>
+      <button style="padding:8px 12px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:11px;cursor:pointer">📄 PDF</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rrhh)">Resumen de nómina — Marzo</div>
+    <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ac-rrhh);margin-bottom:4px">$9.845.000</div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">Total líquido · 24 empleados</div>
+    <table class="mx">
+      <tr><th>Empleado</th><th>Sueldo base</th><th>Líquido</th><th>Estado</th></tr>
+      <tr><td>Juan Pérez</td><td style="font-family:var(--mono)">$600k</td><td style="font-family:var(--mono);color:var(--ok)">$562k</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Pagada</span></td></tr>
+      <tr><td>María González</td><td style="font-family:var(--mono)">$550k</td><td style="font-family:var(--mono);color:var(--ok)">$515k</td><td><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">Pagada</span></td></tr>
+      <tr><td>Carlos López</td><td style="font-family:var(--mono)">$480k</td><td style="font-family:var(--mono);color:var(--warn)">$450k</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">Pendiente</span></td></tr>
+    </table>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s4 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     5 — RECLUTAMIENTO
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s5" style="--ac:var(--ac-rec)">
+<div class="tabs">
+  <button class="tb on" onclick="P(5,0)" style="--ac:var(--ac-rec)">Panel ofertas</button>
+  <button class="tb" onclick="P(5,1)" style="--ac:var(--ac-rec)">Postulantes</button>
+  <button class="tb" onclick="P(5,2)" style="--ac:var(--ac-rec)">Crear oferta</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(245,197,24,.1);color:var(--ac-rec)">💼 RECLUTAMIENTO M23</div>
+    <div class="htitle">Gestión de talento</div>
+    <div class="hsub">Ofertas de empleo públicas. Pipeline de candidatos. Entrevistas. Al contratar, los datos pasan automáticamente a RRHH.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s5p0">
+<div class="kpis" style="margin-top:16px">
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-rec)">8</div><div class="kpi-lbl">Ofertas activas</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-rec)">124</div><div class="kpi-lbl">Postulantes</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--warn)">18</div><div class="kpi-lbl">Entrevistas sem.</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ok)">3</div><div class="kpi-lbl">Contratados mes</div></div>
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rec)">Ofertas publicadas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);border:1px solid var(--b1)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">Vendedor de tienda</div><div style="font-size:10px;color:var(--t2)">Presencial · $600-800k · Plazo fijo</div></div><span class="tag" style="background:rgba(255,63,91,.1);color:var(--err)">⚡ 10 nuevas</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--t2)"><span>32 postulantes en total</span><button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ac-rec);color:#000;font-size:10px;cursor:pointer;font-weight:700">Ver →</button></div>
+      </div>
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);border:1px solid var(--b1)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">Cajero</div><div style="font-size:10px;color:var(--t2)">Presencial · $500-650k · Indefinido</div></div><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">🟡 5 nuevas</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--t2)"><span>18 postulantes en total</span><button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ac-rec);color:#000;font-size:10px;cursor:pointer;font-weight:700">Ver →</button></div>
+      </div>
+      <div style="padding:9px 10px;background:var(--s2);border-radius:var(--r);border:1px solid var(--b1)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">Repartidor</div><div style="font-size:10px;color:var(--t2)">Presencial · $450k + comisión · Part-time</div></div><span class="tag" style="background:rgba(0,229,160,.1);color:var(--ok)">✅ Activa</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--t2)"><span>24 postulantes en total</span><button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ac-rec);color:#000;font-size:10px;cursor:pointer;font-weight:700">Ver →</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rec)">Próximas entrevistas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:8px 10px;background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.2);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600">Juan Pérez · Vendedor</div>
+        <div style="font-family:var(--mono);color:var(--ac-rec);margin-top:2px">19/03 10:00 · Presencial</div>
+      </div>
+      <div style="padding:8px 10px;background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.2);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600">María López · Cajero</div>
+        <div style="font-family:var(--mono);color:var(--ac-rec);margin-top:2px">19/03 12:00 · Videollamada</div>
+      </div>
+      <div style="padding:8px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600">Carlos Soto · Jefe bodega</div>
+        <div style="font-family:var(--mono);color:var(--t2);margin-top:2px">20/03 09:30 · Presencial</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s5p1">
+<div class="card" style="margin-top:16px">
+  <div class="clabel" style="color:var(--ac-rec)">Postulantes — Vendedor de tienda (32)</div>
+  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+    <div class="pill on" style="--ac:var(--ac-rec)">Todos (32)</div>
+    <div class="pill" style="--ac:var(--ac-rec)">Preseleccionados (8)</div>
+    <div class="pill" style="--ac:var(--ac-rec)">Entrevistados (3)</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="padding:10px 12px;background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.2);border-radius:var(--r)">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div><div style="font-size:12px;font-weight:700">⭐⭐⭐⭐⭐ Juan Pérez · 28 años</div><div style="font-size:10px;color:var(--t2);margin-top:2px">Exp: 3 años Abarrote Don Juan · Disp: Inmediata · Pretensión: $700.000</div></div>
+        <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;margin-left:8px">
+          <button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:9px;cursor:pointer;font-weight:700">✅ Preselect.</button>
+          <button style="padding:3px 8px;border-radius:5px;border:1px solid rgba(255,63,91,.3);background:none;color:var(--err);font-size:9px;cursor:pointer">❌ Rechazar</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;margin-top:6px">
+        <button style="padding:3px 8px;border-radius:5px;border:1px solid var(--b2);background:none;color:var(--t2);font-size:9px;cursor:pointer">📄 CV</button>
+        <button style="padding:3px 8px;border-radius:5px;border:1px solid var(--b2);background:none;color:var(--t2);font-size:9px;cursor:pointer">📅 Agendar</button>
+      </div>
+    </div>
+    <div style="padding:10px 12px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r)">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div><div style="font-size:12px;font-weight:700">⭐⭐⭐⭐ María López · 32 años</div><div style="font-size:10px;color:var(--t2);margin-top:2px">Exp: 5 años Supermercado Central · Disp: 15 días · Pretensión: $650.000</div></div>
+        <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;margin-left:8px">
+          <button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:9px;cursor:pointer;font-weight:700">✅ Preselect.</button>
+          <button style="padding:3px 8px;border-radius:5px;border:1px solid rgba(255,63,91,.3);background:none;color:var(--err);font-size:9px;cursor:pointer">❌ Rechazar</button>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 12px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r)">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div><div style="font-size:12px;font-weight:700">⭐⭐⭐ Carlos Soto · 24 años</div><div style="font-size:10px;color:var(--t2);margin-top:2px">Exp: 1 año Tienda de barrio · Disp: Inmediata · Pretensión: $600.000</div></div>
+        <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0;margin-left:8px">
+          <button style="padding:3px 8px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:9px;cursor:pointer;font-weight:700">✅ Preselect.</button>
+          <button style="padding:3px 8px;border-radius:5px;border:1px solid rgba(255,63,91,.3);background:none;color:var(--err);font-size:9px;cursor:pointer">❌ Rechazar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;margin-top:10px">
+    <button style="padding:7px 12px;border-radius:var(--r);border:none;background:rgba(245,197,24,.15);color:var(--ac-rec);font-size:11px;cursor:pointer;font-weight:600">📧 Email masivo seleccionados</button>
+    <button style="padding:7px 12px;border-radius:var(--r);border:none;background:rgba(0,229,160,.12);color:var(--ok);font-size:11px;cursor:pointer;font-weight:600">📅 Agendar entrevistas</button>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s5p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rec)">Nueva oferta de empleo</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Título del cargo</label><input class="pos-in" placeholder="Ej: Vendedor de tienda" style="width:100%"></div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Tipo contrato</label><select class="sel"><option>Plazo fijo</option><option>Indefinido</option><option>Honorarios</option></select></div>
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Modalidad</label><select class="sel"><option>Presencial</option><option>Híbrido</option><option>Remoto</option></select></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Sueldo mínimo</label><input class="pos-in" placeholder="$600.000"></div>
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Sueldo máximo</label><input class="pos-in" placeholder="$800.000"></div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Descripción del cargo</label><textarea class="nota" placeholder="Buscamos vendedor para tienda de abarrotes..."></textarea></div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Vacantes</label><input class="pos-in" value="2" type="number"></div>
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Cierre</label><input type="date" class="pos-in" value="2026-03-30"></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button style="flex:1;padding:9px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:12px;cursor:pointer">💾 Borrador</button>
+        <button style="flex:2;padding:9px;border-radius:var(--r);border:none;background:var(--ac-rec);color:#000;font-size:12px;cursor:pointer;font-weight:700">🚀 Publicar oferta</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-rec)">URL pública de postulación</div>
+    <div style="padding:10px;background:var(--s2);border-radius:var(--r);font-size:11px;font-family:var(--mono);color:var(--ac-rec);margin-bottom:8px;word-break:break-all">ferreteria-don-pedro.benderand.cl/empleo/vendedor-2026</div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:8px">Postulantes acceden a este link, completan formulario y quedan en el pipeline automáticamente.</div>
+    <div class="qr-box" style="margin:0 auto">📱</div>
+    <div style="text-align:center;font-size:10px;color:var(--t2);margin-top:5px">QR para imprimir y pegar en la tienda</div>
+    <button style="margin-top:8px;width:100%;padding:8px;border-radius:var(--r);border:none;background:rgba(245,197,24,.15);color:var(--ac-rec);font-size:11px;cursor:pointer;font-weight:600">📥 Descargar QR</button>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s5 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     6 — MARKETING QR
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s6" style="--ac:var(--ac-qr)">
+<div class="tabs">
+  <button class="tb on" onclick="P(6,0)" style="--ac:var(--ac-qr)">Panel QR</button>
+  <button class="tb" onclick="P(6,1)" style="--ac:var(--ac-qr)">Crear QR</button>
+  <button class="tb" onclick="P(6,2)" style="--ac:var(--ac-qr)">Landing cliente</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(0,229,160,.1);color:var(--ac-qr)">📱 MARKETING QR M24</div>
+    <div class="htitle">Marketing con QR dinámico</div>
+    <div class="hsub">QRs con descuentos, encuestas, 2x1 o acceso directo a WhatsApp. Tracking de escaneos y conversiones. ROI medible por campaña.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s6p0">
+<div class="kpis" style="margin-top:16px">
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-qr)">1.234</div><div class="kpi-lbl">Escaneos</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ac-qr)">345</div><div class="kpi-lbl">Conversiones</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--warn)">28%</div><div class="kpi-lbl">Tasa conv.</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:var(--ok)">$234.567</div><div class="kpi-lbl">Descuentos otorg.</div></div>
+</div>
+<div class="grid">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">QRs activos</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="padding:9px 10px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">QR-001 — 20% descuento Leche</div><div style="font-size:10px;color:var(--t2)">Escaneos: 234 · Usos: 89 · Vence: 31/03</div></div><div class="qr-box" style="width:40px;height:40px;font-size:16px;border-radius:5px">📱</div></div>
+        <div style="display:flex;gap:4px;margin-top:6px">
+          <button style="padding:3px 7px;border-radius:5px;border:none;background:rgba(0,229,160,.15);color:var(--ok);font-size:9px;cursor:pointer;font-weight:700">📊 Ver</button>
+          <button style="padding:3px 7px;border-radius:5px;border:none;background:rgba(0,229,160,.12);color:var(--ok);font-size:9px;cursor:pointer">📥 Descargar</button>
+          <button style="padding:3px 7px;border-radius:5px;border:1px solid var(--b2);background:none;color:var(--t2);font-size:9px;cursor:pointer">✏️ Editar</button>
+          <button style="padding:3px 7px;border-radius:5px;border:1px solid rgba(255,63,91,.3);background:none;color:var(--err);font-size:9px;cursor:pointer">⏸️ Pausar</button>
+        </div>
+      </div>
+      <div style="padding:9px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">QR-002 — 2x1 Coca-Cola 1.5L</div><div style="font-size:10px;color:var(--t2)">Escaneos: 567 · Usos: 234 · Vence: 15/04</div></div><div class="qr-box" style="width:40px;height:40px;font-size:16px;border-radius:5px">📱</div></div>
+      </div>
+      <div style="padding:9px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-size:12px;font-weight:700">QR-003 — Encuesta satisfacción</div><div style="font-size:10px;color:var(--t2)">Escaneos: 433 · Respuestas: 112 · Sin venc.</div></div><div class="qr-box" style="width:40px;height:40px;font-size:16px;border-radius:5px">📱</div></div>
+      </div>
+    </div>
+    <button style="margin-top:8px;padding:7px;width:100%;border-radius:var(--r);border:none;background:rgba(0,229,160,.15);color:var(--ac-qr);font-size:11px;cursor:pointer;font-weight:700">+ Nuevo QR</button>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Métricas QR-001</div>
+    <div class="bar-wrap">
+      <div class="bar-row"><span class="bar-lbl">Lun 11</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--ac-qr)"></div></div><span class="bar-val" style="color:var(--ac-qr)">34</span></div>
+      <div class="bar-row"><span class="bar-lbl">Mar 12</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--ac-qr)"></div></div><span class="bar-val" style="color:var(--ac-qr)">24</span></div>
+      <div class="bar-row"><span class="bar-lbl">Mié 13</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--ac-qr)"></div></div><span class="bar-val" style="color:var(--ac-qr)">42</span></div>
+      <div class="bar-row"><span class="bar-lbl">Jue 14</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--warn)"></div></div><span class="bar-val" style="color:var(--warn)">26</span></div>
+      <div class="bar-row"><span class="bar-lbl">Vie 15</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--ac-qr)"></div></div><span class="bar-val" style="color:var(--ac-qr)">52</span></div>
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-qr)">38%</div><div class="kpi-lbl">Tasa conv. QR</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ok)">$47.110</div><div class="kpi-lbl">Ventas generadas</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s6p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Configurar nuevo QR</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Nombre de la campaña</label><input class="pos-in" placeholder="Ej: Promoción Leche Marzo" style="width:100%"></div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Tipo de acción</label>
+        <div class="pill-row">
+          <div class="pill on" style="--ac:var(--ac-qr)">Descuento %</div>
+          <div class="pill" style="--ac:var(--ac-qr)">Descuento $</div>
+          <div class="pill" style="--ac:var(--ac-qr)">2x1</div>
+          <div class="pill" style="--ac:var(--ac-qr)">Encuesta</div>
+          <div class="pill" style="--ac:var(--ac-qr)">Abrir WA</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:2"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Producto aplicable</label><select class="sel"><option>Leche Colún 1L</option><option>Coca-Cola 1.5L</option><option>Todos los productos</option></select></div>
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Descuento</label><input class="pos-in" value="20" type="number"><span style="font-size:10px;color:var(--t2)">%</span></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Válido hasta</label><input type="date" class="pos-in" value="2026-03-31"></div>
+        <div style="flex:1"><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Usos máximos</label><input class="pos-in" value="500" type="number"></div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Al escanear, mostrar:</label>
+        <div class="pill-row">
+          <div class="pill on" style="--ac:var(--ac-qr)">Descuento en landing</div>
+          <div class="pill" style="--ac:var(--ac-qr)">Abrir WhatsApp</div>
+          <div class="pill" style="--ac:var(--ac-qr)">Tienda online</div>
+        </div>
+      </div>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-qr);color:#000;font-size:12px;cursor:pointer;font-weight:700">✅ Generar QR</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Vista previa QR generado</div>
+    <div style="text-align:center;padding:16px">
+      <div class="qr-box" style="width:120px;height:120px;margin:0 auto;font-size:48px">📱</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--ac-qr);margin-top:8px">LECHE20-123456</div>
+      <div style="font-size:10px;color:var(--t2);margin-top:2px">Válido hasta 31/03/2026</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button style="flex:1;padding:8px;border-radius:var(--r);border:none;background:rgba(0,229,160,.15);color:var(--ac-qr);font-size:11px;cursor:pointer;font-weight:600">📥 PNG</button>
+      <button style="flex:1;padding:8px;border-radius:var(--r);border:none;background:rgba(0,229,160,.12);color:var(--ac-qr);font-size:11px;cursor:pointer;font-weight:600">📐 SVG</button>
+      <button style="flex:1;padding:8px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:11px;cursor:pointer">📤 Compartir</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s6p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Landing pública — Vista cliente</div>
+    <div style="padding:16px;background:rgba(0,229,160,.04);border:1px solid rgba(0,229,160,.15);border-radius:var(--r);text-align:center">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">🎉 ¡Felicitaciones!</div>
+      <div style="font-size:13px;font-weight:600;color:var(--ac-qr);margin-bottom:8px">HAS OBTENIDO UN DESCUENTO DEL 20%</div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:10px">En Leche Colún 1L</div>
+      <div style="background:var(--s2);border-radius:var(--r);padding:10px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Precio normal</span><span style="font-family:var(--mono);color:var(--t2);text-decoration:line-through">$1.190</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Con descuento</span><span style="font-family:var(--mono);color:var(--ac-qr)">$952</span></div>
+      </div>
+      <div style="background:rgba(0,229,160,.1);border-radius:var(--r);padding:10px;margin-bottom:8px">
+        <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--ac-qr)">LECHE20-123456</div>
+        <div style="font-size:10px;color:var(--t2);margin-top:2px">Muéstralo en caja · Válido 31/03</div>
+      </div>
+      <button style="width:100%;padding:10px;border-radius:var(--r);border:none;background:rgba(37,211,102,.15);color:var(--ac-wa);font-size:12px;cursor:pointer;font-weight:600">📱 Suscribirme a más ofertas por WA</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-qr)">Flujo de conversión QR → Venta</div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot" style="background:rgba(0,229,160,.15);color:var(--ac-qr);font-size:10px">1</div><div class="tl-body"><div class="tl-title">Cliente escanea QR en tienda/volante</div><div class="tl-sub">Registro de escaneo con IP y timestamp</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:rgba(0,229,160,.15);color:var(--ac-qr);font-size:10px">2</div><div class="tl-body"><div class="tl-title">Ve landing con descuento personalizado</div><div class="tl-sub">Código único LECHE20-123456</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:rgba(245,197,24,.15);color:var(--warn);font-size:10px">3</div><div class="tl-body"><div class="tl-title">Muestra código en caja</div><div class="tl-sub">Cajero aplica descuento — venta registrada</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:rgba(0,229,160,.15);color:var(--ok);font-size:10px">✓</div><div class="tl-body"><div class="tl-title" style="color:var(--ok)">Conversión registrada automáticamente</div><div class="tl-sub">QR marcado como usado en la venta</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s6 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     7 — SII / DTE
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s7" style="--ac:var(--ac-sii)">
+<div class="tabs">
+  <button class="tb on" onclick="P(7,0)" style="--ac:var(--ac-sii)">Dashboard SII</button>
+  <button class="tb" onclick="P(7,1)" style="--ac:var(--ac-sii)">Emitir DTE</button>
+  <button class="tb" onclick="P(7,2)" style="--ac:var(--ac-sii)">Libro IVA</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(91,141,238,.1);color:var(--ac-sii)">📄 SII M20</div>
+    <div class="htitle">Facturación electrónica</div>
+    <div class="hsub">Emisión automática de DTE al confirmar venta. Boletas, facturas, honorarios, notas de crédito. Integrado con LibreDTE. Envío PDF por WA.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s7p0">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-sii)">Resumen del día</div>
+    <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;padding:7px 9px;background:var(--s2);border-radius:7px"><span>Boletas</span><div><span style="font-family:var(--mono)">18 · </span><span style="font-family:var(--mono);color:var(--ac-sii)">$342.500</span></div></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 9px;background:var(--s2);border-radius:7px"><span>Facturas</span><div><span style="font-family:var(--mono)">4 · </span><span style="font-family:var(--mono);color:var(--ac-sii)">$1.234.000</span></div></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 9px;background:var(--s2);border-radius:7px"><span>Honorarios</span><div><span style="font-family:var(--mono)">2 · </span><span style="font-family:var(--mono);color:var(--ac-sii)">$120.000</span></div></div>
+      <div style="display:flex;justify-content:space-between;padding:7px 9px;background:var(--s2);border-radius:7px"><span>NC / ND</span><span style="font-family:var(--mono);color:var(--t2)">0</span></div>
+    </div>
+    <div style="padding:8px 10px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.15);border-radius:var(--r);font-size:11px">
+      <div style="display:flex;justify-content:space-between"><span>Timbres disponibles</span><span style="font-family:var(--mono);color:var(--ok)">4.328 / 5.000</span></div>
+      <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="color:var(--t2)">Próx. vencimiento</span><span style="font-family:var(--mono);color:var(--t2)">31/12/2026</span></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <button style="flex:1;padding:7px;border-radius:var(--r);border:none;background:var(--ac-sii);color:#fff;font-size:11px;cursor:pointer;font-weight:600">+ Nuevo DTE</button>
+      <button style="padding:7px 12px;border-radius:var(--r);border:1px solid rgba(255,63,91,.3);background:rgba(255,63,91,.06);color:var(--err);font-size:11px;cursor:pointer">⚠️ Rechazados: 0</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-sii)">Últimos documentos emitidos</div>
+    <table class="mx">
+      <tr><th>Hora</th><th>Tipo</th><th>N°</th><th>Receptor</th><th>Total</th><th>Estado</th></tr>
+      <tr><td style="font-family:var(--mono)">14:30</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">BOL</span></td><td style="font-family:var(--mono)">1042</td><td>María G.</td><td style="font-family:var(--mono)">$4.320</td><td><span style="color:var(--ok)">✓ ACE</span></td></tr>
+      <tr><td style="font-family:var(--mono)">14:15</td><td><span class="tag" style="background:rgba(91,141,238,.1);color:var(--ac-sii)">FAC</span></td><td style="font-family:var(--mono)">101</td><td>Constr. Andes</td><td style="font-family:var(--mono)">$522k</td><td><span style="color:var(--ok)">✓ ACE</span></td></tr>
+      <tr><td style="font-family:var(--mono)">13:50</td><td><span class="tag" style="background:rgba(136,136,160,.1);color:var(--t2)">BOL</span></td><td style="font-family:var(--mono)">1041</td><td>Juan P.</td><td style="font-family:var(--mono)">$2.890</td><td><span style="color:var(--ok)">✓ ACE</span></td></tr>
+      <tr><td style="font-family:var(--mono)">13:20</td><td><span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">HON</span></td><td style="font-family:var(--mono)">58</td><td>Ana López</td><td style="font-family:var(--mono)">$60k</td><td><span style="color:var(--warn)">⏳ ENV</span></td></tr>
+    </table>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s7p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-sii)">Emitir documento · Paso 1 de 3</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Tipo de documento</label>
+        <div class="pill-row">
+          <div class="pill" style="--ac:var(--ac-sii)">Boleta</div>
+          <div class="pill on" style="--ac:var(--ac-sii)">Factura</div>
+          <div class="pill" style="--ac:var(--ac-sii)">Honorarios</div>
+          <div class="pill" style="--ac:var(--ac-sii)">NC / ND</div>
+        </div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">RUT receptor</label>
+        <div style="display:flex;gap:6px"><input class="pos-in" placeholder="76.543.210-K" style="flex:1"><button style="padding:9px 12px;border-radius:var(--r);border:none;background:var(--ac-sii);color:#fff;font-size:11px;cursor:pointer;font-weight:600">Buscar</button></div>
+      </div>
+      <div style="padding:9px;background:rgba(91,141,238,.07);border:1px solid rgba(91,141,238,.2);border-radius:var(--r);font-size:11px">
+        <div style="font-weight:600">Constructora Andes Ltda.</div>
+        <div style="color:var(--t2);margin-top:2px">Giro: Construcción · Dir: Av. Siempre Viva 123</div>
+        <div style="color:var(--t2)">Email factura: facturas@andes.cl <span style="color:var(--ok)">✓</span></div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Forma de pago</label><select class="sel"><option>Crédito 30 días</option><option>Contado</option><option>Contado al vencimiento</option></select></div>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-sii);color:#fff;font-size:12px;cursor:pointer;font-weight:700">Siguiente → Agregar ítems</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-sii)">Ítems del documento</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px">
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);font-size:11px;display:flex;justify-content:space-between"><span>Cable THHN 47.5m</span><span style="font-family:var(--mono)">$42.275</span></div>
+      <div style="padding:8px 10px;background:var(--s2);border-radius:var(--r);font-size:11px;display:flex;justify-content:space-between"><span>Pintura látex 5L</span><span style="font-family:var(--mono)">$21.000</span></div>
+    </div>
+    <div style="background:var(--s2);border-radius:var(--r);overflow:hidden">
+      <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>Neto</span><span style="font-family:var(--mono)">$53.172</span></div>
+      <div style="padding:7px 10px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px"><span>IVA 19%</span><span style="font-family:var(--mono)">$10.103</span></div>
+      <div style="padding:7px 10px;display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span>Total</span><span style="font-family:var(--mono);color:var(--ac-sii)">$63.275</span></div>
+    </div>
+    <button style="margin-top:8px;width:100%;padding:9px;border-radius:var(--r);border:none;background:var(--ac-sii);color:#fff;font-size:12px;cursor:pointer;font-weight:700">📄 Emitir Factura Electrónica</button>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s7p2">
+<div class="card" style="margin-top:16px">
+  <div class="clabel" style="color:var(--ac-sii)">Libro de ventas — Marzo 2026</div>
+  <div class="kpis" style="margin-bottom:10px">
+    <div class="kpi"><div class="kpi-val" style="color:var(--ac-sii)">$12.345.678</div><div class="kpi-lbl">Total ventas</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--ac-sii)">$2.345.679</div><div class="kpi-lbl">IVA débito</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--ac-sii)">$5.432.100</div><div class="kpi-lbl">Total boletas</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--ac-sii)">$6.913.578</div><div class="kpi-lbl">Total facturas</div></div>
+  </div>
+  <table class="mx">
+    <tr><th>Día</th><th>Boletas</th><th>Facturas</th><th>Honorarios</th><th>Total</th></tr>
+    <tr><td style="font-family:var(--mono)">01</td><td style="font-family:var(--mono)">$234.500</td><td style="font-family:var(--mono)">$456.000</td><td style="font-family:var(--mono);color:var(--t2)">$0</td><td style="font-family:var(--mono);color:var(--ac-sii)">$690.500</td></tr>
+    <tr><td style="font-family:var(--mono)">02</td><td style="font-family:var(--mono)">$123.400</td><td style="font-family:var(--mono)">$789.000</td><td style="font-family:var(--mono)">$120.000</td><td style="font-family:var(--mono);color:var(--ac-sii)">$1.032.400</td></tr>
+    <tr><td style="font-family:var(--mono)">03</td><td style="font-family:var(--mono)">$456.700</td><td style="font-family:var(--mono)">$234.000</td><td style="font-family:var(--mono);color:var(--t2)">$0</td><td style="font-family:var(--mono);color:var(--ac-sii)">$690.700</td></tr>
+  </table>
+  <div style="display:flex;gap:6px;margin-top:8px">
+    <button style="padding:7px 12px;border-radius:var(--r);border:none;background:rgba(91,141,238,.15);color:var(--ac-sii);font-size:11px;cursor:pointer;font-weight:600">📥 Exportar CSV</button>
+    <button style="padding:7px 12px;border-radius:var(--r);border:1px solid var(--b2);background:none;color:var(--t2);font-size:11px;cursor:pointer">🖨️ Imprimir</button>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s7 -->
+
+<!-- ══════════════════════════════════════════════════════════
+     8 — WHATSAPP BOT
+══════════════════════════════════════════════════════════ -->
+<div class="sect" id="s8" style="--ac:var(--ac-wa)">
+<div class="tabs">
+  <button class="tb on" onclick="P(8,0)" style="--ac:var(--ac-wa)">Conversaciones</button>
+  <button class="tb" onclick="P(8,1)" style="--ac:var(--ac-wa)">Config Bot</button>
+  <button class="tb" onclick="P(8,2)" style="--ac:var(--ac-wa)">Flujos por rubro</button>
+</div>
+<div class="content">
+<div class="hero">
+  <div>
+    <div class="badge" style="background:rgba(37,211,102,.1);color:var(--ac-wa)">💬 WHATSAPP BOT</div>
+    <div class="htitle">Bot IA con handover humano</div>
+    <div class="hsub">Bot GPT-4o integrado con el ERP. Consulta stock, crea pedidos, agenda citas. Handover a humano cuando el cliente lo pide o el bot no entiende.</div>
+  </div>
+</div>
+
+<div class="panel on" id="s8p0">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Conversaciones activas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <!-- Conversación bot activa -->
+      <div style="padding:9px 10px;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.2);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><div style="font-size:12px;font-weight:700"><span class="dot" style="background:var(--ok)"></span>María (Cliente)</div><span style="font-size:10px;color:var(--t2)">2 min</span></div>
+        <div style="font-size:11px;color:var(--t2)">Bot: "Sí, tenemos 48 unidades a $1.190 c/u"</div>
+        <span class="tag" style="background:rgba(37,211,102,.1);color:var(--ac-wa);margin-top:4px;display:inline-flex">🤖 Bot activo</span>
+      </div>
+      <!-- Conversación esperando humano -->
+      <div style="padding:9px 10px;background:rgba(245,197,24,.06);border:1.5px solid rgba(245,197,24,.3);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><div style="font-size:12px;font-weight:700"><span class="dot" style="background:var(--warn)"></span>Juan (Cliente)</div><span style="font-size:10px;color:var(--warn)">⚠️ Esperando</span></div>
+        <div style="font-size:11px;color:var(--t2)">"Necesito hablar con alguien urgente"</div>
+        <div style="display:flex;gap:5px;margin-top:6px">
+          <button style="padding:4px 10px;border-radius:5px;border:none;background:var(--warn);color:#000;font-size:10px;cursor:pointer;font-weight:700">👋 Tomar control</button>
+          <span class="tag" style="background:rgba(245,197,24,.1);color:var(--warn)">Handover solicitado</span>
+        </div>
+      </div>
+      <!-- Conversación cotización empresa -->
+      <div style="padding:9px 10px;background:rgba(91,141,238,.06);border:1px solid rgba(91,141,238,.2);border-radius:var(--r)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><div style="font-size:12px;font-weight:700"><span class="dot" style="background:var(--info)"></span>Constructora Pérez</div><span style="font-size:10px;color:var(--t2)">5 min</span></div>
+        <div style="font-size:11px;color:var(--t2)">Bot generó cotización #1045 por $1.234.000</div>
+        <div style="display:flex;gap:5px;margin-top:6px">
+          <button style="padding:4px 10px;border-radius:5px;border:none;background:rgba(91,141,238,.2);color:var(--info);font-size:10px;cursor:pointer;font-weight:600">📋 Ver cotización</button>
+          <button style="padding:4px 10px;border-radius:5px;border:none;background:var(--ok);color:#000;font-size:10px;cursor:pointer;font-weight:700">✅ Aprobar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Métricas de hoy</div>
+    <div class="kpis" style="grid-template-columns:1fr 1fr">
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-wa)">34</div><div class="kpi-lbl">Conversaciones</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ok)">28</div><div class="kpi-lbl">Resueltas bot</div><div class="kpi-sub" style="color:var(--ok)">82%</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--warn)">6</div><div class="kpi-lbl">Transferidas</div><div class="kpi-sub" style="color:var(--warn)">18%</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--ac-wa)">12</div><div class="kpi-lbl">Ventas WA</div><div class="kpi-sub" style="color:var(--ac-wa)">$234.500</div></div>
+    </div>
+    <div class="slbl">Conversación en vivo — Tomar control</div>
+    <div class="chat">
+      <div class="msg in"><div class="msg-who" style="color:var(--ac-wa)">CLIENTE</div>Hola, ¿tienen leche?</div>
+      <div class="msg out"><div class="msg-who" style="color:var(--ok)">BOT IA</div>Sí, tenemos Leche Colún 1L a $1.190. ¿Cuántas necesitas?</div>
+      <div class="msg in">2 leches y 1 pan molde, ¿me lo pueden mandar?</div>
+      <div class="msg out">¡Claro! 🛍️ Tu pedido:<br>• Leche x2: $2.380<br>• Pan: $1.490<br>Delivery +$2.000 = <strong>$5.870</strong><br>¿Confirmas? (Sí/No)</div>
+    </div>
+    <button style="margin-top:7px;width:100%;padding:8px;border-radius:var(--r);border:none;background:rgba(37,211,102,.15);color:var(--ac-wa);font-size:11px;cursor:pointer;font-weight:700">✍️ Escribir como agente humano</button>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s8p1">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Configuración del bot</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Personalidad del bot</label>
+        <div class="pill-row">
+          <div class="pill" style="--ac:var(--ac-wa)">Formal</div>
+          <div class="pill on" style="--ac:var(--ac-wa)">Cercano</div>
+          <div class="pill" style="--ac:var(--ac-wa)">Técnico</div>
+        </div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Horario de atención</label>
+        <div style="display:flex;gap:5px">
+          <input class="pos-in" value="09:00" type="time" style="flex:1">
+          <span style="font-size:11px;color:var(--t2);align-self:center">a</span>
+          <input class="pos-in" value="20:00" type="time" style="flex:1">
+        </div>
+        <div style="font-size:10px;color:var(--t2);margin-top:3px">Fuera de horario: mensaje automático de no disponibilidad</div>
+      </div>
+      <div><label style="font-size:10px;color:var(--t2);display:block;margin-bottom:3px">Mensaje de bienvenida</label><textarea class="nota">¡Hola! 👋 Soy el asistente de Ferretería Don Pedro. ¿En qué te puedo ayudar?</textarea></div>
+      <button style="padding:9px;border-radius:var(--r);border:none;background:var(--ac-wa);color:#000;font-size:12px;cursor:pointer;font-weight:700">💾 Guardar configuración</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Intenciones activas</div>
+    <div style="display:flex;flex-direction:column;gap:4px;font-size:11px">
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Consultar stock en tiempo real</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Consultar precio de producto</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Crear pedido remoto</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Consultar deuda del cliente</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Enviar link de pago deuda</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" style="accent-color:var(--ac-wa)"> Agendar hora (requiere M08)</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" style="accent-color:var(--ac-wa)"> Reservar cancha / habitación</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border-radius:7px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--ac-wa)"> Seguimiento de pedido</label>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="s8p2">
+<div class="grid" style="margin-top:16px">
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Flujo: Abarrotes — Pedido remoto</div>
+    <div class="chat">
+      <div class="msg in"><div class="msg-who" style="color:var(--ac-wa)">CLIENTE</div>Hola, ¿tienen leche?</div>
+      <div class="msg out"><div class="msg-who" style="color:var(--ok)">BOT</div>Sí, tenemos Leche Colún 1L a $1.190. ¿Cuántas necesitas?</div>
+      <div class="msg in">2 leches y 1 pan molde</div>
+      <div class="msg out">🛍️ <strong>$3.870</strong> · ¿Confirmas? ¿Retiras o delivery (+$2.000)?</div>
+      <div class="msg in">Delivery por favor</div>
+      <div class="msg out">✅ Pedido #1042 creado. Preparamos en ~20 min. Te avisamos cuando esté listo.</div>
+    </div>
+    <div style="font-size:10px;color:var(--t2);margin-top:6px;padding:6px 8px;background:rgba(37,211,102,.06);border-radius:6px">→ ERP: crea venta remota_pendiente · notifica al cajero · bot envía tracking URL</div>
+  </div>
+  <div class="card">
+    <div class="clabel" style="color:var(--ac-wa)">Flujo: Motel — Reserva</div>
+    <div class="chat">
+      <div class="msg in"><div class="msg-who" style="color:var(--ac-wa)">CLIENTE</div>¿Tienen habitación disponible?</div>
+      <div class="msg out"><div class="msg-who" style="color:var(--ok)">BOT</div>Sí, Suite disponible a $15.000/hora (mín 2h). ¿Para cuándo?</div>
+      <div class="msg in">Ahora mismo</div>
+      <div class="msg out">Suite lista. ¿Cuántas horas? 2h=$30k · 3h=$42k</div>
+      <div class="msg in">3 horas</div>
+      <div class="msg out">✅ Reserva confirmada Suite #2 · 3 horas. Presenta este código en recepción: <strong>RES-2026-089</strong></div>
+    </div>
+    <div style="font-size:10px;color:var(--t2);margin-top:6px;padding:6px 8px;background:rgba(37,211,102,.06);border-radius:6px">→ ERP: bloquea habitación · crea venta · activa timer · notifica recepción</div>
+  </div>
+</div>
+</div>
+</div><!-- /content -->
+</div><!-- /s8 -->
+
+<script>
+function S(n){
+  document.querySelectorAll('.sect').forEach((el,i)=>el.classList.toggle('on',i===n));
+  document.querySelectorAll('.nb').forEach((el,i)=>el.classList.toggle('on',i===n));
+  const panels=document.querySelectorAll('#s'+n+' .panel');
+  panels.forEach((p,i)=>p.classList.toggle('on',i===0));
+  const tabs=document.querySelectorAll('#s'+n+' .tabs .tb');
+  tabs.forEach((t,i)=>t.classList.toggle('on',i===0));
+}
+function P(s,p){
+  const sect=document.getElementById('s'+s);
+  sect.querySelectorAll('.panel').forEach((el,i)=>el.classList.toggle('on',i===p));
+  sect.querySelectorAll('.tabs .tb').forEach((el,i)=>el.classList.toggle('on',i===p));
+}
+// Sidebar admin
+document.querySelectorAll('.asi').forEach(el=>{
+  el.onclick=()=>{document.querySelectorAll('.asi').forEach(a=>a.classList.remove('on'));el.classList.add('on');}
+});
+// Reloj asistencia
+function updateClock(){
+  const el=document.getElementById('horaActual');
+  if(el)el.textContent=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000);
+</script>
+</body>
+</html>

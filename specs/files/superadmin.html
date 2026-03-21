@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Super Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080a; --s1:#111115; --s2:#18181e; --s3:#1e1e28;
+  --b1:#1e1e28; --b2:#2a2a3a; --b3:#38384a;
+  --tx:#e8e8f0; --t2:#7878a0; --t3:#3a3a55;
+  --ac:#e040fb;        /* super admin = púrpura */
+  --ac2:#b800d8;
+  --ok:#00e5a0; --warn:#f5c518; --err:#ff3f5b; --info:#4488ff;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --nav-w:220px;
+  --top-h:52px;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--sans)}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  height:var(--top-h); min-height:var(--top-h);
+  background:var(--s1); border-bottom:1px solid var(--b1);
+  display:flex; align-items:center; padding:0 20px; gap:12px;
+  flex-shrink:0; z-index:20;
+}
+.tb-brand{font-family:var(--mono);font-weight:700;font-size:17px;letter-spacing:-1px}
+.tb-sep{width:1px;height:18px;background:var(--b2)}
+.tb-title{font-size:12px;font-weight:600;color:var(--t2);flex:1}
+.tb-badge{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--ac);
+  border:1px solid rgba(224,64,251,.3);padding:3px 10px;
+}
+.tb-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(224,64,251,.15);border:1px solid rgba(224,64,251,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ac);
+  cursor:pointer;flex-shrink:0;
+}
+
+/* ═══ LAYOUT ═══ */
+.layout{flex:1;display:flex;overflow:hidden;min-height:0}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  width:var(--nav-w);min-width:var(--nav-w);
+  background:var(--s1);border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+  flex-shrink:0;
+}
+.sidebar::-webkit-scrollbar{width:2px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
+
+.nav-section{padding:16px 12px 4px}
+.nav-section-lbl{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);
+  padding:0 8px;margin-bottom:4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  font-size:13px;font-weight:500;color:var(--t2);
+  cursor:pointer;transition:all .12s;text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.nav-item:hover{background:var(--s2);color:var(--tx)}
+.nav-item.active{background:rgba(224,64,251,.1);color:var(--ac)}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:6px;bottom:6px;
+  width:3px;background:var(--ac);border-radius:0 2px 2px 0;
+}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;background:var(--err);color:#fff;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  padding:2px 6px;border-radius:4px;
+}
+.nav-badge.warn{background:var(--warn);color:#000}
+
+.sidebar-footer{
+  margin-top:auto;padding:12px;border-top:1px solid var(--b1);
+}
+.logout-btn{
+  width:100%;padding:9px 12px;
+  background:none;border:1px solid var(--b2);border-radius:8px;
+  color:var(--t2);font-family:var(--sans);font-size:12px;
+  cursor:pointer;transition:all .12s;text-align:left;
+  display:flex;align-items:center;gap:8px;
+}
+.logout-btn:hover{border-color:var(--err);color:var(--err)}
+
+/* ═══ CONTENIDO ═══ */
+.content{flex:1;overflow-y:auto;min-width:0;padding:24px}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--b2)}
+
+/* ═══ PÁGINA ═══ */
+.page{display:none}
+.page.active{display:block}
+
+/* ── Header página ── */
+.page-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:12px;
+}
+.page-title{font-size:20px;font-weight:700}
+.page-sub{font-size:13px;color:var(--t2);margin-top:2px}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:8px;border:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;transition:filter .15s;
+}
+.btn-primary{background:var(--ac);color:#000}
+.btn-primary:active{filter:brightness(.88)}
+.btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--b2)}
+.btn-ghost:hover{color:var(--tx);border-color:var(--b3)}
+
+/* ── KPI row ── */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;margin-bottom:24px;
+}
+.kpi{
+  background:var(--s1);border:1px solid var(--b1);border-radius:10px;
+  padding:16px 18px;
+}
+.kpi-lbl{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);
+  margin-bottom:8px;
+}
+.kpi-val{
+  font-family:var(--mono);font-size:26px;font-weight:700;color:var(--tx);
+  line-height:1;margin-bottom:4px;
+}
+.kpi-delta{font-size:11px;color:var(--t2)}
+.kpi-delta.up{color:var(--ok)}
+.kpi-delta.down{color:var(--err)}
+.kpi-delta.warn{color:var(--warn)}
+
+/* ── Grid 2 cols ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+
+/* ── Card ── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;overflow:hidden}
+.card-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--b1);
+}
+.card-title{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);
+}
+.card-action{
+  font-size:11px;color:var(--ac);background:none;border:none;
+  cursor:pointer;font-family:var(--sans);font-weight:600;
+}
+
+/* ── Tabla ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  text-align:left;padding:10px 14px;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);
+  border-bottom:1px solid var(--b2);white-space:nowrap;
+}
+.tbl td{
+  padding:11px 14px;border-bottom:1px solid var(--b1);
+  font-size:13px;vertical-align:middle;
+}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--s2)}
+.tbl .mono{font-family:var(--mono)}
+.tbl .right{text-align:right}
+
+/* ── Badges de estado/plan ── */
+.badge{
+  display:inline-block;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;
+}
+.badge-ok   {color:var(--ok);  background:rgba(0,229,160,.1); border:1px solid rgba(0,229,160,.2)}
+.badge-warn {color:var(--warn);background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.2)}
+.badge-err  {color:var(--err); background:rgba(255,63,91,.1); border:1px solid rgba(255,63,91,.2)}
+.badge-info {color:var(--info);background:rgba(68,136,255,.1);border:1px solid rgba(68,136,255,.2)}
+.badge-dim  {color:var(--t2);  background:var(--s2);          border:1px solid var(--b2)}
+
+/* ── Dot de estado ── */
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-ok  {background:var(--ok)}
+.dot-warn{background:var(--warn)}
+.dot-err {background:var(--err)}
+.dot-dim {background:var(--b3)}
+
+/* ── Acciones en tabla ── */
+.tbl-actions{display:flex;gap:6px;align-items:center}
+.act-btn{
+  background:none;border:1px solid var(--b2);border-radius:6px;
+  color:var(--t2);font-size:11px;padding:4px 10px;cursor:pointer;
+  font-family:var(--sans);font-weight:600;transition:all .12s;white-space:nowrap;
+}
+.act-btn:hover{color:var(--tx);border-color:var(--b3)}
+.act-btn.danger:hover{color:var(--err);border-color:var(--err)}
+.act-btn.primary{color:var(--ac);border-color:rgba(224,64,251,.3)}
+.act-btn.primary:hover{background:rgba(224,64,251,.1)}
+
+/* ── Rubro tag ── */
+.rubro-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:500;
+}
+
+/* ── Cobros ── */
+.cobro-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--b1);
+}
+.cobro-item:last-child{border-bottom:none}
+.cobro-empresa{font-size:13px;font-weight:600;flex:1}
+.cobro-monto{font-family:var(--mono);font-size:13px;font-weight:700}
+.cobro-fecha{font-family:var(--mono);font-size:10px;color:var(--t2)}
+
+/* ── Mini chart placeholder ── */
+.chart-placeholder{
+  height:80px;display:flex;align-items:flex-end;
+  gap:3px;padding:8px 16px 0;
+}
+.chart-bar{
+  flex:1;border-radius:2px 2px 0 0;
+  background:rgba(224,64,251,.2);
+  transition:height .3s;
+  min-height:4px;
+}
+.chart-bar.today{background:var(--ac)}
+.chart-labels{
+  display:flex;gap:3px;padding:4px 16px 8px;
+}
+.chart-label{flex:1;text-align:center;font-family:var(--mono);font-size:8px;color:var(--t3)}
+
+/* ── Toggle suspender ── */
+.toggle{
+  position:relative;width:36px;height:20px;
+  display:inline-block;cursor:pointer;flex-shrink:0;
+}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{
+  position:absolute;inset:0;border-radius:10px;
+  background:var(--b3);transition:background .2s;
+}
+.toggle input:checked + .toggle-track{background:var(--ok)}
+.toggle-thumb{
+  position:absolute;width:14px;height:14px;border-radius:50%;
+  background:#fff;top:3px;left:3px;transition:transform .2s;
+}
+.toggle input:checked + .toggle-track + .toggle-thumb{transform:translateX(16px)}
+
+/* ── Búsqueda / filtros ── */
+.filters{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:16px;align-items:center;
+}
+.filter-input{
+  flex:1;min-width:160px;
+  background:var(--s2);border:1.5px solid var(--b2);border-radius:8px;
+  color:var(--tx);font-family:var(--sans);font-size:13px;
+  padding:8px 12px;outline:none;transition:border-color .15s;
+}
+.filter-input:focus{border-color:var(--ac)}
+.filter-input::placeholder{color:var(--t3)}
+.filter-sel{
+  background:var(--s2);border:1.5px solid var(--b2);border-radius:8px;
+  color:var(--t2);font-family:var(--sans);font-size:12px;
+  padding:8px 10px;outline:none;cursor:pointer;
+}
+
+/* ── Wizard ── */
+.wizard-steps{
+  display:flex;gap:0;margin-bottom:24px;
+  border:1px solid var(--b1);border-radius:10px;overflow:hidden;
+}
+.wstep{
+  flex:1;padding:12px 16px;text-align:center;
+  background:var(--s2);border-right:1px solid var(--b1);
+  font-size:12px;font-weight:600;color:var(--t3);
+}
+.wstep:last-child{border-right:none}
+.wstep.done{color:var(--ok)}
+.wstep.active{background:rgba(224,64,251,.08);color:var(--ac)}
+.wstep-num{
+  font-family:var(--mono);font-size:18px;font-weight:700;
+  display:block;margin-bottom:2px;
+}
+
+.form-group{margin-bottom:16px}
+.form-lbl{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);
+  margin-bottom:6px;display:block;
+}
+.form-input{
+  width:100%;
+  background:var(--s2);border:1.5px solid var(--b2);border-radius:8px;
+  color:var(--tx);font-family:var(--sans);font-size:14px;
+  padding:10px 12px;outline:none;transition:border-color .15s;
+}
+.form-input:focus{border-color:var(--ac)}
+.form-input::placeholder{color:var(--t3);font-size:12px}
+.form-sel{
+  width:100%;
+  background:var(--s2);border:1.5px solid var(--b2);border-radius:8px;
+  color:var(--tx);font-family:var(--sans);font-size:14px;
+  padding:10px 12px;outline:none;cursor:pointer;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* ── Empresa detalle ── */
+.detail-header{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:20px;border-bottom:1px solid var(--b1);
+}
+.detail-logo{
+  width:52px;height:52px;border-radius:10px;
+  background:var(--s3);border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.detail-info{flex:1}
+.detail-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.detail-meta{font-size:12px;color:var(--t2);display:flex;gap:12px;flex-wrap:wrap}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  .sidebar{
+    position:fixed;left:-100%;top:var(--top-h);bottom:0;
+    width:var(--nav-w);z-index:100;transition:left .25s ease;
+  }
+  .sidebar.open{left:0}
+  .content{padding:16px}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <span class="tb-brand">B&</span>
+  <div class="tb-sep"></div>
+  <span class="tb-title">Super Admin</span>
+  <span class="tb-badge">SUPER ADMIN</span>
+  <div class="tb-avatar" title="SA">SA</div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-lbl">Principal</div>
+      <a class="nav-item active" onclick="goTo('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <a class="nav-item" href="/superadmin/spider">
+        <span class="nav-icon">◈</span> Spider QA
+      </a>
+      <a class="nav-item" onclick="goTo('empresas')">
+        <span class="nav-icon">⊞</span> Empresas
+        <span class="nav-badge">12</span>
+      </a>
+      <a class="nav-item" onclick="goTo('cobros')">
+        <span class="nav-icon">⚠</span> Cobros
+        <span class="nav-badge warn">3</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-lbl">Operaciones</div>
+      <a class="nav-item" onclick="goTo('nueva-empresa')">
+        <span class="nav-icon">+</span> Nueva empresa
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="if(confirm('¿Cerrar sesión?'))window.location='/login'">
+        <span>⏻</span> Cerrar sesión
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- ══════════════════════════════
+         PÁGINA: DASHBOARD
+         ══════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-hdr">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Visión global de la plataforma</div>
+        </div>
+        <button class="btn btn-primary" onclick="goTo('nueva-empresa')">+ Nueva empresa</button>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-lbl">Empresas activas</div>
+          <div class="kpi-val" id="kEmpresasActivas">12</div>
+          <div class="kpi-delta up">↑ 2 este mes</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">MRR Total</div>
+          <div class="kpi-val" id="kMRR">$486K</div>
+          <div class="kpi-delta up">↑ 14% vs mes ant.</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Transacciones hoy</div>
+          <div class="kpi-val" id="kTxHoy">847</div>
+          <div class="kpi-delta">en 8 empresas</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Cobros vencidos</div>
+          <div class="kpi-val" style="color:var(--warn)">3</div>
+          <div class="kpi-delta warn">⚠ Acción requerida</div>
+        </div>
+      </div>
+
+      <!-- Gráfico + cobros -->
+      <div class="grid-2">
+
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Actividad 7 días</span>
+            <button class="card-action">Ver detalle</button>
+          </div>
+          <div class="chart-placeholder" id="chart7d"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">Cobros próximos</span>
+            <button class="card-action" onclick="goTo('cobros')">Ver todos</button>
+          </div>
+          <div id="cobrosPreview"></div>
+        </div>
+
+      </div>
+
+      <!-- Tabla empresas recientes -->
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">Empresas — todas</span>
+          <button class="card-action" onclick="goTo('empresas')">Ver grid →</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl" id="tblDashboard"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PÁGINA: EMPRESAS
+         ══════════════════════════════ -->
+    <div class="page" id="page-empresas">
+      <div class="page-hdr">
+        <div>
+          <div class="page-title">Empresas</div>
+          <div class="page-sub" id="empresaCount">12 empresas registradas</div>
+        </div>
+        <button class="btn btn-primary" onclick="goTo('nueva-empresa')">+ Nueva empresa</button>
+      </div>
+
+      <div class="filters">
+        <input class="filter-input" type="text" placeholder="Buscar empresa..."
+          id="filterSearch" oninput="filtrarEmpresas()">
+        <select class="filter-sel" id="filterRubro" onchange="filtrarEmpresas()">
+          <option value="">Todos los rubros</option>
+          <option>Retail</option><option>Ferretería</option>
+          <option>Abogado</option><option>Pádel</option>
+          <option>Motel</option><option>Médico</option>
+        </select>
+        <select class="filter-sel" id="filterEstado" onchange="filtrarEmpresas()">
+          <option value="">Todos los estados</option>
+          <option value="activo">Activo</option>
+          <option value="suspendido">Suspendido</option>
+        </select>
+        <select class="filter-sel" id="filterPlan" onchange="filtrarEmpresas()">
+          <option value="">Todos los planes</option>
+          <option>Básico</option><option>Pro</option><option>Enterprise</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="tbl" id="tblEmpresas"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PÁGINA: EMPRESA DETALLE
+         ══════════════════════════════ -->
+    <div class="page" id="page-empresa-detalle">
+      <div class="page-hdr">
+        <div>
+          <button class="btn btn-ghost" style="font-size:12px" onclick="goTo('empresas')">← Volver</button>
+        </div>
+        <div id="detalleBtns" style="display:flex;gap:8px"></div>
+      </div>
+      <div id="detalleContent"></div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PÁGINA: COBROS
+         ══════════════════════════════ -->
+    <div class="page" id="page-cobros">
+      <div class="page-hdr">
+        <div>
+          <div class="page-title">Cobros y facturación</div>
+          <div class="page-sub">Seguimiento de pagos por empresa</div>
+        </div>
+      </div>
+
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi">
+          <div class="kpi-lbl">Vencidos</div>
+          <div class="kpi-val" style="color:var(--err)">3</div>
+          <div class="kpi-delta down">$89.700 pendientes</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Vencen en 7 días</div>
+          <div class="kpi-val" style="color:var(--warn)">4</div>
+          <div class="kpi-delta warn">$158.400</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Al día</div>
+          <div class="kpi-val" style="color:var(--ok)">5</div>
+          <div class="kpi-delta up">Sin deuda</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Todos los cobros</span></div>
+        <div style="overflow-x:auto">
+          <table class="tbl" id="tblCobros"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         PÁGINA: NUEVA EMPRESA (wizard)
+         ══════════════════════════════ -->
+    <div class="page" id="page-nueva-empresa">
+      <div class="page-hdr">
+        <div>
+          <div class="page-title">Nueva empresa</div>
+          <div class="page-sub">Onboarding manual de tenant</div>
+        </div>
+        <button class="btn btn-ghost" onclick="goTo('empresas')">Cancelar</button>
+      </div>
+
+      <div class="wizard-steps">
+        <div class="wstep active" id="ws1">
+          <span class="wstep-num">1</span>Datos básicos
+        </div>
+        <div class="wstep" id="ws2">
+          <span class="wstep-num">2</span>Rubro y plan
+        </div>
+        <div class="wstep" id="ws3">
+          <span class="wstep-num">3</span>Confirmar
+        </div>
+      </div>
+
+      <!-- Paso 1 -->
+      <div id="wPaso1" class="card" style="padding:20px">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Nombre empresa *</label>
+            <input class="form-input" id="wNombre" type="text" placeholder="Ej. Ferretería El Clavo">
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">RUT empresa *</label>
+            <input class="form-input" id="wRut" type="text" placeholder="76.123.456-7">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Email administrador *</label>
+            <input class="form-input" id="wEmail" type="email" placeholder="admin@empresa.cl">
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Teléfono WhatsApp *</label>
+            <input class="form-input" id="wTel" type="tel" placeholder="+56 9 1234 5678">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="wizardPaso(2)">Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- Paso 2 -->
+      <div id="wPaso2" class="card" style="padding:20px;display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Rubro *</label>
+            <select class="form-sel" id="wRubro">
+              <option value="">Seleccionar rubro</option>
+              <option>🛒 Retail / Abarrotes</option>
+              <option>🔧 Ferretería</option>
+              <option>⚖️ Abogado / Legal</option>
+              <option>🎾 Pádel / Deportes</option>
+              <option>🏨 Motel / Hospedaje</option>
+              <option>🏥 Médico / Salud</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Plan *</label>
+            <select class="form-sel" id="wPlan">
+              <option value="1">Básico — $29.900/mes</option>
+              <option value="2">Pro — $59.900/mes</option>
+              <option value="3">Enterprise — $99.900/mes</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Notas internas</label>
+          <input class="form-input" id="wNotas" type="text" placeholder="Comentario opcional">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" onclick="wizardPaso(1)">← Atrás</button>
+          <button class="btn btn-primary" onclick="wizardPaso(3)">Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- Paso 3 -->
+      <div id="wPaso3" class="card" style="padding:20px;display:none" id="wPaso3">
+        <div id="wResumen" style="margin-bottom:20px"></div>
+        <div style="padding:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.15);border-radius:8px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--t2);margin-bottom:4px">Se enviará por WhatsApp:</div>
+          <div style="font-size:13px">Credenciales de acceso + link de onboarding al número registrado</div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" onclick="wizardPaso(2)">← Atrás</button>
+          <button class="btn btn-primary" onclick="crearEmpresa()">✓ Crear empresa</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════
+   DATOS DEMO
+   ═══════════════════════════ */
+const RUBROS = {
+  'Retail':      {icon:'🛒', ac:'#00e5a0'},
+  'Ferretería':  {icon:'🔧', ac:'#f5c518'},
+  'Abogado':     {icon:'⚖️', ac:'#7c6af7'},
+  'Pádel':       {icon:'🎾', ac:'#00c4ff'},
+  'Motel':       {icon:'🏨', ac:'#ff6b35'},
+  'Médico':      {icon:'🏥', ac:'#3dd9eb'},
+};
+
+/* ═══════════════════════════
+   DATOS DINÁMICOS
+   ═══════════════════════════ */
+let EMPRESAS = [];
+let COBROS = [];
+let DASH_DATA = {};
+
+async function apiFetch(url, method = 'GET', body = null) {
+  try {
+    const options = {
+      method,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    };
+    if (body) options.body = JSON.stringify(body);
+    const resp = await fetch(url, options);
+    if (!resp.ok) throw new Error(`Error ${resp.status}`);
+    return await resp.json();
+  } catch (err) {
+    console.error("API Error:", err);
+    toast("Error al conectar con el servidor", "err");
+    return null;
+  }
+}
+
+
+/* ═══════════════════════════
+   NAVEGACIÓN
+   ═══════════════════════════ */
+let currentPage = 'dashboard';
+
+function goTo(page, id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const target = document.getElementById(`page-${page}`);
+  if (target) target.classList.add('active');
+
+  const navItem = document.querySelector(`[onclick="goTo('${page}')"]`);
+  if (navItem) navItem.classList.add('active');
+
+  currentPage = page;
+
+  if (page === 'empresa-detalle' && id) renderDetalle(id);
+  if (page === 'empresas') renderTblEmpresas(EMPRESAS);
+  if (page === 'cobros') renderCobros();
+}
+
+/* ═══════════════════════════
+   INIT
+   ═══════════════════════════ */
+/* ═══════════════════════════
+   INIT
+   ═══════════════════════════ */
+window.onload = async () => {
+  await cargarDashboard();
+  await cargarEmpresas();
+  await cargarCobros();
+};
+
+async function cargarDashboard() {
+  const data = await apiFetch('/api/saas/dashboard');
+  if (data) {
+    DASH_DATA = data;
+    renderKPIs(data.kpis);
+    renderChart(data.grafico_mrr);
+    renderDistrubicionPlanes(data.distribucion_planes);
+  }
+}
+
+function renderKPIs(k) {
+  if (!k) return;
+  document.getElementById('kEmpresasActivas').textContent = k.tenants_activos;
+  document.getElementById('kMRR').textContent = fmt(k.mrr);
+  document.getElementById('kTxHoy').textContent = k.tenants_trial + " trial";
+}
+
+async function cargarEmpresas() {
+  const data = await apiFetch('/api/saas/clientes');
+  if (data) {
+    EMPRESAS = data.data || [];
+    renderTblDashboard();
+    renderTblEmpresas(EMPRESAS);
+  }
+}
+
+async function cargarCobros() {
+  const data = await apiFetch('/api/saas/cobros');
+  if (data) {
+    COBROS = data.data || [];
+    renderCobros();
+    renderCobrosPreview();
+  }
+}
+
+
+/* ── Gráfico simple ── */
+function renderChart() {
+  const vals = [420, 580, 310, 760, 490, 680, 847];
+  const dias = ['Lu','Ma','Mi','Ju','Vi','Sá','Hoy'];
+  const max  = Math.max(...vals);
+  const bars = document.getElementById('chart7d');
+  const lbls = document.getElementById('chartLabels');
+  bars.innerHTML = vals.map((v,i) =>
+    `<div class="chart-bar${i===6?' today':''}" style="height:${Math.round(v/max*72)}px"></div>`
+  ).join('');
+  lbls.innerHTML = dias.map(d =>
+    `<div class="chart-label">${d}</div>`
+  ).join('');
+}
+
+/* ── Cobros preview ── */
+function renderCobrosPreview() {
+  const venc = EMPRESAS.filter(e => e.vencido || new Date(e.vence) <= new Date(Date.now()+7*864e5))
+    .slice(0,4);
+  document.getElementById('cobrosPreview').innerHTML = venc.map(e => {
+    const cls = e.vencido ? 'badge-err' : 'badge-warn';
+    const lbl = e.vencido ? 'VENCIDO' : 'PRÓXIMO';
+    return `<div class="cobro-item">
+      <div>
+        <div class="cobro-empresa">${e.nombre}</div>
+        <div class="cobro-fecha">${e.vence}</div>
+      </div>
+      <div class="cobro-monto">${fmt(e.mrr)}</div>
+      <span class="badge ${cls}">${lbl}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── Tabla dashboard ── */
+function renderTblDashboard() {
+  document.getElementById('tblDashboard').innerHTML = `
+    <thead><tr>
+      <th>Empresa</th><th>Rubro</th><th>Plan</th>
+      <th>Ventas 30d</th><th>MRR</th><th>Estado</th><th>Acciones</th>
+    </tr></thead>
+    <tbody>${EMPRESAS.map(e => tblRow(e)).join('')}</tbody>`;
+}
+
+function renderTblEmpresas(list) {
+  document.getElementById('empresaCount').textContent = `${list.length} empresas`;
+  document.getElementById('tblEmpresas').innerHTML = `
+    <thead><tr>
+      <th>Empresa</th><th>RUT</th><th>Rubro</th><th>Plan</th>
+      <th class="right">Ventas 30d</th><th class="right">MRR</th>
+      <th>Vence</th><th>Estado</th><th>Activo</th><th>Acciones</th>
+    </tr></thead>
+    <tbody>${list.map(e => tblRow(e, true)).join('')}</tbody>`;
+}
+
+function tblRow(e, full=false) {
+  const r = RUBROS[e.industria] || {icon:'◈', ac:'#888'};
+  const estadoCls = e.estado === 'activo' ? 'ok' : 'err';
+  const planTag = e.plan ? e.plan.nombre : 'S/P';
+  const vencido = e.estado === 'moroso' ? `<span class="badge badge-err">MOROSO</span>` : '';
+  const rutCol  = full ? `<td class="mono" style="font-size:11px;color:var(--t2)">${e.rut}</td>` : '';
+  const venceCol= full ? `<td class="mono" style="font-size:11px">${e.fecha_trial_fin || 'N/A'} ${vencido}</td>` : '';
+  const activoCol = full ? `
+    <td>
+      <label class="toggle">
+        <input type="checkbox" ${e.estado==='activo'?'checked':''} onchange="toggleEmpresa(${e.id},this)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </td>` : '';
+  return `<tr>
+    <td>
+      <div style="font-weight:600">${e.razon_social}</div>
+      <div style="font-size:11px;color:var(--t2)">${e.contacto_nombre}</div>
+    </td>
+    ${rutCol}
+    <td><span class="rubro-tag">${r.icon} ${e.industria}</span></td>
+    <td><span class="badge badge-dim">${planTag}</span></td>
+    <td class="mono right">${fmt(e.ventas_acumuladas || 0)}</td>
+    <td class="mono right">${fmt(e.precio_actual)}</td>
+    ${venceCol}
+    <td><span class="dot dot-${estadoCls}"></span>${e.estado}</td>
+    ${activoCol}
+    <td>
+      <div class="tbl-actions">
+        <button class="act-btn primary" onclick="goTo('empresa-detalle',${e.id})">Ver</button>
+        <button class="act-btn" onclick="enviarWsp(${e.id})">📲 WA</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+/* ── Tabla cobros ── */
+function renderCobros() {
+  document.getElementById('tblCobros').innerHTML = `
+    <thead><tr>
+      <th>Empresa</th><th>Plan</th><th>Monto</th>
+      <th>Vencimiento</th><th>Estado</th><th>Acciones</th>
+    </tr></thead>
+    <tbody>${COBROS.map(c => {
+      const cls = c.estado === 'vencido' ? 'badge-err' : (c.estado === 'pendiente' ? 'badge-warn' : 'badge-ok');
+      const lbl = c.estado.toUpperCase();
+      return `<tr>
+        <td>
+          <div style="font-weight:600">${c.cliente?.razon_social}</div>
+          <div style="font-size:11px;color:var(--t2)">${c.cliente?.contacto_whatsapp}</div>
+        </td>
+        <td><span class="badge badge-dim">${c.cliente?.plan?.nombre || 'N/A'}</span></td>
+        <td class="mono">${fmt(c.total)}</td>
+        <td class="mono" style="font-size:12px">${c.fecha_vencimiento}</td>
+        <td><span class="badge ${cls}">${lbl}</span></td>
+        <td>
+          <div class="tbl-actions">
+            <button class="act-btn" onclick="enviarWsp(${c.cliente_id})">📲 Recordar</button>
+            <button class="act-btn primary" onclick="marcarPagado(${c.id})">✓ Pagado</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+
+/* ── Detalle empresa ── */
+async function renderDetalle(id) {
+  const e = await apiFetch(`/api/saas/clientes/${id}`);
+  if (!e) return;
+  const r = RUBROS[e.industria] || {icon:'◈', ac:'#888'};
+  const estadoCls = e.estado === 'activo' ? 'ok' : 'err';
+
+  document.getElementById('detalleBtns').innerHTML = `
+    <button class="btn ${e.estado==='activo'?'btn-ghost':'btn-primary'}" 
+      onclick="toggleEmpresaDetalle(${id}, '${e.estado}')" id="btnToggleEmpresa">
+      ${e.estado==='activo'?'⏸ Suspender':'▶ Reactivar'}
+    </button>`;
+
+  document.getElementById('detalleContent').innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="detail-header">
+        <div class="detail-logo">${r.icon}</div>
+        <div class="detail-info">
+          <div class="detail-name">${e.razon_social}</div>
+          <div class="detail-meta">
+            <span>${e.rut || 'S/RUT'}</span>
+            <span>${e.industria}</span>
+            <span class="badge badge-dim">${e.plan?.nombre || 'S/Plan'}</span>
+            <span><span class="dot dot-${estadoCls}"></span>${e.estado}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;border-top:1px solid var(--b1)">
+        ${[
+          ['Contacto', e.contacto_nombre],
+          ['WhatsApp', e.contacto_whatsapp],
+          ['Precio Mensual', fmt(e.precio_actual)],
+          ['Ventas Acum.', fmt(e.ventas_acumuladas || 0)],
+          ['Fin Trial', e.fecha_trial_fin || 'N/A'],
+          ['Estado', e.estado],
+        ].map(([lbl,val]) => `
+          <div style="padding:14px 18px;border-right:1px solid var(--b1)">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px">${lbl}</div>
+            <div style="font-size:13px;font-weight:600">${val}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Historial de cobros (Últimos 12)</span></div>
+        <div style="padding:12px 16px">
+          ${(e.cobros || []).length ? e.cobros.map(c => `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1);font-size:13px">
+              <span style="color:var(--t2)">${c.periodo}</span>
+              <span style="font-family:var(--mono);font-weight:600">${fmt(c.total)}</span>
+              <span class="badge ${c.estado==='pagado'?'badge-ok':'badge-warn'}">${c.estado.toUpperCase()}</span>
+            </div>`).join('') : '<div class="dim center">Sin historial</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Módulos activos</span></div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+          ${['POS / Caja','Gestión de stock','CRM Clientes','WhatsApp Bot','Reportes'].map(m => `
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px">${m}</span>
+              <label class="toggle">
+                <input type="checkbox" checked>
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════
+   FILTROS
+   ═══════════════════════════ */
+function filtrarEmpresas() {
+  const q     = document.getElementById('filterSearch').value.toLowerCase();
+  const rubro = document.getElementById('filterRubro').value;
+  const estado= document.getElementById('filterEstado').value;
+  const plan  = document.getElementById('filterPlan').value;
+  const res   = EMPRESAS.filter(e =>
+    (!q      || e.nombre.toLowerCase().includes(q) || e.rut.includes(q)) &&
+    (!rubro  || e.rubro === rubro) &&
+    (!estado || e.estado === estado) &&
+    (!plan   || e.plan === plan)
+  );
+  renderTblEmpresas(res);
+}
+
+/* ═══════════════════════════
+   ACCIONES
+   ═══════════════════════════ */
+async function toggleEmpresa(id, cb) {
+  const nuevoEstado = cb.checked ? 'activo' : 'suspendido';
+  if (!cb.checked && !confirm(`¿Suspender este tenant?`)) {
+    cb.checked = true; return;
+  }
+  const res = await apiFetch(`/api/saas/clientes/${id}`, 'PUT', { estado: nuevoEstado });
+  if (res) toast(`Tenant ${nuevoEstado}`);
+}
+
+async function toggleEmpresaDetalle(id, currentEstado) {
+  const nuevoEstado = currentEstado === 'activo' ? 'suspendido' : 'activo';
+  if (currentEstado === 'activo') {
+    if (!confirm(`¿Suspender este tenant? El POS dejará de funcionar.`)) return;
+  }
+  const res = await apiFetch(`/api/saas/clientes/${id}`, 'PUT', { estado: nuevoEstado });
+  if (res) {
+    await renderDetalle(id);
+    toast(`Tenant ${nuevoEstado}`);
+  }
+}
+
+function enviarWsp(id) {
+  const e = EMPRESAS.find(x => x.id === id);
+  toast(`📲 Recordatorio enviado a ${e.nombre}`);
+  /* POST /api/superadmin/wsp/recordatorio/:id */
+}
+
+function marcarPagado(id) {
+  const e = EMPRESAS.find(x => x.id === id);
+  if (!e) return;
+  e.vencido = false;
+  e.vence = new Date(Date.now()+30*864e5).toISOString().split('T')[0];
+  renderCobros();
+  renderCobrosPreview();
+  toast(`✓ ${e.nombre} marcada como pagada`);
+}
+
+/* ═══════════════════════════
+   WIZARD NUEVA EMPRESA
+   ═══════════════════════════ */
+let wizardData = {};
+function wizardPaso(paso) {
+  if (paso === 2) {
+    const nombre = document.getElementById('wNombre').value.trim();
+    const email  = document.getElementById('wEmail').value.trim();
+    const tel    = document.getElementById('wTel').value.trim();
+    if (!nombre || !email || !tel) { toast('Completa los campos obligatorios', 'err'); return; }
+    wizardData.nombre = nombre;
+    wizardData.rut    = document.getElementById('wRut').value.trim();
+    wizardData.email  = email;
+    wizardData.tel    = tel;
+  }
+  if (paso === 3) {
+    const rubro = document.getElementById('wRubro').value;
+    if (!rubro) { toast('Selecciona un rubro', 'err'); return; }
+    wizardData.rubro = rubro;
+    wizardData.plan_id = document.getElementById('wPlan').value;
+    wizardData.plan_name = document.getElementById('wPlan').options[document.getElementById('wPlan').selectedIndex].text;
+    wizardData.notas = document.getElementById('wNotas').value;
+    document.getElementById('wResumen').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${Object.entries({
+          'Empresa': wizardData.nombre,
+          'RUT':     wizardData.rut || 'No ingresado',
+          'Email':   wizardData.email,
+          'Teléfono':wizardData.tel,
+          'Rubro':   wizardData.rubro,
+          'Plan':    wizardData.plan_name,
+        }).map(([k,v]) => `
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">${k}</div>
+            <div style="font-size:13px;font-weight:600">${v}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+  [1,2,3].forEach(i => {
+    document.getElementById(`wPaso${i}`).style.display = i === paso ? 'block' : 'none';
+    const ws = document.getElementById(`ws${i}`);
+    ws.classList.remove('active','done');
+    if (i < paso) ws.classList.add('done');
+    if (i === paso) ws.classList.add('active');
+  });
+}
+
+async function crearEmpresa() {
+  const body = {
+    razon_social:      wizardData.nombre,
+    rut:               wizardData.rut,
+    industria:         wizardData.rubro.split(' ').slice(1).join(' '),
+    contacto_nombre:   wizardData.email, // Por ahora usamos email como nombre si no hay mas campos
+    contacto_whatsapp: wizardData.tel,
+    plan_id:           parseInt(wizardData.plan_id) || 1, // Asumimos ID 1 si no hay seleccion
+    ejecutivo_id:      1 // Default
+  };
+  
+  const res = await apiFetch('/api/saas/clientes', 'POST', body);
+  if (res) {
+    toast('✓ Empresa creada — credenciales enviadas por WhatsApp');
+    setTimeout(() => goTo('empresas'), 800);
+  }
+}
+
+/* ═══════════════════════════
+   UTILS
+   ═══════════════════════════ */
+function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
+function toast(msg, tipo='ok') {
+  let t = document.getElementById('_toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_toast';
+    t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(6px);
+      background:var(--s3);border:1px solid var(--b2);border-radius:20px;padding:8px 18px;
+      font-family:var(--mono);font-size:12px;color:var(--tx);opacity:0;pointer-events:none;
+      transition:opacity .2s,transform .2s;white-space:nowrap;z-index:999`;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(6px)';
+  }, 2500);
+}
+</script>
+<script src="/js/benderand-debug.js"></script>
+</body>
+</html>

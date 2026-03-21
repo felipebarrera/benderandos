@@ -1,0 +1,22 @@
+PASS|TC-SA-05|SA dashboard con token -> 200
+PASS|TC-SA-06|SA tenants lista -> 200
+PASS|TC-TA-05|Tenant dashboard con token -> 200
+PASS|TC-ROL-04|Cross-tenant bloqueado (tenant->SA -> 401|403)
+PASS|TC-API-SA-dashboard|SA /api/superadmin/dashboard -> 200
+PASS|TC-API-SA-tenants|SA /api/superadmin/tenants -> 200
+PASS|TC-API-T-dashboard|Tenant /api/dashboard -> 200
+PASS|TC-API-T-productos|Tenant /api/productos -> 200
+PASS|TC-API-T-ventas|Tenant /api/ventas -> 200
+PASS|TC-API-T-clientes|Tenant /api/clientes -> 200
+PASS|TC-DB-01|super_admins tiene registros
+PASS|TC-DB-02|plan_modulos tiene datos
+PASS|TC-DB-03|Tenants registrados
+FAIL|TC-DB-04|bug_reports tabla existe|esperado:1
+PASS|TC-DB-05|Usuarios en tenant DB (tenantdf21b4b0-fdb8-43dd-8841-9de2ba7c6f38)
+PASS|TC-LAR-01|Redis cache OK
+FAIL|TC-LAR-02|Sin migraciones pendientes|esperado:0
+PASS|TC-LAR-03|APP_KEY configurada
+FAIL|TC-UI-01|SA UI: input login|esperado:1
+FAIL|TC-UI-02|SA UI: funcion doLogin|esperado:1
+FAIL|TC-UI-03|SA UI: overlay de login|esperado:1
+PASS|TC-UI-04|Tenant UI: form presente

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Dashboard Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #070707;
+    --surface:  #0d0d0d;
+    --card:     #131313;
+    --card2:    #191919;
+    --border:   #1c1c1c;
+    --border2:  #252525;
+    --tx:       #e0e0e0;
+    --tx-muted: #555;
+    --tx-dim:   #2a2a2a;
+    --accent:   #00e5a0;
+    --accent-d: #00b87c;
+    --warn:     #ffaa00;
+    --danger:   #ff4455;
+    --info:     #4488ff;
+    --purple:   #aa66ff;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+    --sidebar:  220px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: var(--sans);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar);
+    background: var(--surface);
+    border-right: 1px solid var(--border2);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+  }
+
+  .sb-brand {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .sb-brand-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: .04em;
+  }
+
+  .sb-brand-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--tx-muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .sb-section {
+    padding: 14px 12px 4px;
+  }
+
+  .sb-section-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--tx-dim);
+    padding: 0 6px;
+    margin-bottom: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    font-size: 13px;
+    color: var(--tx-muted);
+    cursor: pointer;
+    transition: all .12s;
+    border-radius: 2px;
+    text-decoration: none;
+  }
+
+  .nav-item:hover   { background: var(--card); color: var(--tx); }
+  .nav-item.active  { background: var(--card2); color: var(--accent); }
+
+  .nav-icon {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--danger);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 2px;
+  }
+
+  .sb-spacer { flex: 1; }
+
+  .sb-user {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sb-avatar {
+    width: 30px; height: 30px;
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .sb-user-name {
+    font-size: 12px;
+    color: var(--tx);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sb-user-role {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--tx-muted);
+    letter-spacing: .06em;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar);
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .topbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 40;
+  }
+
+  .page-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--tx);
+    letter-spacing: .04em;
+  }
+
+  .topbar-spacer { flex: 1; }
+
+  .date-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-muted);
+  }
+
+  .btn-pos {
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-pos:hover { background: var(--accent-d); }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 24px;
+  }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .kpi-card.green::before  { background: var(--accent); }
+  .kpi-card.yellow::before { background: var(--warn); }
+  .kpi-card.red::before    { background: var(--danger); }
+  .kpi-card.blue::before   { background: var(--info); }
+  .kpi-card.purple::before { background: var(--purple); }
+
+  .kpi-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--tx-muted);
+    margin-bottom: 10px;
+  }
+
+  .kpi-val {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--tx);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .kpi-card.green  .kpi-val { color: var(--accent); }
+  .kpi-card.yellow .kpi-val { color: var(--warn); }
+  .kpi-card.red    .kpi-val { color: var(--danger); }
+
+  .kpi-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-muted);
+  }
+
+  .kpi-delta {
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-left: 6px;
+  }
+
+  .kpi-delta.up   { color: var(--accent); }
+  .kpi-delta.down { color: var(--danger); }
+
+  /* Columns */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border2);
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--tx-muted);
+    flex: 1;
+  }
+
+  .panel-action {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    letter-spacing: .06em;
+    transition: opacity .12s;
+  }
+  .panel-action:hover { opacity: .7; }
+
+  /* Recent sales table */
+  .sales-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .sales-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--tx-dim);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .sales-table td {
+    padding: 10px 16px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--tx-muted);
+  }
+
+  .sales-table tr:last-child td { border-bottom: none; }
+  .sales-table tr:hover td { background: var(--card2); }
+
+  .td-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-dim);
+  }
+
+  .td-total {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tx);
+  }
+
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border: 1px solid;
+  }
+
+  .status-badge.pagada     { color: var(--accent); border-color: var(--accent); }
+  .status-badge.pendiente  { color: var(--warn);   border-color: var(--warn); }
+  .status-badge.en-caja    { color: var(--info);   border-color: var(--info); }
+  .status-badge.anulada    { color: var(--danger); border-color: var(--danger); }
+
+  /* Stock alert list */
+  .stock-list {
+    padding: 0;
+  }
+
+  .stock-item {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background .12s;
+    cursor: pointer;
+  }
+
+  .stock-item:hover { background: var(--card2); }
+  .stock-item:last-child { border-bottom: none; }
+
+  .stock-name {
+    flex: 1;
+    font-size: 12px;
+    color: var(--tx);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stock-qty {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  .stock-qty.critical { color: var(--danger); }
+  .stock-qty.low      { color: var(--warn); }
+
+  .stock-bar-wrap {
+    width: 50px; height: 3px;
+    background: var(--border2);
+  }
+
+  .stock-bar {
+    height: 100%;
+    background: var(--warn);
+    transition: width .3s;
+  }
+
+  .stock-bar.critical { background: var(--danger); }
+
+  /* Quick actions */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .quick-btn {
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-muted);
+    letter-spacing: .04em;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .quick-icon { font-size: 18px; }
+
+  /* Chart placeholder */
+  .chart-area {
+    padding: 16px;
+    height: 160px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .chart-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .chart-bar {
+    width: 100%;
+    background: var(--border2);
+    transition: background .2s;
+    min-height: 4px;
+    position: relative;
+  }
+
+  .chart-bar.today { background: var(--accent); }
+  .chart-bar:hover { opacity: .8; }
+
+  .chart-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--tx-muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .cols { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-name">BenderAnd</div>
+    <div class="sb-brand-sub">Admin Panel</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Principal</div>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">◈</span> Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⊡</span> POS / Caja
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">≡</span> Ventas
+    </a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Inventario</div>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◻</span> Productos
+      <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">↓</span> Compras
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⏱</span> Encargos
+    </a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">CRM</div>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◯</span> Clientes
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⚠</span> Deudas
+      <span class="nav-badge">2</span>
+    </a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Configuración</div>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">◈</span> Usuarios
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">⊞</span> Empresa
+    </a>
+  </div>
+
+  <div class="sb-spacer"></div>
+
+  <div class="sb-user">
+    <div class="sb-avatar">JB</div>
+    <div>
+      <div class="sb-user-name">Juan Barrera</div>
+      <div class="sb-user-role">admin</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <span class="page-title">Dashboard</span>
+    <div class="topbar-spacer"></div>
+    <span class="date-badge" id="dashDate">—</span>
+    <button class="btn-pos" onclick="window.open('pos.html','_blank')">→ Ir al POS</button>
+  </div>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card green">
+        <div class="kpi-label">Ventas Hoy</div>
+        <div class="kpi-val">$847.320</div>
+        <div class="kpi-sub">14 transacciones <span class="kpi-delta up">↑ 23%</span></div>
+      </div>
+      <div class="kpi-card yellow">
+        <div class="kpi-label">Ventas Semana</div>
+        <div class="kpi-val">$4.2M</div>
+        <div class="kpi-sub">89 transacciones <span class="kpi-delta up">↑ 8%</span></div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-label">Deudas Activas</div>
+        <div class="kpi-val">$128.000</div>
+        <div class="kpi-sub">3 clientes pendientes</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Ventas Abiertas</div>
+        <div class="kpi-val">2</div>
+        <div class="kpi-sub">En caja / en proceso</div>
+      </div>
+    </div>
+
+    <!-- Chart + Quick -->
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:16px">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Ventas últimos 7 días</span>
+          <button class="panel-action">Ver historial</button>
+        </div>
+        <div class="chart-area" id="chartArea">
+          <!-- bars injected by JS -->
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Acciones rápidas</span>
+        </div>
+        <div class="quick-grid">
+          <div class="quick-btn">
+            <span class="quick-icon">+</span>
+            Producto
+          </div>
+          <div class="quick-btn">
+            <span class="quick-icon">↓</span>
+            Compra
+          </div>
+          <div class="quick-btn">
+            <span class="quick-icon">◯</span>
+            Cliente
+          </div>
+          <div class="quick-btn">
+            <span class="quick-icon">⬡</span>
+            Reporte
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cols -->
+    <div class="cols">
+      <!-- Recent sales -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Ventas recientes</span>
+          <button class="panel-action">Ver todas</button>
+        </div>
+        <table class="sales-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hora</th>
+              <th>Cliente</th>
+              <th>Cajero</th>
+              <th>Pago</th>
+              <th>Total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="salesBody">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Stock alerts -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Stock crítico</span>
+          <button class="panel-action">Gestionar</button>
+        </div>
+        <div class="stock-list" id="stockList">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Date
+const now = new Date();
+document.getElementById('dashDate').textContent =
+  now.toLocaleDateString('es-CL',{weekday:'long',day:'2-digit',month:'long'}).toUpperCase();
+
+// Chart
+const chartData = [320000, 480000, 210000, 590000, 440000, 710000, 847320];
+const chartDays = ['L','M','X','J','V','S','HOY'];
+const max = Math.max(...chartData);
+
+document.getElementById('chartArea').innerHTML = chartData.map((v,i) => `
+  <div class="chart-bar-wrap">
+    <div class="chart-bar ${i===6?'today':''}"
+         style="height:${Math.round(v/max*120)+4}px"
+         title="$${v.toLocaleString('es-CL')}"></div>
+    <span class="chart-label">${chartDays[i]}</span>
+  </div>
+`).join('');
+
+// Sales table
+const sales = [
+  { id:1142, hora:'17:44', cliente:'Juan Pérez', cajero:'cajero1', pago:'Débito',    total:45990,  estado:'pagada' },
+  { id:1141, hora:'17:31', cliente:'—',          cajero:'operario2',pago:'Efectivo', total:8990,   estado:'pagada' },
+  { id:1140, hora:'17:12', cliente:'M. González',cajero:'cajero1', pago:'Crédito',   total:134500, estado:'en-caja' },
+  { id:1139, hora:'16:58', cliente:'—',          cajero:'cajero1', pago:'Transfer.',  total:22000,  estado:'pagada' },
+  { id:1138, hora:'16:43', cliente:'P. Rojas',   cajero:'operario1',pago:'Efectivo', total:67800,  estado:'pagada' },
+  { id:1137, hora:'16:20', cliente:'—',          cajero:'cajero2', pago:'Débito',    total:15000,  estado:'anulada' },
+  { id:1136, hora:'15:55', cliente:'C. Valdés',  cajero:'cajero1', pago:'Efectivo',  total:180000, estado:'pagada' },
+];
+
+const statusLabel = { pagada:'pagada', pendiente:'pendiente', 'en-caja':'en caja', anulada:'anulada' };
+
+document.getElementById('salesBody').innerHTML = sales.map(s => `
+  <tr>
+    <td class="td-id">#${s.id}</td>
+    <td>${s.hora}</td>
+    <td>${s.cliente}</td>
+    <td style="font-family:var(--mono);font-size:11px">${s.cajero}</td>
+    <td>${s.pago}</td>
+    <td class="td-total">$${s.total.toLocaleString('es-CL')}</td>
+    <td><span class="status-badge ${s.estado}">${statusLabel[s.estado]}</span></td>
+  </tr>
+`).join('');
+
+// Stock
+const lowStock = [
+  { nombre:'Batería 12V 60Ah', stock:3, max:20 },
+  { nombre:'Anticongelante 1L', stock:0, max:30 },
+  { nombre:'Pastillas Freno Del.', stock:6, max:40 },
+  { nombre:'Correa Distribución', stock:5, max:25 },
+  { nombre:'Filtro Aceite Universal', stock:12, max:50 },
+];
+
+document.getElementById('stockList').innerHTML = lowStock.map(p => {
+  const pct = Math.round(p.stock / p.max * 100);
+  const cls = p.stock === 0 ? 'critical' : p.stock <= 5 ? 'critical' : 'low';
+  return `
+    <div class="stock-item">
+      <div class="stock-name">${p.nombre}</div>
+      <div class="stock-bar-wrap">
+        <div class="stock-bar ${cls}" style="width:${pct}%"></div>
+      </div>
+      <div class="stock-qty ${cls}">${p.stock}</div>
+    </div>
+  `;
+}).join('');
+</script>
+</body>
+</html>

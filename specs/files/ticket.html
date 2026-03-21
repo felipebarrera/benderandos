@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BenderAnd — Ticket</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #080808;
+    --surface:  #101010;
+    --card:     #161616;
+    --border:   #222;
+    --border2:  #2e2e2e;
+    --tx:       #e8e8e8;
+    --tx-muted: #666;
+    --tx-dim:   #333;
+    --accent:   #00e5a0;
+    --warn:     #ffaa00;
+    --danger:   #ff4455;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: var(--sans);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Grid BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: .2;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 400px;
+    padding: 24px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Success animation */
+  .success-icon {
+    width: 64px; height: 64px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    animation: popIn .4s cubic-bezier(.17,.67,.35,1.3) both;
+    box-shadow: 0 0 24px rgba(0,229,160,.15);
+  }
+
+  @keyframes popIn {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .success-title {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+    letter-spacing: .04em;
+    animation: fadeUp .3s .15s both;
+  }
+
+  .success-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-muted);
+    margin-bottom: 28px;
+    animation: fadeUp .3s .2s both;
+  }
+
+  @keyframes fadeUp {
+    0%   { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Ticket */
+  .ticket {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    position: relative;
+    animation: fadeUp .35s .25s both;
+  }
+
+  /* Serrated top */
+  .ticket::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: 0; right: 0;
+    height: 8px;
+    background:
+      radial-gradient(circle at 8px 8px, var(--bg) 8px, transparent 0) repeat-x;
+    background-size: 16px 8px;
+  }
+
+  /* Serrated bottom */
+  .ticket::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; left: 0; right: 0;
+    height: 8px;
+    background:
+      radial-gradient(circle at 8px 0px, var(--bg) 8px, transparent 0) repeat-x;
+    background-size: 16px 8px;
+  }
+
+  .ticket-head {
+    padding: 20px 20px 16px;
+    border-bottom: 1px dashed var(--border2);
+    text-align: center;
+  }
+
+  .t-empresa {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tx);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .t-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-muted);
+    line-height: 1.7;
+  }
+
+  .ticket-items {
+    padding: 14px 20px;
+    border-bottom: 1px dashed var(--border2);
+  }
+
+  .t-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 5px 0;
+    gap: 10px;
+  }
+
+  .t-item-name {
+    font-size: 12px;
+    color: var(--tx);
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .t-item-qty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-muted);
+    white-space: nowrap;
+  }
+
+  .t-item-sub {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tx);
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  .ticket-totals {
+    padding: 12px 20px;
+    border-bottom: 1px dashed var(--border2);
+  }
+
+  .t-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-muted);
+  }
+
+  .t-row.total {
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid var(--border2);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .ticket-foot {
+    padding: 14px 20px;
+    text-align: center;
+  }
+
+  .t-barcode {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .25em;
+    color: var(--tx-dim);
+    word-break: break-all;
+    margin-bottom: 8px;
+  }
+
+  .t-thankyou {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-muted);
+    letter-spacing: .06em;
+  }
+
+  /* Actions */
+  .actions {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: fadeUp .3s .4s both;
+  }
+
+  .btn-nueva {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-nueva:hover { background: #00c990; }
+
+  .btn-print {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--tx-muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    padding: 11px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-print:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Print mode */
+  @media print {
+    body { background: white; }
+    body::before, .actions, .success-icon, .success-title, .success-sub { display: none; }
+    .ticket {
+      border: 1px solid #ccc;
+      color: black;
+    }
+    .ticket * { color: black !important; }
+    .ticket::before, .ticket::after { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="success-icon">✓</div>
+  <div class="success-title">Venta Completada</div>
+  <div class="success-sub" id="ventaId">— · —</div>
+
+  <div class="ticket">
+    <div class="ticket-head">
+      <div class="t-empresa" id="tEmpresa">Empresa S.A.</div>
+      <div class="t-meta">
+        <span id="tFecha">—</span><br>
+        Cajero: <span id="tCajero">—</span> · Pago: <span id="tPago">—</span>
+      </div>
+    </div>
+
+    <div class="ticket-items" id="tItems">
+      <!-- items injected -->
+    </div>
+
+    <div class="ticket-totals">
+      <div class="t-row">
+        <span>Subtotal</span>
+        <span id="tSubtotal">$0</span>
+      </div>
+      <div class="t-row" id="tDiscRow" style="display:none">
+        <span>Descuento</span>
+        <span id="tDisc" style="color:var(--warn)">-$0</span>
+      </div>
+      <div class="t-row total">
+        <span>TOTAL</span>
+        <span id="tTotal">$0</span>
+      </div>
+    </div>
+
+    <div class="ticket-foot">
+      <div class="t-barcode" id="tBarcode">■ ■■ ■■■■ ■■ ■■■ ■■■■■ ■■</div>
+      <div class="t-thankyou">Gracias por su compra</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-nueva" onclick="nuevaVenta()">Nueva Venta →</button>
+    <button class="btn-print" onclick="window.print()">Imprimir Ticket</button>
+  </div>
+
+</div>
+
+<script>
+// Demo data — in real app, read from URL params or sessionStorage
+// e.g. const venta = JSON.parse(sessionStorage.getItem('lastVenta'));
+const venta = {
+  id: 1142,
+  empresa: 'Automotriz Barrera',
+  cajero: 'Juan B.',
+  pago: 'Débito',
+  items: [
+    { nombre: 'Aceite Motor 5W-30 1L', qty: 2, precio: 8990 },
+    { nombre: 'Filtro Aceite Universal', qty: 1, precio: 4500 },
+    { nombre: 'Cambio de Aceite (Servicio)', qty: 1, precio: 15000 },
+  ],
+  descuento: 2000,
+};
+
+const now = new Date();
+const fechaStr = now.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'}) +
+  ' ' + now.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+
+const subtotal = venta.items.reduce((s,i)=>s+i.precio*i.qty, 0);
+const total    = subtotal - (venta.descuento||0);
+
+document.getElementById('ventaId').textContent = `#${venta.id} · ${fechaStr}`;
+document.getElementById('tEmpresa').textContent = venta.empresa;
+document.getElementById('tFecha').textContent   = fechaStr;
+document.getElementById('tCajero').textContent  = venta.cajero;
+document.getElementById('tPago').textContent    = venta.pago;
+document.getElementById('tSubtotal').textContent = fmt(subtotal);
+document.getElementById('tTotal').textContent   = fmt(total);
+
+if (venta.descuento) {
+  document.getElementById('tDiscRow').style.display = 'flex';
+  document.getElementById('tDisc').textContent = `-${fmt(venta.descuento)}`;
+}
+
+document.getElementById('tItems').innerHTML = venta.items.map(i => `
+  <div class="t-item">
+    <div class="t-item-name">${i.nombre}</div>
+    <div class="t-item-qty">x${i.qty}</div>
+    <div class="t-item-sub">${fmt(i.precio * i.qty)}</div>
+  </div>
+`).join('');
+
+// Barcode-style ID
+document.getElementById('tBarcode').textContent = `VTA-${String(venta.id).padStart(6,'0')}`;
+
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('es-CL');
+}
+
+function nuevaVenta() {
+  window.location = 'pos.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1587 @@
+{
+    "_meta": {
+        "version": "3.0",
+        "created": "2026-03-18T03:08:33.078651",
+        "updated": "2026-03-18T03:08:33.079896",
+        "total_tests": 186
+    },
+    "http_checks": [
+        {
+            "id": "H-1",
+            "path": "//",
+            "label": "Vista: /",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-2",
+            "path": "/admin/api-docs",
+            "label": "Vista: admin/api-docs",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-3",
+            "path": "/admin/clientes",
+            "label": "Vista: admin/clientes",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-4",
+            "path": "/admin/compras",
+            "label": "Vista: admin/compras",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-5",
+            "path": "/admin/compras-avanzadas",
+            "label": "Vista: admin/compras-avanzadas",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-6",
+            "path": "/admin/config",
+            "label": "Vista: admin/config",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-7",
+            "path": "/admin/dashboard",
+            "label": "Vista: admin/dashboard",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-8",
+            "path": "/admin/delivery",
+            "label": "Vista: admin/delivery",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-9",
+            "path": "/admin/login",
+            "label": "Vista: admin/login",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-10",
+            "path": "/admin/marketing",
+            "label": "Vista: admin/marketing",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-11",
+            "path": "/admin/productos",
+            "label": "Vista: admin/productos",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-12",
+            "path": "/admin/recetas",
+            "label": "Vista: admin/recetas",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-13",
+            "path": "/admin/reclutamiento",
+            "label": "Vista: admin/reclutamiento",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-14",
+            "path": "/admin/rentas",
+            "label": "Vista: admin/rentas",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-15",
+            "path": "/admin/reportes",
+            "label": "Vista: admin/reportes",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-16",
+            "path": "/admin/rrhh",
+            "label": "Vista: admin/rrhh",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-17",
+            "path": "/admin/saas/dashboard",
+            "label": "Vista: admin/saas/dashboard",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-18",
+            "path": "/admin/sii",
+            "label": "Vista: admin/sii",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-19",
+            "path": "/admin/usuarios",
+            "label": "Vista: admin/usuarios",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-20",
+            "path": "/admin/whatsapp",
+            "label": "Vista: admin/whatsapp",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-21",
+            "path": "/auth/login",
+            "label": "Vista: auth/login",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-22",
+            "path": "/auth/login/web",
+            "label": "Vista: auth/login/web",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-23",
+            "path": "/auth/logout",
+            "label": "Vista: auth/logout",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-24",
+            "path": "/auth/me",
+            "label": "Vista: auth/me",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-25",
+            "path": "/central",
+            "label": "Vista: central",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-26",
+            "path": "/central/billing",
+            "label": "Vista: central/billing",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-27",
+            "path": "/central/billing/modulos",
+            "label": "Vista: central/billing/modulos",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-28",
+            "path": "/central/billing/planes",
+            "label": "Vista: central/billing/planes",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-29",
+            "path": "/central/billing/subscription",
+            "label": "Vista: central/billing/subscription",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-30",
+            "path": "/central/login",
+            "label": "Vista: central/login",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-31",
+            "path": "/central/logout",
+            "label": "Vista: central/logout",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-32",
+            "path": "/central/modulos",
+            "label": "Vista: central/modulos",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-33",
+            "path": "/central/planes",
+            "label": "Vista: central/planes",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-34",
+            "path": "/central/tenants",
+            "label": "Vista: central/tenants",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-35",
+            "path": "/login",
+            "label": "Vista: login",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-36",
+            "path": "/operario",
+            "label": "Vista: operario",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-37",
+            "path": "/portal/catalogo",
+            "label": "Vista: portal/catalogo",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-38",
+            "path": "/portal/deudas",
+            "label": "Vista: portal/deudas",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-39",
+            "path": "/portal/historial",
+            "label": "Vista: portal/historial",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-40",
+            "path": "/portal/login",
+            "label": "Vista: portal/login",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-41",
+            "path": "/portal/logout",
+            "label": "Vista: portal/logout",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-42",
+            "path": "/portal/pedido",
+            "label": "Vista: portal/pedido",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-43",
+            "path": "/pos",
+            "label": "Vista: pos",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-44",
+            "path": "/pos/historial",
+            "label": "Vista: pos/historial",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-45",
+            "path": "/pos/saas/pipeline",
+            "label": "Vista: pos/saas/pipeline",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-46",
+            "path": "/pos/saas/tenants",
+            "label": "Vista: pos/saas/tenants",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-47",
+            "path": "/rentas",
+            "label": "Vista: rentas",
+            "expected": "200|301|302",
+            "url_key": "tenant"
+        },
+        {
+            "id": "H-48",
+            "path": "/web/logout",
+            "label": "Vista: web/logout",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-49",
+            "path": "/webhook/wa/config",
+            "label": "Vista: webhook/wa/config",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-50",
+            "path": "/webhook/whatsapp/check-slug",
+            "label": "Vista: webhook/whatsapp/check-slug",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-51",
+            "path": "/webhook/whatsapp/onboarding",
+            "label": "Vista: webhook/whatsapp/onboarding",
+            "expected": "200|301|302",
+            "url_key": "super"
+        },
+        {
+            "id": "H-52",
+            "path": "/webhook/whatsapp/pedido-remoto",
+            "label": "Vista: webhook/whatsapp/pedido-remoto",
+            "expected": "200|301|302",
+            "url_key": "super"
+        }
+    ],
+    "api_sa_checks": [
+        {
+            "id": "SA-1",
+            "path": "/api/central/plan/modulos",
+            "label": "API SA: api/central/plan/modulos",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-2",
+            "path": "/api/central/plan/modulos/{id}",
+            "label": "API SA: api/central/plan/modulos/{id}",
+            "method": "PUT",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "SA-3",
+            "path": "/api/central/plan/modulos/{id}/impacto",
+            "label": "API SA: api/central/plan/modulos/{id}/impacto",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "SA-4",
+            "path": "/api/spider/db-check",
+            "label": "API SA: api/spider/db-check",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-5",
+            "path": "/api/spider/probe",
+            "label": "API SA: api/spider/probe",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-6",
+            "path": "/api/spider/sync",
+            "label": "API SA: api/spider/sync",
+            "method": "POST",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-7",
+            "path": "/api/spider/tests",
+            "label": "API SA: api/spider/tests",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-8",
+            "path": "/central/spider",
+            "label": "API SA: central.spider",
+            "method": "GET",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "SA-9",
+            "path": "/central/spider/token",
+            "label": "API SA: central.spider.token",
+            "method": "POST",
+            "url_key": "super",
+            "expected": 401,
+            "expected_with_auth": 200
+        }
+    ],
+    "api_tenant_checks": [
+        {
+            "id": "T-1",
+            "path": "/api/bot/agenda/disponibilidad",
+            "label": "API Tenant: api/bot/agenda/disponibilidad",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-2",
+            "path": "/api/bot/cliente/{telefono}",
+            "label": "API Tenant: api/bot/cliente/{telefono}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-3",
+            "path": "/api/bot/config",
+            "label": "API Tenant: api/bot/config",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-4",
+            "path": "/api/bot/pedido",
+            "label": "API Tenant: api/bot/pedido",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-5",
+            "path": "/api/bot/pedido/{id}/estado",
+            "label": "API Tenant: api/bot/pedido/{id}/estado",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-6",
+            "path": "/api/bot/precio/{sku}",
+            "label": "API Tenant: api/bot/precio/{sku}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-7",
+            "path": "/api/bot/stock/{sku}",
+            "label": "API Tenant: api/bot/stock/{sku}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-8",
+            "path": "/api/clientes",
+            "label": "API Tenant: api/clientes",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-9",
+            "path": "/api/clientes/1",
+            "label": "API Tenant: api/clientes/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-10",
+            "path": "/api/compras",
+            "label": "API Tenant: api/compras",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-11",
+            "path": "/api/compras/alertas-stock",
+            "label": "API Tenant: api/compras/alertas-stock",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-12",
+            "path": "/api/compras/dashboard",
+            "label": "API Tenant: api/compras/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-13",
+            "path": "/api/compras/{id}",
+            "label": "API Tenant: api/compras/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-14",
+            "path": "/api/config/aplicar-preset/{industria}",
+            "label": "API Tenant: api/config/aplicar-preset/{industria}",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-15",
+            "path": "/api/config/mi-plan",
+            "label": "API Tenant: api/config/mi-plan",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-16",
+            "path": "/api/config/modulos-disponibles",
+            "label": "API Tenant: api/config/modulos-disponibles",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-17",
+            "path": "/api/config/modulos-rubro/{id}/toggle",
+            "label": "API Tenant: api/config/modulos-rubro/{id}/toggle",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-18",
+            "path": "/api/config/modulos/{id}/activar",
+            "label": "API Tenant: api/config/modulos/{id}/activar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-19",
+            "path": "/api/config/modulos/{id}/desactivar",
+            "label": "API Tenant: api/config/modulos/{id}/desactivar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-20",
+            "path": "/api/config/modulos/{id}/preview",
+            "label": "API Tenant: api/config/modulos/{id}/preview",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-21",
+            "path": "/api/config/rubro",
+            "label": "API Tenant: api/config/rubro",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-22",
+            "path": "/api/dashboard",
+            "label": "API Tenant: api/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-23",
+            "path": "/api/delivery/dashboard",
+            "label": "API Tenant: api/delivery/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-24",
+            "path": "/api/delivery/entregas",
+            "label": "API Tenant: api/delivery/entregas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-25",
+            "path": "/api/delivery/entregas/{id}",
+            "label": "API Tenant: api/delivery/entregas/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-26",
+            "path": "/api/delivery/entregas/{id}/asignar",
+            "label": "API Tenant: api/delivery/entregas/{id}/asignar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-27",
+            "path": "/api/delivery/entregas/{id}/estado",
+            "label": "API Tenant: api/delivery/entregas/{id}/estado",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-28",
+            "path": "/api/delivery/repartidores",
+            "label": "API Tenant: api/delivery/repartidores",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-29",
+            "path": "/api/delivery/repartidores/{id}",
+            "label": "API Tenant: api/delivery/repartidores/{id}",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-30",
+            "path": "/api/delivery/zonas",
+            "label": "API Tenant: api/delivery/zonas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-31",
+            "path": "/api/delivery/zonas/{id}",
+            "label": "API Tenant: api/delivery/zonas/{id}",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-32",
+            "path": "/api/empleo/ofertas",
+            "label": "API Tenant: api/empleo/ofertas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-33",
+            "path": "/api/empleo/ofertas/{slug}",
+            "label": "API Tenant: api/empleo/ofertas/{slug}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-34",
+            "path": "/api/empleo/ofertas/{slug}/postular",
+            "label": "API Tenant: api/empleo/ofertas/{slug}/postular",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-35",
+            "path": "/api/internal/clientes/buscar",
+            "label": "API Tenant: api/internal/clientes/buscar",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-36",
+            "path": "/api/internal/productos/stock",
+            "label": "API Tenant: api/internal/productos/stock",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-37",
+            "path": "/api/internal/ventas/remota",
+            "label": "API Tenant: api/internal/ventas/remota",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 401
+        },
+        {
+            "id": "T-38",
+            "path": "/api/login",
+            "label": "API Tenant: api/login",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 422,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-39",
+            "path": "/api/marketing/campanas",
+            "label": "API Tenant: api/marketing/campanas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-40",
+            "path": "/api/marketing/campanas/{id}",
+            "label": "API Tenant: api/marketing/campanas/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-41",
+            "path": "/api/marketing/campanas/{id}/qrs",
+            "label": "API Tenant: api/marketing/campanas/{id}/qrs",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-42",
+            "path": "/api/marketing/dashboard",
+            "label": "API Tenant: api/marketing/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-43",
+            "path": "/api/marketing/escaneos",
+            "label": "API Tenant: api/marketing/escaneos",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-44",
+            "path": "/api/ordenes-compra",
+            "label": "API Tenant: api/ordenes-compra",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-45",
+            "path": "/api/ordenes-compra/{id}",
+            "label": "API Tenant: api/ordenes-compra/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-46",
+            "path": "/api/ordenes-compra/{id}/anular",
+            "label": "API Tenant: api/ordenes-compra/{id}/anular",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-47",
+            "path": "/api/ordenes-compra/{id}/autorizar",
+            "label": "API Tenant: api/ordenes-compra/{id}/autorizar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-48",
+            "path": "/api/ordenes-compra/{id}/enviar",
+            "label": "API Tenant: api/ordenes-compra/{id}/enviar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-49",
+            "path": "/api/ordenes-compra/{id}/recepcion",
+            "label": "API Tenant: api/ordenes-compra/{id}/recepcion",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-50",
+            "path": "/api/producciones",
+            "label": "API Tenant: api/producciones",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-51",
+            "path": "/api/productos",
+            "label": "API Tenant: api/productos",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-52",
+            "path": "/api/productos/buscar",
+            "label": "API Tenant: api/productos/buscar",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-53",
+            "path": "/api/productos/{id}",
+            "label": "API Tenant: api/productos/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-54",
+            "path": "/api/productos/{id}/ajuste-stock",
+            "label": "API Tenant: api/productos/{id}/ajuste-stock",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-55",
+            "path": "/api/proveedores",
+            "label": "API Tenant: api/proveedores",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-56",
+            "path": "/api/proveedores/{id}",
+            "label": "API Tenant: api/proveedores/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-57",
+            "path": "/api/proveedores/{id}/productos",
+            "label": "API Tenant: api/proveedores/{id}/productos",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-58",
+            "path": "/api/recetas",
+            "label": "API Tenant: api/recetas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-59",
+            "path": "/api/recetas-reporte/costos",
+            "label": "API Tenant: api/recetas-reporte/costos",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-60",
+            "path": "/api/recetas/dashboard",
+            "label": "API Tenant: api/recetas/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-61",
+            "path": "/api/recetas/{id}",
+            "label": "API Tenant: api/recetas/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-62",
+            "path": "/api/recetas/{id}/producir",
+            "label": "API Tenant: api/recetas/{id}/producir",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-63",
+            "path": "/api/recetas/{id}/recalcular",
+            "label": "API Tenant: api/recetas/{id}/recalcular",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-64",
+            "path": "/api/recetas/{id}/verificar-stock",
+            "label": "API Tenant: api/recetas/{id}/verificar-stock",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-65",
+            "path": "/api/reclutamiento/dashboard",
+            "label": "API Tenant: api/reclutamiento/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-66",
+            "path": "/api/reclutamiento/ofertas",
+            "label": "API Tenant: api/reclutamiento/ofertas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-67",
+            "path": "/api/reclutamiento/ofertas/{id}",
+            "label": "API Tenant: api/reclutamiento/ofertas/{id}",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-68",
+            "path": "/api/reclutamiento/postulaciones",
+            "label": "API Tenant: api/reclutamiento/postulaciones",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-69",
+            "path": "/api/reclutamiento/postulaciones/{id}",
+            "label": "API Tenant: api/reclutamiento/postulaciones/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-70",
+            "path": "/api/reclutamiento/postulaciones/{id}/entrevista",
+            "label": "API Tenant: api/reclutamiento/postulaciones/{id}/entrevista",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-71",
+            "path": "/api/reclutamiento/postulaciones/{id}/mover",
+            "label": "API Tenant: api/reclutamiento/postulaciones/{id}/mover",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-72",
+            "path": "/api/rentas/panel",
+            "label": "API Tenant: api/rentas/panel",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-73",
+            "path": "/api/rentas/{id}/devolver",
+            "label": "API Tenant: api/rentas/{id}/devolver",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-74",
+            "path": "/api/rentas/{id}/extender",
+            "label": "API Tenant: api/rentas/{id}/extender",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-75",
+            "path": "/api/roles",
+            "label": "API Tenant: api/roles",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-76",
+            "path": "/api/rrhh/asistencia/entrada",
+            "label": "API Tenant: api/rrhh/asistencia/entrada",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-77",
+            "path": "/api/rrhh/asistencia/hoy",
+            "label": "API Tenant: api/rrhh/asistencia/hoy",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-78",
+            "path": "/api/rrhh/asistencia/salida",
+            "label": "API Tenant: api/rrhh/asistencia/salida",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-79",
+            "path": "/api/rrhh/dashboard",
+            "label": "API Tenant: api/rrhh/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-80",
+            "path": "/api/rrhh/empleados",
+            "label": "API Tenant: api/rrhh/empleados",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-81",
+            "path": "/api/rrhh/empleados/{id}",
+            "label": "API Tenant: api/rrhh/empleados/{id}",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-82",
+            "path": "/api/rrhh/liquidaciones",
+            "label": "API Tenant: api/rrhh/liquidaciones",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-83",
+            "path": "/api/rrhh/liquidaciones/generar",
+            "label": "API Tenant: api/rrhh/liquidaciones/generar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-84",
+            "path": "/api/rrhh/liquidaciones/masivo",
+            "label": "API Tenant: api/rrhh/liquidaciones/masivo",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-85",
+            "path": "/api/rrhh/permisos",
+            "label": "API Tenant: api/rrhh/permisos",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-86",
+            "path": "/api/rrhh/permisos/{id}/resolver",
+            "label": "API Tenant: api/rrhh/permisos/{id}/resolver",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-87",
+            "path": "/api/rrhh/vacaciones",
+            "label": "API Tenant: api/rrhh/vacaciones",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-88",
+            "path": "/api/rrhh/vacaciones/{id}/resolver",
+            "label": "API Tenant: api/rrhh/vacaciones/{id}/resolver",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-89",
+            "path": "/api/saas/clientes",
+            "label": "API Tenant: clientes.index",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-90",
+            "path": "/api/saas/clientes/{cliente}",
+            "label": "API Tenant: clientes.show",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-91",
+            "path": "/api/saas/cobros",
+            "label": "API Tenant: api/saas/cobros",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-92",
+            "path": "/api/saas/cobros/generar-mes",
+            "label": "API Tenant: api/saas/cobros/generar-mes",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-93",
+            "path": "/api/saas/cobros/vencimientos",
+            "label": "API Tenant: api/saas/cobros/vencimientos",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-94",
+            "path": "/api/saas/cobros/{id}/pago",
+            "label": "API Tenant: api/saas/cobros/{id}/pago",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-95",
+            "path": "/api/saas/dashboard",
+            "label": "API Tenant: api/saas/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-96",
+            "path": "/api/saas/generar-snapshot",
+            "label": "API Tenant: api/saas/generar-snapshot",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-97",
+            "path": "/api/saas/pipeline",
+            "label": "API Tenant: api/saas/pipeline",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-98",
+            "path": "/api/saas/pipeline/{id}/actividad",
+            "label": "API Tenant: api/saas/pipeline/{id}/actividad",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-99",
+            "path": "/api/saas/pipeline/{id}/demo",
+            "label": "API Tenant: api/saas/pipeline/{id}/demo",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-100",
+            "path": "/api/saas/pipeline/{id}/etapa",
+            "label": "API Tenant: api/saas/pipeline/{id}/etapa",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-101",
+            "path": "/api/sii/config",
+            "label": "API Tenant: api/sii/config",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-102",
+            "path": "/api/sii/consultar-estado/{dteId}",
+            "label": "API Tenant: api/sii/consultar-estado/{dteId}",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-103",
+            "path": "/api/sii/dashboard",
+            "label": "API Tenant: api/sii/dashboard",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-104",
+            "path": "/api/sii/dtes",
+            "label": "API Tenant: api/sii/dtes",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-105",
+            "path": "/api/sii/dtes/{id}",
+            "label": "API Tenant: api/sii/dtes/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-106",
+            "path": "/api/sii/emitir/{ventaId}",
+            "label": "API Tenant: api/sii/emitir/{ventaId}",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-107",
+            "path": "/api/sii/libro-ventas",
+            "label": "API Tenant: api/sii/libro-ventas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-108",
+            "path": "/api/sii/nota-credito/{dteId}",
+            "label": "API Tenant: api/sii/nota-credito/{dteId}",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-109",
+            "path": "/api/user",
+            "label": "API Tenant: api/user",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-110",
+            "path": "/api/user/tokens",
+            "label": "API Tenant: api/user/tokens",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-111",
+            "path": "/api/user/tokens/{id}",
+            "label": "API Tenant: api/user/tokens/{id}",
+            "method": "DELETE",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-112",
+            "path": "/api/usuarios",
+            "label": "API Tenant: api/usuarios",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-113",
+            "path": "/api/usuarios/{id}",
+            "label": "API Tenant: api/usuarios/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-114",
+            "path": "/api/v1/public/clientes",
+            "label": "API Tenant: api/v1/public/clientes",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-115",
+            "path": "/api/v1/public/productos",
+            "label": "API Tenant: api/v1/public/productos",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-116",
+            "path": "/api/v1/public/stock/{sku}",
+            "label": "API Tenant: api/v1/public/stock/{sku}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-117",
+            "path": "/api/v1/public/ventas",
+            "label": "API Tenant: api/v1/public/ventas",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-118",
+            "path": "/api/ventas",
+            "label": "API Tenant: api/ventas",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-119",
+            "path": "/api/ventas/por-cliente",
+            "label": "API Tenant: api/ventas/por-cliente",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": 200
+        },
+        {
+            "id": "T-120",
+            "path": "/api/ventas/{id}",
+            "label": "API Tenant: api/ventas/{id}",
+            "method": "GET",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-121",
+            "path": "/api/ventas/{id}/anular",
+            "label": "API Tenant: api/ventas/{id}/anular",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-122",
+            "path": "/api/ventas/{id}/confirmar",
+            "label": "API Tenant: api/ventas/{id}/confirmar",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-123",
+            "path": "/api/ventas/{id}/estado",
+            "label": "API Tenant: api/ventas/{id}/estado",
+            "method": "PUT",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-124",
+            "path": "/api/ventas/{id}/items",
+            "label": "API Tenant: api/ventas/{id}/items",
+            "method": "POST",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        },
+        {
+            "id": "T-125",
+            "path": "/api/ventas/{ventaId}/items/{itemId}",
+            "label": "API Tenant: api/ventas/{ventaId}/items/{itemId}",
+            "method": "DELETE",
+            "url_key": "tenant",
+            "expected": 401,
+            "expected_with_auth": null
+        }
+    ],
+    "auth_checks": [],
+    "db_checks": [],
+    "ui_checks": []
+}

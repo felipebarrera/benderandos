@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Promoción QR</title>
+<style>
+:root {
+  --bg: #0b0e14; --s1: #11151c; --s2: #1a1f28; --b1: #252b36; --t1: #eee; --t2: #94a3b8;
+  --ac: #00e5a0; --warn: #f5c518; --err: #ff3f5b; --r: 15px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--t1); font-family: 'Inter', sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
+.card { background:var(--s1); border:1px solid var(--b1); border-radius:var(--r); padding:30px; width:100%; max-width:400px; text-align:center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+h1 { font-size: 1.8rem; margin-bottom: 10px; }
+.desc { color:var(--t2); font-size:14px; margin-bottom:25px; }
+.promo-box { background:var(--s2); border:2px dashed var(--ac); border-radius:12px; padding:20px; margin-bottom:25px; }
+.code { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--ac); letter-spacing: 2px; }
+.btn { display:block; width:100%; padding:15px; background:var(--ac); color:#000; text-decoration:none; border-radius:10px; font-weight:700; margin-top:10px; border:none; cursor:pointer; font-size:16px; transition:0.2s; }
+.btn:hover { opacity:0.9; transform:scale(1.02); }
+.btn-wa { background:#25d366; color:#fff; }
+.loading { font-size:12px; color:var(--t2); }
+</style>
+</head>
+<body>
+
+<div class="card" id="mainCard">
+  <div id="loader">
+    <div class="loading">Validando código QR...</div>
+  </div>
+  
+  <div id="content" style="display:none">
+    <h1 id="title">¡Promoción Activada!</h1>
+    <p class="desc" id="subtitle">Has obtenido un beneficio exclusivo por escanear nuestro código.</p>
+    
+    <div class="promo-box" id="promoBox">
+      <div class="code" id="promoCode">CÓDIGO</div>
+    </div>
+    
+    <p class="desc" id="instructions">Muestra este código en caja para aplicar tu descuento.</p>
+    
+    <a href="#" id="actionBtn" class="btn">Continuar</a>
+  </div>
+
+  <div id="error" style="display:none">
+    <h1 style="color:var(--err)">Enlace Inválido</h1>
+    <p class="desc">Este código QR no existe o la campaña ha finalizado.</p>
+    <a href="/" class="btn" style="background:var(--b1);color:var(--t2)">Volver al inicio</a>
+  </div>
+</div>
+
+<script>
+async function processScan() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const uuid = window.location.pathname.split('/').pop();
+  
+  try {
+    const res = await fetch(`/api/public/qr/${uuid}`);
+    if (!res.ok) throw new Error("QR no válido");
+    
+    const campana = await res.json();
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    
+    document.getElementById('title').textContent = campana.nombre;
+    
+    const promoBox = document.getElementById('promoBox');
+    const promoCode = document.getElementById('promoCode');
+    const actionBtn = document.getElementById('actionBtn');
+    
+    if (campana.tipo_accion.includes('descuento') || campana.tipo_accion === 'dos_por_uno') {
+      promoCode.textContent = campana.codigo_pos;
+    } else {
+      promoBox.style.display = 'none';
+      document.getElementById('instructions').style.display = 'none';
+    }
+    
+    if (campana.tipo_accion === 'abrir_whatsapp') {
+      actionBtn.textContent = "Chatear con nosotros";
+      actionBtn.classList.add('btn-wa');
+      actionBtn.href = `https://wa.me/${campana.mensaje_whatsapp}`; // Asumiendo que el campo guarda el número en este caso o mensaje
+    } else if (campana.tipo_accion === 'link_externo') {
+      actionBtn.href = campana.link_destino;
+      actionBtn.textContent = "Ver oferta";
+    } else {
+      actionBtn.style.display = 'none';
+    }
+    
+  } catch (e) {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('error').style.display = 'block';
+  }
+}
+
+processScan();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Acceso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #080808;
+    --surface:  #101010;
+    --card:     #161616;
+    --border:   #222;
+    --border2:  #2e2e2e;
+    --tx:       #e8e8e8;
+    --tx-muted: #666;
+    --tx-dim:   #3a3a3a;
+    --accent:   #00e5a0;
+    --accent-d: #00b87c;
+    --danger:   #ff4455;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: var(--sans);
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: .35;
+    pointer-events: none;
+  }
+
+  /* Corner marks */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 50%, transparent 40%, var(--bg) 100%);
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .brand {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--tx-muted);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .4; transform: scale(.7); }
+  }
+
+  .card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    padding: 36px 32px 32px;
+    position: relative;
+  }
+
+  /* Corner accents */
+  .card::before, .card::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+  }
+  .card::before {
+    top: -1px; left: -1px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+  .card::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tx);
+    margin-bottom: 4px;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--tx-muted);
+    margin-bottom: 32px;
+    font-family: var(--mono);
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--tx-muted);
+    margin-bottom: 8px;
+  }
+
+  input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--tx);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color .15s;
+    -webkit-appearance: none;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder { color: var(--tx-dim); }
+
+  .error-msg {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 6px;
+    display: none;
+  }
+
+  .btn-login {
+    width: 100%;
+    margin-top: 24px;
+    background: var(--accent);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    border: none;
+    padding: 14px;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-login:hover  { background: var(--accent-d); }
+  .btn-login:active { transform: scale(.99); }
+
+  .btn-login.loading::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.15) 50%, transparent 100%);
+    animation: shimmer .8s infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .roles-hint {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .roles-hint-title {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .2em;
+    color: var(--tx-dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .role-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+
+  .chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    border: 1px solid var(--border2);
+    color: var(--tx-muted);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .version {
+    position: fixed;
+    bottom: 16px; right: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    BenderAnd POS
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acceso</div>
+    <div class="card-sub">Sistema de punto de venta</div>
+
+    <div class="field">
+      <label>Usuario</label>
+      <input type="text" id="username" placeholder="usuario" autocomplete="username" autofocus>
+    </div>
+
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      <div class="error-msg" id="err">Usuario o contraseña incorrectos</div>
+    </div>
+
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar →</button>
+
+    <div class="roles-hint">
+      <div class="roles-hint-title">Acceso rápido demo</div>
+      <div class="role-chips">
+        <span class="chip" onclick="fillDemo('admin','admin123')">admin</span>
+        <span class="chip" onclick="fillDemo('cajero','cajero123')">cajero</span>
+        <span class="chip" onclick="fillDemo('operario','oper123')">operario</span>
+        <span class="chip" onclick="fillDemo('cliente','cli123')">cliente</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="version">v2.0 · dev</div>
+
+<script>
+function fillDemo(u, p) {
+  document.getElementById('username').value = u;
+  document.getElementById('password').value = p;
+  document.getElementById('password').focus();
+}
+
+function doLogin() {
+  const btn = document.getElementById('btnLogin');
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  btn.classList.add('loading');
+  btn.textContent = 'Verificando...';
+
+  // Simulate API call — replace with fetch('/api/auth/login')
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    const u = document.getElementById('username').value;
+    const roleMap = { admin: '/admin', cajero: '/pos', operario: '/pos', cliente: '/cliente' };
+    if (roleMap[u]) {
+      btn.textContent = 'OK ✓';
+      btn.style.background = '#00e5a0';
+      // window.location = roleMap[u];
+    } else {
+      err.style.display = 'block';
+      btn.textContent = 'Ingresar →';
+    }
+  }, 900);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

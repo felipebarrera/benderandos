@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Central\WhatsAppWebhookController;
+use App\Http\Controllers\Central\CentralAuthController;
+use App\Http\Controllers\Central\MetricsController;
+use App\Http\Controllers\Central\TenantManageController;
+use App\Http\Controllers\Central\BillingController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Endpoint central de Webhook que el bot llama para dar de alta clientes
+Route::post('/webhook/whatsapp/onboarding', [WhatsAppWebhookController::class, 'onboarding']);
+
+// --- REDIRECTS OLD SUPERADMIN ---
+Route::redirect('/superadmin', '/central');
+Route::redirect('/superadmin/spider', '/central/spider');
+
+// --- PANEL CENTRAL (MIGRADO SUPERADMIN) ---
+Route::group(['prefix' => 'central', 'as' => 'central.'], function () {
+    Route::get('/login', [CentralAuthController::class, 'showLogin'])->name('login_page');
+    Route::post('/login', [CentralAuthController::class, 'loginWeb'])->name('login.post');
+    Route::post('/logout', [CentralAuthController::class, 'logoutWeb'])->name('logout');
+
+    Route::middleware(['auth:super_admin'])->group(function () {
+        Route::get('/', [MetricsController::class, 'dashboard'])->name('dashboard');
+
+        Route::get('/tenants', [TenantManageController::class, 'indexWeb'])->name('tenants.index');
+        Route::get('/tenants/{tenant}/usuarios', [TenantManageController::class, 'usuarios'])->name('tenants.usuarios');
+        Route::put('/tenants/{tenant}/suspender', [TenantManageController::class, 'suspenderWeb'])->name('tenants.suspender');
+        Route::put('/tenants/{tenant}/reactivar', [TenantManageController::class, 'reactivarWeb'])->name('tenants.reactivar');
+        Route::post('/tenants/{tenant}/impersonar', [TenantManageController::class, 'impersonar'])->name('tenants.impersonar');
+
+        Route::get('/billing', [BillingController::class, 'indexWeb'])->name('billing.index');
+
+        Route::get('/spider', [\App\Http\Controllers\SpiderController::class, 'index'])->name('spider');
+
+        Route::post('/spider/token', [\App\Http\Controllers\SpiderController::class, 'generateToken'])->name('spider.token');
+    });
+});
+
+// Alias for Laravel's default 'login' route
+Route::get('/login', [CentralAuthController::class, 'showLogin'])->name('login');
