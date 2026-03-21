@@ -101,4 +101,28 @@ class ConfigRubroController extends Controller
             'config'  => $activo
         ]);
     }
+    /**
+     * Actualizar la configuración del portal público
+     */
+    public function updatePortal(Request $request): JsonResponse
+    {
+        $config = RubroConfig::firstOrFail();
+        
+        $config->update($request->only([
+            'portal_activo',
+            'portal_descripcion',
+            'portal_horario',
+            'portal_telefono',
+            'portal_direccion',
+            'portal_logo_url',
+            'portal_color_primario',
+            'portal_telegram_url',
+            'portal_whatsapp_numero',
+        ]));
+
+        return response()->json([
+            'message' => 'Configuración del portal actualizada con éxito',
+            'config'  => $config
+        ]);
+    }
 }

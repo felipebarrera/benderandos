@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Producto;
 use App\Models\Tenant\Usuario;
+use App\Models\Tenant\RubroConfig;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -98,7 +99,8 @@ class WebPanelController extends Controller
     public function config(): \Illuminate\View\View
     {
         $tenant = tenancy()->tenant;
-        return view('tenant.admin.config', compact('tenant'));
+        $config = RubroConfig::first();
+        return view('tenant.admin.config', compact('tenant', 'config'));
     }
 
     /* ── POS Views ─────────────────────────────────────────── */

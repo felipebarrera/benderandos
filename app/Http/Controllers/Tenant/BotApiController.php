@@ -135,4 +135,21 @@ class BotApiController extends Controller
             'total'  => $venta->total
         ]);
     }
+
+    /**
+     * Retorna datos del portal público para context del bot.
+     */
+    public function portalData()
+    {
+        $config = \App\Models\Tenant\RubroConfig::first();
+        return response()->json([
+            'nombre'      => tenant()->nombre,
+            'descripcion' => $config->portal_descripcion,
+            'horario'     => $config->portal_horario,
+            'telefono'    => $config->portal_telefono,
+            'direccion'   => $config->portal_direccion,
+            'whatsapp'    => $config->portal_whatsapp_numero,
+            'telegram'    => $config->portal_telegram_url,
+        ]);
+    }
 }

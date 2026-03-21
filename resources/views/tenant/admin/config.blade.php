@@ -51,6 +51,73 @@
                 </div>
             </div>
 
+            {{-- Configuración del Portal Público --}}
+            <div class="card">
+                <h3 style="margin-bottom:12px; font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                    Portal Público
+                </h3>
+                <p style="color:var(--t2); font-size:13px; margin-bottom:16px;">Configura la apariencia y datos de contacto de tu página web pública.</p>
+                
+                <form id="portalForm" onsubmit="event.preventDefault(); guardarPortal()">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="field">
+                            <label class="label">¿Portal Activo?</label>
+                            <select name="portal_activo">
+                                <option value="1" {{ $config->portal_activo ? 'selected' : '' }}>Sí, visible</option>
+                                <option value="0" {{ !$config->portal_activo ? 'selected' : '' }}>No, desactivado</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label class="label">Color Primario</label>
+                            <input type="color" name="portal_color_primario" value="{{ $config->portal_color_primario ?? '#00e5a0' }}" style="height:38px; padding:2px;">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Descripción del Negocio</label>
+                        <textarea name="portal_descripcion" rows="3" placeholder="Somos la mejor opción en..." style="width:100%; border:1px solid var(--b2); border-radius:8px; padding:10px; background:var(--s2); color:var(--t1);">{{ $config->portal_descripcion }}</textarea>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="field">
+                            <label class="label">WhatsApp (Número)</label>
+                            <input type="text" name="portal_whatsapp_numero" value="{{ $config->portal_whatsapp_numero }}" placeholder="+56912345678">
+                        </div>
+                        <div class="field">
+                            <label class="label">Telegram (URL Bot)</label>
+                            <input type="text" name="portal_telegram_url" value="{{ $config->portal_telegram_url }}" placeholder="https://t.me/TuBot">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="field">
+                            <label class="label">Teléfono de Contacto</label>
+                            <input type="text" name="portal_telefono" value="{{ $config->portal_telefono }}" placeholder="+56 2 2345 6789">
+                        </div>
+                        <div class="field">
+                            <label class="label">Horario de Atención</label>
+                            <input type="text" name="portal_horario" value="{{ $config->portal_horario }}" placeholder="Lun-Vie 09:00 - 18:00">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Dirección Física</label>
+                        <input type="text" name="portal_direccion" value="{{ $config->portal_direccion }}" placeholder="Av. Principal 123, Ciudad">
+                    </div>
+
+                    <div class="field">
+                        <label class="label">URL del Logo</label>
+                        <input type="text" name="portal_logo_url" value="{{ $config->portal_logo_url }}" placeholder="https://tusitio.com/logo.png">
+                    </div>
+
+                    <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+                        <a href="{{ route('public.portal.index') }}" target="_blank" style="font-size:12px; color:var(--ac); text-decoration:underline;">Ver mi portal público ↗</a>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios del Portal</button>
+                    </div>
+                </form>
+
+
             {{-- Gestor de Módulos Atómicos (Billing H19) --}}
             <div class="card" id="planBillingContainer">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -249,6 +316,20 @@
             setTimeout(() => location.reload(), 800);
         } catch (e) {
             toast(e.message || 'Error al guardar etiquetas', 'err');
+        }
+    }
+
+    async function guardarPortal() {
+        const form = document.getElementById('portalForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        try {
+            const res = await api('PUT', '/api/config/portal', data);
+            toast(res.message);
+            // No recargamos para no perder el scroll, pero actualizamos el enlace si cambió algo
+        } catch (e) {
+            toast(e.message || 'Error al guardar configuración del portal', 'err');
         }
     }
 

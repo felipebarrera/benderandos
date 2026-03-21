@@ -8,9 +8,14 @@ use App\Http\Controllers\Central\MetricsController;
 use App\Http\Controllers\Central\TenantManageController;
 use App\Http\Controllers\Central\BillingController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['domain' => '{domain}', 'where' => ['domain' => 'localhost|127.0.0.1|benderand.cl|www.benderand.cl']], function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
 });
+
+
+
 
 // Endpoint central de Webhook que el bot llama para dar de alta clientes
 Route::post('/webhook/whatsapp/onboarding', [WhatsAppWebhookController::class, 'onboarding']);

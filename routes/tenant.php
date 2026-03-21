@@ -18,7 +18,10 @@ use App\Http\Controllers\Tenant\WebPanelController;
 use App\Http\Controllers\Tenant\PagoController;
 use App\Http\Controllers\Tenant\ConfigRubroController;
 use App\Http\Controllers\Tenant\ConfigBotController;
+
+
 use App\Http\Controllers\Tenant\InternalBotController;
+
 use App\Http\Controllers\Tenant\BotApiController;
 use App\Http\Controllers\Tenant\SiiController;
 use App\Http\Controllers\Tenant\OrdenCompraController;
@@ -59,6 +62,14 @@ Route::middleware([
     Route::redirect('/admin/login', '/auth/login/web', 301);
     Route::redirect('/login', '/auth/login/web', 301);
     Route::get('/auth/login/web', [WebPanelController::class, 'showLogin'])->name('tenant.login.web');
+
+    
+    // --- PORTAL PÚBLICO (Sin Auth) ---
+    Route::get('/', [PortalPublicoController::class, 'index'])->name('public.portal.index');
+    Route::get('/catalogo', [PortalPublicoController::class, 'catalogo'])->name('public.portal.catalogo');
+    Route::get('/producto/{id}', [PortalPublicoController::class, 'producto'])->name('public.portal.producto');
+    Route::get('/pedido/whatsapp', [PortalPublicoController::class, 'pedirPorWhatsapp'])->name('public.portal.pedido.whatsapp');
+
     Route::post('/auth/login/web', [WebPanelController::class, 'postLogin'])->name('tenant.login.web.post');
     Route::post('/web/logout',   [WebPanelController::class, 'logout'])->name('web.logout');
 
@@ -113,7 +124,9 @@ Route::middleware([
 
     // --- H8: JWT BRIDGE FOR WHATSAPP BOT (Node.js) ---
     Route::group(['prefix' => 'api/bot', 'middleware' => 'jwt.bridge'], function () {
+        Route::get('/portal-data',            [BotApiController::class, 'portalData']);
         Route::get('/stock/{sku}',            [BotApiController::class, 'stock']);
+
         Route::get('/precio/{sku}',           [BotApiController::class, 'precio']);
         Route::get('/cliente/{telefono}',     [BotApiController::class, 'cliente']);
         Route::get('/agenda/disponibilidad',  [BotApiController::class, 'disponibilidad']);
@@ -348,6 +361,10 @@ Route::middleware([
                 Route::put('/rubro', [ConfigRubroController::class, 'update']);
                 Route::post('/modulos-rubro/{id}/toggle', [ConfigRubroController::class, 'toggleModulo']);
                 Route::post('/aplicar-preset/{industria}', [ConfigRubroController::class, 'aplicarPreset']);
+                
+                // Portal Público
+                Route::put('/portal', [ConfigRubroController::class, 'updatePortal']);
+
                 
                 // Activar/Desactivar Módulos con costo
                 Route::get('/modulos/{id}/preview', [\App\Http\Controllers\Tenant\Api\MiPlanController::class, 'preview']);
