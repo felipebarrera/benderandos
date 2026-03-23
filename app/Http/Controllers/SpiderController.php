@@ -14,6 +14,10 @@ class SpiderController extends Controller
         return view('central.spider');
     }
 
+    /**
+     * @deprecated Spider v4 — browser-side fetch replaces server-side probe.
+     * Kept for backward compatibility but no longer called from spider.blade.php.
+     */
     public function probe(Request $request)
     {
         $url = $request->query('url');

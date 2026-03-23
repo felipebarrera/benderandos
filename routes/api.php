@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Spider QA endpoints (H24) — use auth:sanctum for proper Bearer token protection
 Route::middleware('auth:sanctum')->prefix('spider')->group(function () {
-    Route::get('/probe',    [\App\Http\Controllers\SpiderController::class, 'probe']);
+    // Route::get('/probe', ...); // @deprecated Spider v4 — browser-side fetch replaces server-side probe
     Route::get('/db-check', [\App\Http\Controllers\SpiderController::class, 'dbCheck']);
     Route::post('/sync',    [\App\Http\Controllers\SpiderController::class, 'syncTests']);
     Route::get('/tests',    [\App\Http\Controllers\SpiderController::class, 'getTests']);

@@ -8,11 +8,8 @@ use App\Http\Controllers\Central\MetricsController;
 use App\Http\Controllers\Central\TenantManageController;
 use App\Http\Controllers\Central\BillingController;
 
-Route::group(['domain' => '{domain}', 'where' => ['domain' => 'localhost|127.0.0.1|benderand.cl|www.benderand.cl']], function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
-});
+// Root route — redirect to central login
+Route::get('/', fn() => redirect('/central/login'));
 
 
 

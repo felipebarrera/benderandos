@@ -1,7 +1,7 @@
 @extends('layouts.central')
 
 @section('title', 'Spider QA')
-@section('page-title', 'Spider QA v3 — Auto-sync')
+@section('page-title', 'Spider QA v4 — Browser-side')
 
 @push('styles')
 <style>
@@ -105,7 +105,7 @@
 
 @section('content')
 <div class="page-hdr">
-    <div class="page-title">Spider QA v3 — Auto-sync</div>
+    <div class="page-title">Spider QA v4 — Browser-side</div>
     <div class="tb-badge">H22 · H23</div>
 </div>
 
@@ -160,7 +160,7 @@
   </div>
 
   <div class="pane on" id="pane-r">
-    <div class="empty" id="er"><div class="ei">◈</div><div class="et">Spider v3 en espera</div>
+    <div class="empty" id="er"><div class="ei">◈</div><div class="et">Spider v4 en espera</div>
       <div>Haz clic en "Sync desde Laravel" para cargar los tests, luego ejecuta el spider</div></div>
     <div class="spider-fr" id="fr" style="display:none">
       <button class="spider-fb on" onclick="filt(this,'all')">Todo</button>
@@ -364,18 +364,26 @@ async function saveTests(){
   }catch(e){ log('JSON inválido: '+e.message,'err') }
 }
 
-// ── PROBE via backend ─────────────────────────────────────────────────────────
-async function probe(url,expected){
-  const SU=cfg('u-super')
+// ── BROWSER-SIDE FETCH (Spider v4) ────────────────────────────────────────────
+// Direct fetch from browser — no server-side probe needed.
+// The browser resolves DNS exactly like the end user would.
+async function checkUrl(url){
   try{
-    const r=await fetch(SU+'/api/spider/probe?url='+encodeURIComponent(url),{
-      headers:{
-        'Authorization':'Bearer '+S.saT,
-        'Accept':'application/json'
-      }
-    })
-    return await r.json()
-  }catch(e){return{code:null,err:e.message}}
+    const ctrl=new AbortController()
+    const tm=setTimeout(()=>ctrl.abort(),4000)
+    const r=await fetch(url,{method:'GET',redirect:'follow',signal:ctrl.signal})
+    clearTimeout(tm)
+    return r.status
+  }catch(e){ return 0 }
+}
+async function checkUrlAuth(url,token){
+  try{
+    const ctrl=new AbortController()
+    const tm=setTimeout(()=>ctrl.abort(),4000)
+    const r=await fetch(url,{headers:{'Authorization':'Bearer '+token,'Accept':'application/json'},signal:ctrl.signal})
+    clearTimeout(tm)
+    return r.status
+  }catch(e){ return 0 }
 }
 
 async function apiPost(url,payload){
@@ -396,13 +404,13 @@ function codeMatch(actual,expected){
   return String(expected).split('|').some(e=>String(actual)===e)
 }
 
-// ── FASES HARDCODED ─────────────────────────────────────────────────────────
+// ── FASES ────────────────────────────────────────────────────────────────────
 async function phaseAuth(){
   if(!chk('c-auth')) return
   log('── AUTH ──','inf'); setP('Autenticación...',5)
   const SU=cfg('u-super'), TU=cfg('u-tenant')
 
-  // SA: obtener token desde sesión Laravel (sin enviar password) para evitar prompts
+  // SA: obtener token desde sesión Laravel (sin enviar password)
   if(!S.saT){
     try{
       const r = await fetch('{{ route('central.spider.token') }}', {
@@ -466,12 +474,14 @@ async function phaseDB(){
   addR('warn','DB: /api/spider/db-check no disponible','Instalar SpiderController','','','db')
 }
 
+// ── JSON TESTS — browser-side with batched parallelism ───────────────────────
 async function phaseJsonTests(){
   if(!chk('c-json')) return
   if(!S.tests){ addR('warn','Tests JSON: no cargados','Haz Sync primero','','','json'); return }
-  log('── JSON TESTS ──','inf'); setP('Tests del JSON...',70)
+  log('── JSON TESTS (browser-side v4) ──','inf'); setP('Tests del JSON...',70)
   const SU=cfg('u-super'), TU=cfg('u-tenant')
   const urlMap={super:SU, tenant:TU}
+  const BATCH=10
 
   const sections=['http_checks','api_sa_checks','api_tenant_checks','ui_checks']
   let total=0, done=0
@@ -482,19 +492,21 @@ async function phaseJsonTests(){
 
   for(const sec of sections){
     const tests=(S.tests[sec]||[]).filter(t=>t.activo!==false)
-    for(const t of tests){
-      if(S.stop) return
-      done++
-      const label    = t.label    || t.desc   || t.id
-      const expected = t.expected || t.expect || '200'
-      const baseUrl  = urlMap[t.url_key||'super']||SU
-      const url      = baseUrl+(t.path||'')
+    const isApiAuth = sec==='api_sa_checks'||sec==='api_tenant_checks'
 
-      const isApiAuth = sec==='api_sa_checks'||sec==='api_tenant_checks'
-      const token = sec==='api_sa_checks' ? S.saT : sec==='api_tenant_checks' ? S.tT : null
+    if(isApiAuth){
+      // API auth checks — sequential (need per-check token logic)
+      for(const t of tests){
+        if(S.stop) return
+        done++
+        const label    = t.label    || t.desc   || t.id
+        const expected = t.expected || t.expect || '200'
+        const baseUrl  = urlMap[t.url_key||'super']||SU
+        const url      = baseUrl+(t.path||'')
+        const token    = sec==='api_sa_checks' ? S.saT : S.tT
+        const method   = t.method || 'GET'
 
-      if(isApiAuth){
-        const method = t.method || 'GET'
+        // Without auth
         const r=await apiFetch(url, null, method)
         const expNoAuth=expected||401
         if(codeMatch(r.code, String(expNoAuth)))
@@ -504,6 +516,7 @@ async function phaseJsonTests(){
           addBug(t.tipo||'E-HTTP',t.capa||'api',t.prio||'medio',label+' sin token protección',
             'HTTP '+r.code+' esperado '+expNoAuth,t.fix||'',url)
         }
+        // With auth
         if(token && t.expected_with_auth){
           await sleep(50)
           const r2=await apiFetch(url, token, method)
@@ -512,35 +525,55 @@ async function phaseJsonTests(){
           else{
             addR('fail','['+t.id+'] '+label+' con token','HTTP '+r2.code+' (esp '+t.expected_with_auth+')',url,t.fix||'',sec)
             addBug(t.tipo||'E-HTTP',t.capa||'api',t.prio||'medio',label+' con token falla',
-              'HTTP '+r2.code+' esperado 200',t.fix||'',url)
+              'HTTP '+r2.code+' esperado '+t.expected_with_auth,t.fix||'',url)
           }
         }
-      }else{
-        const p=await probe(url, expected||'200')
-        if(p.code===null){
-          addR('warn','['+t.id+'] '+label,'Proxy no disponible: '+p.err,url,'',sec)
-        }else if(codeMatch(p.code, String(expected||'200'))){
-          addR('pass','['+t.id+'] '+label+' HTTP '+p.code+(p.via?' via '+p.via:''),url,'',sec)
-        }else{
-          addR('fail','['+t.id+'] '+label+' HTTP '+p.code+' (esp '+expected+')',url,t.fix||'',sec)
-          addBug(t.tipo||'E-HTTP',t.capa||'ui',t.prio||'bajo',label,
-            'HTTP '+p.code+' esperado '+expected,t.fix||'',url)
-        }
+        setP('Tests del JSON...',70+Math.round(done/total*25))
+        await sleep(30)
       }
-      await sleep(80)
+    }else{
+      // HTTP/UI checks — batched parallel via browser fetch (Spider v4)
+      for(let i=0;i<tests.length;i+=BATCH){
+        if(S.stop) return
+        const batch=tests.slice(i,i+BATCH)
+        const results=await Promise.all(batch.map(async t=>{
+          const label    = t.label    || t.desc   || t.id
+          const expected = t.expected || t.expect || '200'
+          const baseUrl  = urlMap[t.url_key||'super']||SU
+          const url      = baseUrl+(t.path||'')
+          const code     = await checkUrl(url)
+          return {t,label,expected,url,code}
+        }))
+        for(const {t,label,expected,url,code} of results){
+          done++
+          if(code===0){
+            addR('fail','['+t.id+'] '+label,'HTTP 0 — no alcanzable',url,t.fix||'Verificar DNS/hosts',sec)
+            addBug(t.tipo||'E-HTTP',t.capa||'ui',t.prio||'bajo',label,
+              'HTTP 0 — no alcanzable',t.fix||'Verificar DNS/hosts',url)
+          }else if(codeMatch(code, String(expected))){
+            addR('pass','['+t.id+'] '+label,'HTTP '+code,url,'',sec)
+          }else{
+            addR('fail','['+t.id+'] '+label,'HTTP '+code+' (esp '+expected+')',url,t.fix||'',sec)
+            addBug(t.tipo||'E-HTTP',t.capa||'ui',t.prio||'bajo',label,
+              'HTTP '+code+' esperado '+expected,t.fix||'',url)
+          }
+        }
+        setP('Tests del JSON...',70+Math.round(done/total*25))
+      }
     }
   }
 }
 
 async function phaseTenant(){
   if(!chk('c-tenant')) return
-  log('── TENANT ──','inf'); setP('Setup tenant...', 95)
+  log('── TENANT (browser-side v4) ──','inf'); setP('Setup tenant...', 95)
   const TU=cfg('u-tenant')
-  const p=await probe(TU+'/login',200)
-  if(p.code===null) addR('warn','Tenant /login — proxy no disponible',p.err||'',TU+'/login','bash tests/diagnose_tenant.sh')
-  else if(p.code===200) addR('pass','Tenant /login carga','HTTP '+p.code,TU+'/login','','tenant')
-  else{ addR('fail','Tenant /login no carga','HTTP '+p.code,TU+'/login','echo "127.0.0.1 demo.localhost" | sudo tee -a /etc/hosts','tenant')
-    addBug('E-CONFIG','config','critico','Tenant URL no alcanzable','HTTP '+p.code,'echo "127.0.0.1 demo.localhost" | sudo tee -a /etc/hosts',TU) }
+  const code=await checkUrl(TU+'/login')
+  if(code===200||code===302) addR('pass','Tenant /login carga','HTTP '+code,TU+'/login','','tenant')
+  else if(code===0){ addR('fail','Tenant /login no alcanzable','HTTP 0 — DNS o red',TU+'/login','echo "127.0.0.1 demo.localhost" | sudo tee -a /etc/hosts','tenant')
+    addBug('E-CONFIG','config','critico','Tenant URL no alcanzable','HTTP 0','echo "127.0.0.1 demo.localhost" | sudo tee -a /etc/hosts',TU) }
+  else{ addR('fail','Tenant /login error','HTTP '+code,TU+'/login','Verificar rutas de tenant','tenant')
+    addBug('E-CONFIG','config','critico','Tenant login HTTP '+code,'Esperado 200 o 302','Verificar rutas',TU) }
 }
 
 async function phaseUI(){
@@ -564,7 +597,7 @@ function genMd(){
   const total=S.pass+S.fail+S.warn, pct=total>0?Math.round(S.pass*100/total):0
   const meta=S.tests?._meta||{}
 
-  let md=`# BenderAnd Spider QA v3 — Reporte
+  let md=`# BenderAnd Spider QA v4 — Reporte
 **Generado:** ${d} ${t}
 **SuperAdmin:** ${SU} | **Tenant:** ${TU}
 **Tests JSON:** ${meta.total_tests||'no cargado'} tests · última sync: ${meta.last_sync||'—'}
@@ -628,7 +661,7 @@ async function startCrawl(){
   g('mds').style.display='none'; g('emd').style.display=''; g('fr').style.display='none'
   updK(); g('btn-run').disabled=true; g('btn-stop').style.display='flex'
   g('btn-exp').style.display='none'; g('pw').style.display='block'; g('pf').style.background='var(--ac)'
-  log('Spider v3 iniciado','inf'); st('r')
+  log('Spider v4 iniciado (browser-side)','inf'); st('r')
   try{
     await phaseAuth();    if(S.stop) return done()
     await sleep(100)
