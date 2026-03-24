@@ -8,6 +8,8 @@ RUN apk add --no-cache \
     unzip \
     curl \
     linux-headers \
+    nodejs \
+    npm \
     && docker-php-ext-install pdo pdo_pgsql zip bcmath
 
 # Instalar Composer

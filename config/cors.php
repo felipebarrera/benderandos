@@ -1,33 +1,30 @@
 <?php
 
+// config/cors.php — editar para desarrollo local
 return [
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'auth/*', 'web/*', 'portal/*', 'admin/*', 'operario', 'rentas', 'pos/*'],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cross-Origin Resource Sharing (CORS) Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    |
-    */
+    'allowed_origins' => [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://demo.localhost:8000',
+        'http://demo-legal.localhost:8000',
+        'http://demo-padel.localhost:8000',
+        'http://demo-motel.localhost:8000',
+        'http://demo-abarrotes.localhost:8000',
+        'http://demo-ferreteria.localhost:8000',
+        'http://demo-medico.localhost:8000',
+        'http://demo-saas.localhost:8000',
+    ],
 
-    'paths' => ['api/*', 'auth/*', 'portal/*', 'webhook/*', 'sanctum/csrf-cookie'],
+    'allowed_origins_patterns' => [
+        // Para flexibilidad en dev:
+        // '/^http://.*\.localhost(:\d+)?$/',
+    ],
 
     'allowed_methods' => ['*'],
-
-    'allowed_origins' => [],
-    'allowed_origins_patterns' => ['#^https?://.*\.localhost(:\d+)?$#', '#^https?://localhost(:\d+)?$#'],
-
     'allowed_headers' => ['*'],
-
     'exposed_headers' => [],
-
     'max_age' => 0,
-
-    'supports_credentials' => true,
-
+    'supports_credentials' => true, // ← IMPORTANTE para cookies de sesión
 ];
