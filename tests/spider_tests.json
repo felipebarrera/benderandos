@@ -2,7 +2,7 @@
     "_meta": {
         "version": "3.1",
         "created": "2026-03-18T03:08:33.078651",
-        "updated": "2026-03-24T00:00:00",
+        "updated": "2026-03-24T00:23:49Z",
         "total_tests": 173,
         "tenant_slug_default": "demo-ferreteria"
     },
@@ -227,10 +227,10 @@
         {
             "id": "H-42",
             "path": "/portal/pedido",
-            "method": "POST",
             "label": "Vista: portal/pedido",
             "expected": "200|301|302|422",
-            "url_key": "tenant"
+            "url_key": "tenant",
+            "method": "POST"
         },
         {
             "id": "H-45",
@@ -256,18 +256,18 @@
         {
             "id": "H-48",
             "path": "/web/logout",
-            "method": "POST",
             "label": "Vista: web/logout",
             "expected": "200|301|302",
-            "url_key": "super"
+            "url_key": "super",
+            "method": "POST"
         },
         {
             "id": "H-49",
             "path": "/webhook/wa/config",
-            "method": "POST",
             "label": "Vista: webhook/wa/config",
             "expected": "200|301|302|401",
-            "url_key": "super"
+            "url_key": "super",
+            "method": "POST"
         },
         {
             "id": "H-50",
@@ -280,18 +280,18 @@
         {
             "id": "H-51",
             "path": "/webhook/whatsapp/onboarding",
-            "method": "POST",
             "label": "Vista: webhook/whatsapp/onboarding",
             "expected": "200|301|302|401",
-            "url_key": "super"
+            "url_key": "super",
+            "method": "POST"
         },
         {
             "id": "H-52",
             "path": "/webhook/whatsapp/pedido-remoto",
-            "method": "POST",
             "label": "Vista: webhook/whatsapp/pedido-remoto",
             "expected": "200|301|302|401",
-            "url_key": "super"
+            "url_key": "super",
+            "method": "POST"
         }
     ],
     "api_sa_checks": [

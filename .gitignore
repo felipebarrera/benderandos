@@ -1,23 +1,178 @@
-/.phpunit.cache
+# =============================================================================
+# 🔐 VARIABLES DE ENTORNO Y SECRETS (CRÍTICO)
+# =============================================================================
+.env
+.env.local
+.env.*.local
+.env.backup
+.env.production
+.env.staging
+.env.test
+.env.development
+*.env
+!.env.example
+credentials.txt
+credentials.json
+credentials.yaml
+credentials.yml
+*.credentials
+*.credentials.*
+AUTH.json
+auth.json
+config/secrets/*.json
+storage/oauth-private.key
+storage/oauth-public.key
+
+# =============================================================================
+# 🗄️ LARAVEL / PHP
+# =============================================================================
+/vendor
+composer.lock
+.phpunit.cache/
+*.log
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/app/private/*
+storage/app/public/*
+!storage/app/public/.gitkeep
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+*.sqlite
+*.sqlite-journal
+public/storage
+public/hot
+
+# =============================================================================
+# ⚡ FRONTEND: Vite + React + Tailwind
+# =============================================================================
 /node_modules
 /public/build
 /public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
-.env
-.env.backup
-.env.production
-.phpactor.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.tsbuildinfo
+.next/
+.nuxt/
+dist/
+build/
+out/
+
+# =============================================================================
+# 🗂️ STORAGE Y UPLOADS
+# =============================================================================
+storage/app/uploads/*
+storage/app/exports/*
+storage/app/imports/*
+storage/app/backups/*
+!storage/app/uploads/.gitkeep
+!storage/app/exports/.gitkeep
+!storage/app/imports/.gitkeep
+!storage/app/backups/.gitkeep
+storage/debugbar/*.json
+
+# =============================================================================
+# 🗄️ BASES DE DATOS LOCALES
+# =============================================================================
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+database/database.sqlite
+database/dumps/*
+!database/dumps/.gitkeep
+
+# =============================================================================
+# 🐳 DOCKER
+# =============================================================================
+.docker/
+docker-compose.override.yml
+*.dockerignore
+
+# =============================================================================
+# 💻 IDEs
+# =============================================================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.ipr
+*.iws
+.fleet/
+.nova/
+*.sublime-project
+*.sublime-workspace
+
+# =============================================================================
+# 🧪 TESTING
+# =============================================================================
+coverage/
+.clover.xml
+coverage.xml
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed
+tests/Browser/screenshots/*
+tests/Browser/console/*
+!tests/Browser/screenshots/.gitkeep
+!tests/Browser/console/.gitkeep
+
+# =============================================================================
+# 🔄 SISTEMA OPERATIVO
+# =============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+
+# =============================================================================
+# 📦 CACHE
+# =============================================================================
+.npm/
+~/.composer/cache/
+
+# =============================================================================
+# 🚫 PRODUCCIÓN / SENSIBLES
+# =============================================================================
+*.pem
+*.key
+*.pub
+*.crt
+*.p12
+*.pfx
+*.jks
+config/services.json
+storage/ssl/*
+*.backup
+*.bak
+*.old
+*.orig
+
+# =============================================================================
+# 🤖 CI/CD
+# =============================================================================
+.deploy/
+builds/
+releases/
+current/
+storage/framework/maintenance.php
+
+# =============================================================================
+# 🧹 TEMPORALES
+# =============================================================================
+*.tmp
+*.temp
+*.swp
+*.swo

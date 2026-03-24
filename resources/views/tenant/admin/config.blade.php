@@ -112,7 +112,7 @@
                     </div>
 
                     <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
-                        <a href="{{ route('public.portal.index') }}" target="_blank" style="font-size:12px; color:var(--ac); text-decoration:underline;">Ver mi portal público ↗</a>
+                        <a href="{{ url('/portal') }}" target="_blank" style="font-size:12px; color:var(--ac); text-decoration:underline;">Ver mi portal público ↗</a>
                         <button type="submit" class="btn btn-primary">Guardar Cambios del Portal</button>
                     </div>
                 </form>

@@ -28,18 +28,21 @@ Route::middleware('auth:sanctum')->group(function () {
 // Spider QA endpoints (H24) — use auth:sanctum for proper Bearer token protection
 Route::middleware('auth:sanctum')->prefix('spider')->group(function () {
     // Route::get('/probe', ...); // @deprecated Spider v4 — browser-side fetch replaces server-side probe
-    Route::get('/db-check', [\App\Http\Controllers\SpiderController::class , 'dbCheck']);
-    Route::post('/sync', [\App\Http\Controllers\SpiderController::class , 'syncTests']);
-    Route::get('/tests', [\App\Http\Controllers\SpiderController::class , 'getTests']);
-    Route::post('/tests', [\App\Http\Controllers\SpiderController::class , 'saveTests']);
+    Route::get('/tenants', [\App\Http\Controllers\Central\SpiderController::class , 'listTenants']);
+    Route::get('/db-check', [\App\Http\Controllers\Central\SpiderController::class , 'dbCheck']);
+    Route::post('/sync', [\App\Http\Controllers\Central\SpiderController::class , 'syncTests']);
+    Route::get('/tests', [\App\Http\Controllers\Central\SpiderController::class , 'getTests']);
+    Route::post('/tests', [\App\Http\Controllers\Central\SpiderController::class , 'saveTests']);
 });
 
-// Spider QA endpoints
+// Spider QA endpoints (auth:sanctum)
 Route::middleware('auth:sanctum')->prefix('spider')->group(function () {
-    Route::get('/db-check', [\App\Http\Controllers\SpiderController::class , 'dbCheck']);
-    Route::post('/sync', [\App\Http\Controllers\SpiderController::class , 'syncTests']);
-    Route::get('/tests', [\App\Http\Controllers\SpiderController::class , 'getTests']);
-    Route::post('/tests', [\App\Http\Controllers\SpiderController::class , 'saveTests']);
+    Route::get('/tenants', [SpiderController::class , 'listTenants']);
+    Route::get('/db-check', [\App\Http\Controllers\Central\SpiderController::class , 'dbCheck']);
+    Route::post('/sync', [\App\Http\Controllers\Central\SpiderController::class , 'syncTests']);
+    Route::get('/tests', [\App\Http\Controllers\Central\SpiderController::class , 'getTests']);
+    Route::post('/tests', [\App\Http\Controllers\Central\SpiderController::class , 'saveTests']);
+
     // NUEVO: Endpoint para obtener tenant slug recomendado
-    Route::get('/tenant-slug', [\App\Http\Controllers\SpiderController::class , 'getTenantSlug']);
+    Route::get('/tenant-slug', [\App\Http\Controllers\Central\SpiderController::class , 'getTenantSlug']);
 });
