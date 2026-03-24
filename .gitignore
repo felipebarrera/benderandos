@@ -1,5 +1,5 @@
 # =============================================================================
-# 🔐 SECRETS Y VARIABLES DE ENTORNO
+# 🔐 VARIABLES DE ENTORNO Y SECRETS (CRÍTICO)
 # =============================================================================
 .env
 .env.local
@@ -20,14 +20,11 @@ credentials.yml
 AUTH.json
 auth.json
 config/secrets/*.json
-*.pem
-*.key
-*.pub
-*.crt
-*.p12
-*.pfx
-*.jks
-config/services.json
+storage/oauth-private.key
+storage/oauth-public.key
+.editorconfig
+benderandos.code-workspace
+
 
 # =============================================================================
 # 🗄️ LARAVEL / PHP
@@ -50,9 +47,11 @@ bootstrap/cache/*
 *.sqlite-journal
 public/storage
 public/hot
+database/
+test/
 
 # =============================================================================
-# ⚡ FRONTEND
+# ⚡ FRONTEND: Vite + React + Tailwind
 # =============================================================================
 /node_modules
 /public/build
@@ -65,15 +64,14 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 *.tsbuildinfo
+.next/
+.nuxt/
 dist/
 build/
 out/
-*.min.js
-*.min.css
-*.map
 
 # =============================================================================
-# 🗂️ STORAGE
+# 🗂️ STORAGE Y UPLOADS
 # =============================================================================
 storage/app/uploads/*
 storage/app/exports/*
@@ -86,7 +84,7 @@ storage/app/backups/*
 storage/debugbar/*.json
 
 # =============================================================================
-# 🗄️ DATABASE
+# 🗄️ BASES DE DATOS LOCALES
 # =============================================================================
 *.sql
 *.sql.gz
@@ -102,8 +100,6 @@ database/dumps/*
 .docker/
 docker-compose.override.yml
 *.dockerignore
-.tmp/
-.sail/
 
 # =============================================================================
 # 💻 IDEs
@@ -121,7 +117,6 @@ docker-compose.override.yml
 .nova/
 *.sublime-project
 *.sublime-workspace
-*.code-workspace
 
 # =============================================================================
 # 🧪 TESTING
@@ -145,7 +140,6 @@ tests/Browser/console/*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-$RECYCLE.BIN/
 *~
 
 # =============================================================================
@@ -153,8 +147,23 @@ $RECYCLE.BIN/
 # =============================================================================
 .npm/
 ~/.composer/cache/
-.phpactor.json
-.php-cs-fixer.cache
+
+# =============================================================================
+# 🚫 PRODUCCIÓN / SENSIBLES
+# =============================================================================
+*.pem
+*.key
+*.pub
+*.crt
+*.p12
+*.pfx
+*.jks
+config/services.json
+storage/ssl/*
+*.backup
+*.bak
+*.old
+*.orig
 
 # =============================================================================
 # 🤖 CI/CD
@@ -172,14 +181,134 @@ storage/framework/maintenance.php
 *.temp
 *.swp
 *.swo
+
+
+# =============================================================================
+# 🔐 SECRETS Y VARIABLES DE ENTORNO (NUNCA TRACK EAR)
+# =============================================================================
+.env
+.env.local
+.env.*.local
+.env.backup
+.env.production
+.env.staging
+.env.test
+.env.development
+*.env
+!.env.example
+
+credentials.txt
+credentials.json
+credentials.yaml
+*.credentials
+AUTH.json
+auth.json
+*.pem
+*.key
+*.pub
+*.crt
+*.p12
+*.pfx
+
+# =============================================================================
+# 📦 DEPENDENCIAS (Instaladas, no versionadas)
+# =============================================================================
+/node_modules
+/vendor
+composer.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# =============================================================================
+# 🗄️ BASES DE DATOS LOCALES
+# =============================================================================
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+*.sqlite-journal
+database.sqlite
+
+# =============================================================================
+# 🗂️ STORAGE Y LOGS (Datos dinámicos)
+# =============================================================================
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/private/*
+storage/debugbar/*.json
+
+# =============================================================================
+# ⚡ BUILD ARTIFACTS (Generados)
+# =============================================================================
+/public/build
+/public/hot
+dist/
+build/
+out/
+*.tsbuildinfo
+*.min.js
+*.min.css
+*.map
+
+# =============================================================================
+# 💻 IDEs Y EDITORES
+# =============================================================================
+.vscode/
+.idea/
+.fleet/
+.nova/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# =============================================================================
+# 🔄 SISTEMA OPERATIVO
+# =============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~
+
+# =============================================================================
+# 🧪 TESTING Y CACHE
+# =============================================================================
+coverage/
+.clover.xml
+coverage.xml
+.phpunit.cache/
+.phpunit.result.cache
+.npm/
+.phpactor.json
+.php-cs-fixer.cache
+
+# =============================================================================
+# 🐳 DOCKER (Opcional)
+# =============================================================================
+docker-compose.override.yml
+.tmp/
+.sail/
+docker-compose.yml
+Dockerfile
+
+# =============================================================================
+# 🧹 TEMPORALES
+# =============================================================================
+*.tmp
+*.temp
+*.swp
+*.swo
 *.bak
 *.old
 *.orig
+*.log
 *.pid
-
-# =============================================================================
-# 📄 ARCHIVOS ESPECÍFICOS
-# =============================================================================
 AI_MEMORY.md
-docker-compose.yml
-Dockerfile
+.env

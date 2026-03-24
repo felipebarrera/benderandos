@@ -46,3 +46,18 @@ Route::middleware('auth:sanctum')->prefix('spider')->group(function () {
     // NUEVO: Endpoint para obtener tenant slug recomendado
     Route::get('/tenant-slug', [\App\Http\Controllers\Central\SpiderController::class , 'getTenantSlug']);
 });
+
+// === RUTAS INTERNAS PARA BOT WHATSAPP ===
+// Requieren middleware que valide X-Bot-Token o JWT compartido
+Route::prefix('internal/bot')
+    ->middleware(['auth:sanctum', 'bot.auth']) // bot.auth valida X-Bot-Token
+    ->group(function () {
+        // Resolver tenant por teléfono
+        Route::get('/tenant-by-phone/{phone}', [\App\Http\Controllers\Api\Internal\Bot\TenantPhoneController::class , 'findByPhone'])
+            ->name('internal.bot.tenant-by-phone');
+
+        // Buscar cliente por teléfono dentro de un tenant
+        Route::get('/cliente/{phone}', [\App\Http\Controllers\Api\Internal\Bot\CustomerLookupController::class , 'findByPhone'])
+            ->name('internal.bot.customer-by-phone')
+            ->middleware('tenancy.initialize'); // Esta ruta necesita contexto de tenant
+    });
