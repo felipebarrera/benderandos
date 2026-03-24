@@ -1,5 +1,5 @@
 # =============================================================================
-# 🔐 VARIABLES DE ENTORNO Y SECRETS (CRÍTICO)
+# 🔐 SECRETS Y VARIABLES DE ENTORNO
 # =============================================================================
 .env
 .env.local
@@ -20,8 +20,14 @@ credentials.yml
 AUTH.json
 auth.json
 config/secrets/*.json
-storage/oauth-private.key
-storage/oauth-public.key
+*.pem
+*.key
+*.pub
+*.crt
+*.p12
+*.pfx
+*.jks
+config/services.json
 
 # =============================================================================
 # 🗄️ LARAVEL / PHP
@@ -46,7 +52,7 @@ public/storage
 public/hot
 
 # =============================================================================
-# ⚡ FRONTEND: Vite + React + Tailwind
+# ⚡ FRONTEND
 # =============================================================================
 /node_modules
 /public/build
@@ -59,14 +65,15 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 *.tsbuildinfo
-.next/
-.nuxt/
 dist/
 build/
 out/
+*.min.js
+*.min.css
+*.map
 
 # =============================================================================
-# 🗂️ STORAGE Y UPLOADS
+# 🗂️ STORAGE
 # =============================================================================
 storage/app/uploads/*
 storage/app/exports/*
@@ -79,7 +86,7 @@ storage/app/backups/*
 storage/debugbar/*.json
 
 # =============================================================================
-# 🗄️ BASES DE DATOS LOCALES
+# 🗄️ DATABASE
 # =============================================================================
 *.sql
 *.sql.gz
@@ -95,6 +102,8 @@ database/dumps/*
 .docker/
 docker-compose.override.yml
 *.dockerignore
+.tmp/
+.sail/
 
 # =============================================================================
 # 💻 IDEs
@@ -112,6 +121,7 @@ docker-compose.override.yml
 .nova/
 *.sublime-project
 *.sublime-workspace
+*.code-workspace
 
 # =============================================================================
 # 🧪 TESTING
@@ -135,6 +145,7 @@ tests/Browser/console/*
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+$RECYCLE.BIN/
 *~
 
 # =============================================================================
@@ -142,23 +153,8 @@ Desktop.ini
 # =============================================================================
 .npm/
 ~/.composer/cache/
-
-# =============================================================================
-# 🚫 PRODUCCIÓN / SENSIBLES
-# =============================================================================
-*.pem
-*.key
-*.pub
-*.crt
-*.p12
-*.pfx
-*.jks
-config/services.json
-storage/ssl/*
-*.backup
-*.bak
-*.old
-*.orig
+.phpactor.json
+.php-cs-fixer.cache
 
 # =============================================================================
 # 🤖 CI/CD
@@ -176,3 +172,14 @@ storage/framework/maintenance.php
 *.temp
 *.swp
 *.swo
+*.bak
+*.old
+*.orig
+*.pid
+
+# =============================================================================
+# 📄 ARCHIVOS ESPECÍFICOS
+# =============================================================================
+AI_MEMORY.md
+docker-compose.yml
+Dockerfile
