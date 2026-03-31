@@ -25,6 +25,12 @@ class ProductoController extends Controller
         $productos = $query->orderBy('nombre')
                            ->paginate($request->input('per_page', 50));
 
+        // Add precio alias for POS compatibility
+        $productos->getCollection()->transform(function($p) {
+            $p->precio = $p->valor_venta;
+            return $p;
+        });
+
         return response()->json($productos);
     }
 
@@ -38,7 +44,11 @@ class ProductoController extends Controller
         $productos = Producto::activos()
             ->buscar($request->q)
             ->limit(20)
-            ->get(['id', 'codigo', 'nombre', 'valor_venta', 'cantidad', 'unidad_medida', 'fraccionable']);
+            ->get(['id', 'codigo', 'nombre', 'valor_venta', 'cantidad', 'unidad_medida', 'fraccionable'])
+            ->map(function($p) {
+                $p->precio = $p->valor_venta;
+                return $p;
+            });
 
         return response()->json($productos);
     }

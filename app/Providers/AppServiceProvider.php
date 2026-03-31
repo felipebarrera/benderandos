@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Models\Tenant\RubroConfig;
 use App\Models\Tenant\Usuario;
+use App\Models\Tenant\Cita;
+use App\Models\Tenant\NotaClinica;
+use App\Policies\Tenant\CitaPolicy;
+use App\Policies\Tenant\NotaClinicaPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +22,14 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::policy(Cita::class, CitaPolicy::class);
+        Gate::policy(NotaClinica::class, NotaClinicaPolicy::class);
+
+        // Solo registrar observers dentro de contexto tenant
+        if (app()->bound(\Stancl\Tenancy\Contracts\Tenant::class)) {
+            \App\Models\Tenant\Usuario::observe(\App\Observers\Tenant\UsuarioAgendaObserver::class);
+            \App\Models\Tenant\Producto::observe(\App\Observers\Tenant\ProductoAgendaObserver::class);
+        }
         // --- Gates Hito 2: Permisos granulares ---
         Gate::define('agregar-item-venta', function (Usuario $user) {
             return in_array($user->rol, ['admin', 'super_admin', 'cajero', 'operario']);

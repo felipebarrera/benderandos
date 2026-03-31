@@ -10,7 +10,11 @@ use App\Http\Controllers\Central\BillingController;
 use App\Http\Controllers\Central\SpiderController;
 
 // Root route — redirect to central login
-Route::get('/', fn() => redirect('/central/login'));
+// Root route — redirect to central login ONLY on central domains
+$centralDomains = config('tenancy.central_domains', ['localhost', '127.0.0.1']);
+foreach ($centralDomains as $domain) {
+    Route::domain($domain)->get('/', fn() => redirect('/central/login'));
+}
 
 
 

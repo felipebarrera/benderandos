@@ -13,6 +13,12 @@ use App\Http\Controllers\Tenant\ClienteController;
 use App\Http\Controllers\Tenant\CompraController;
 use App\Http\Controllers\Tenant\DashboardController;
 use App\Http\Controllers\Tenant\UsuarioController;
+use App\Http\Controllers\Tenant\AgendaController;
+use App\Http\Controllers\Tenant\AgendaUniversalController;
+use App\Http\Controllers\Tenant\NotaClinicaController;
+use App\Http\Controllers\Tenant\OnboardingController;
+use App\Http\Controllers\Tenant\ProfesionalConfigController;
+use App\Http\Controllers\Tenant\ProfesionalController;
 use App\Http\Controllers\Tenant\RentaController;
 use App\Http\Controllers\Tenant\WebPanelController;
 use App\Http\Controllers\Tenant\PagoController;
@@ -70,6 +76,14 @@ Route::middleware([
     Route::get('/producto/{id}', [PortalPublicoController::class, 'producto'])->name('public.portal.producto');
     Route::get('/pedido/whatsapp', [PortalPublicoController::class, 'pedirPorWhatsapp'])->name('public.portal.pedido.whatsapp');
 
+    // ── LANDING PÚBLICO AGENDA (M08) ─────────
+    Route::get('/agenda', [AgendaController::class, 'landing'])->name('agenda.landing');
+    Route::prefix('api/public/agenda')->group(function () {
+        Route::get('/recursos',    [AgendaController::class, 'publicRecursos']);
+        Route::get('/slots',       [AgendaController::class, 'publicSlots']);
+        Route::post('/cita',       [AgendaController::class, 'publicCrearCita']);
+    });
+
     Route::post('/auth/login/web', [WebPanelController::class, 'postLogin'])->name('tenant.login.web.post');
     Route::post('/web/logout',   [WebPanelController::class, 'logout'])->name('web.logout');
 
@@ -97,10 +111,76 @@ Route::middleware([
 
         // POS
         Route::get('/pos',             [WebPanelController::class, 'pos'])->name('pos.index');
+
+        // ── M08 AGENDA ────────────────────────────────────────────────────
+        Route::middleware(['module:M08'])->group(function () {
+            Route::get('/pos/agenda',   [AgendaController::class, 'posIndex'])->name('pos.agenda');
+            Route::get('/admin/agenda', [AgendaController::class, 'adminIndex'])->name('admin.agenda');
+            Route::get('/admin/agenda/citas', [AgendaController::class, 'adminCitasIndex'])->name('admin.agenda.citas');
+
+            Route::prefix('api/agenda')->group(function () {
+                Route::get('/dia',                              [AgendaController::class, 'getDia']);
+                Route::get('/calendario',                       [AgendaController::class, 'calendario']);
+                Route::get('/slots',                            [AgendaController::class, 'getSlots']);
+                Route::get('/disponibilidad',                   [AgendaController::class, 'disponibilidad']);
+                Route::post('/citas',                           [AgendaController::class, 'crearCita']);
+                Route::get('/citas/{id}',                       [AgendaController::class, 'show']);
+                Route::put('/citas/{id}',                       [AgendaController::class, 'actualizarCita']);
+                Route::put('/citas/{id}/estado',                [AgendaController::class, 'cambiarEstado']);
+                Route::delete('/citas/{id}',                    [AgendaController::class, 'cancelarCita']);
+                Route::post('/citas/{id}/iniciar-consulta',     [AgendaController::class, 'iniciarConsulta']);
+                Route::post('/citas/{id}/completar',            [AgendaController::class, 'completarCita']);
+                
+                Route::get('/recursos',                         [AgendaController::class, 'getRecursos']);
+                Route::post('/recursos',                        [AgendaController::class, 'crearRecurso']);
+                Route::delete('/recursos/{id}',                 [AgendaController::class, 'eliminarRecurso']);
+                Route::put('/recursos/{id}/horarios',           [AgendaController::class, 'actualizarHorarios']);
+                Route::post('/recursos/{id}/servicios',         [AgendaController::class, 'crearServicio']);
+                Route::delete('/servicios/{id}',                [AgendaController::class, 'eliminarServicio']);
+                
+                Route::get('/config',                           [AgendaController::class, 'getConfig']);
+                Route::put('/config',                           [AgendaController::class, 'updateConfig']);
+                Route::get('/paciente/{clienteId}/historial',   [AgendaController::class, 'historialPaciente']);
+
+                // ── PERSONAL (Operario) ──
+                Route::get('/mi/recurso',        [AgendaController::class, 'miRecurso']);
+                Route::get('/mi/dia',            [AgendaController::class, 'miDia']);
+                Route::get('/mi/semana',         [AgendaController::class, 'miSemana']);
+                Route::put('/mi/horarios',       [AgendaController::class, 'misHorarios']);
+                Route::post('/mi/bloqueo',       [AgendaController::class, 'crearBloqueo']);
+                Route::delete('/mi/bloqueo/{id}',[AgendaController::class, 'eliminarBloqueo']);
+                Route::get('/mi/citas',          [AgendaController::class, 'misCitas']);
+                Route::put('/mi/citas/{id}/estado', [AgendaController::class, 'cambiarEstadoMia']);
+                Route::put('/mi/citas/{id}/notas',  [AgendaController::class, 'actualizarNotasMia']);
+            });
+
+            // Vista Blade personal
+            Route::get('/pos/mi-agenda', [AgendaController::class, 'miAgendaIndex'])->name('pos.mi-agenda');
+
+            // ── PROFESIONAL (Split de /operario) ──
+            Route::get('/profesional', [WebPanelController::class, 'profesional'])->name('profesional');
+            Route::get('/recepcion', [WebPanelController::class, 'recepcionIndex'])->name('recepcion');
+            Route::prefix('api/profesional')->middleware('module:M08')->group(function () {
+                Route::get('/estadisticas',                 [ProfesionalController::class, 'estadisticas']);
+                Route::get('/pacientes',                    [ProfesionalController::class, 'pacientes']);
+                Route::get('/pacientes/{id}',               [ProfesionalController::class, 'paciente']);
+                Route::get('/pacientes/{id}/historial',     [ProfesionalController::class, 'historialPaciente']);
+                Route::post('/pacientes/{id}/note',         [ProfesionalController::class, 'agregarNota']);
+                Route::get('/pacientes/{id}/seguimiento',   [ProfesionalController::class, 'seguimientoPaciente']);
+                Route::post('/pacientes/{id}/seguimiento',  [ProfesionalController::class, 'crearSeguimiento']);
+                Route::put('/seguimiento/{id}',             [ProfesionalController::class, 'actualizarSeguimiento']);
+            });
+
+            // Config de profesionales — solo admin/super_admin
+            Route::middleware(CheckRole::class . ':admin,super_admin')->group(function () {
+                Route::get('/profesionales-config',         [ProfesionalConfigController::class, 'index']);
+                Route::post('/profesionales-config',        [ProfesionalConfigController::class, 'store']);
+                Route::get('/profesionales-config/{id}',    [ProfesionalConfigController::class, 'show']);
+            });
+        });
+
         Route::get('/pos/historial',   [WebPanelController::class, 'posHistorial'])->name('pos.historial');
         Route::get('/rentas',          [WebPanelController::class, 'rentas'])->name('rentas.index');
-
-        // Operario
         Route::get('/operario',        [WebPanelController::class, 'operario'])->name('operario.index');
     });
 
@@ -155,6 +235,18 @@ Route::middleware([
             Route::post('/api/productos', [ProductoController::class, 'store']);
             Route::put('/api/productos/{id}', [ProductoController::class, 'update']);
             Route::post('/api/productos/{id}/ajuste-stock', [ProductoController::class, 'ajusteStock']);
+        });
+
+        // ── UNIVERSAL / ONBOARDING ──
+        Route::prefix('api/universal')->group(function () {
+            // Notas Clínicas — Solo médicos
+            Route::post('/notas',                    [NotaClinicaController::class, 'store']);
+            Route::get('/notas/{id}',                [NotaClinicaController::class, 'show']);
+
+            // Configuración Onboarding
+            Route::get('/onboarding/progress',       [OnboardingController::class, 'progress']);
+            Route::post('/onboarding/step/{id}',     [OnboardingController::class, 'completeStep']);
+            Route::post('/onboarding/step/{id}/saltar', [OnboardingController::class, 'saltarStep']);
         });
 
         // Clientes

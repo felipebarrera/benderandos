@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\Producto;
 use App\Models\Tenant\RubroConfig;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Tenant\AgendaController;
 
 class PortalPublicoController extends Controller
 {
@@ -15,6 +16,12 @@ class PortalPublicoController extends Controller
     public function index()
     {
         $config = RubroConfig::first();
+
+        // Si la industria del tenant es salud, delegamos la página de inicio al landing médico.
+        if ($config && in_array($config->industria_preset, ['medico', 'clinica', 'profesional'])) {
+            return app(AgendaController::class)->landing(request());
+        }
+
         $tenant = tenant();
         $productos = Producto::where('estado', 'activo')
             ->where('visible_en_portal', true)

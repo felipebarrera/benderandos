@@ -65,6 +65,16 @@ class Usuario extends Authenticatable
         return $this->hasOne(Empleado::class, 'usuario_id');
     }
 
+    public function agendaRecurso()
+    {
+        return $this->hasOne(\App\Models\Tenant\AgendaRecurso::class, 'usuario_id');
+    }
+
+    public function profesionalConfig()
+    {
+        return $this->hasOne(ProfesionalConfig::class, 'usuario_id');
+    }
+
     // --- Helpers ---
 
     public function esAdmin(): bool

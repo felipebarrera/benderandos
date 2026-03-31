@@ -58,6 +58,11 @@ class CheckModuleAccess
             return $next($request);
         }
 
+        // Onboarding is always available for all industries
+        if ($request->is('api/universal/onboarding*')) {
+            return $next($request);
+        }
+
         // 1. Verify that the module is in the tenant's active list
         $config = RubroConfig::first(); // Assumes we are inside tenant context
         

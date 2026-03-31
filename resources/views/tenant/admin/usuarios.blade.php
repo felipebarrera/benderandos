@@ -64,8 +64,15 @@
              <option value="cajero">Cajero (POS y Ventas)</option>
              <option value="bodega">Bodega (Inventario y Compras)</option>
              <option value="operario">Operario (Visualización)</option>
-             {{-- super_admin oculto intencionalmente para la app regular --}}
           </select>
+        </div>
+
+        <div class="field" id="fieldRecurso" style="background:rgba(0,229,160,0.05); padding:10px; border-radius:8px; border:1px solid rgba(0,229,160,0.15); margin-top:10px;">
+          <label class="label">Vincular a Agenda (M08)</label>
+          <select id="muRecurso">
+            <option value="">-- No vincular --</option>
+          </select>
+          <div style="font-size:10px; color:var(--accent); margin-top:4px;">Permite al usuario ver "Mi Agenda" si es profesional.</div>
         </div>
         
         <div class="modal-foot">
@@ -80,10 +87,22 @@
 @push('scripts')
 <script>
 let usersList = [];
+let recursosList = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarUsuarios();
+    cargarRecursos();
 });
+
+async function cargarRecursos() {
+    try {
+        const res = await api('GET', '/api/agenda/recursos');
+        recursosList = res || [];
+        const sel = document.getElementById('muRecurso');
+        sel.innerHTML = '<option value="">-- No vincular --</option>' + 
+            recursosList.map(r => `<option value="${r.id}">${r.nombre} (${r.especialidad || 'General'})</option>`).join('');
+    } catch(e) { console.error('Error cargando recursos', e); }
+}
 
 async function cargarUsuarios() {
     try {
@@ -107,11 +126,14 @@ function renderUsuarios(lista) {
         const stColor = u.activo ? 'badge-green' : 'badge-red';
         const stText = u.activo ? 'Activo' : 'Desactivado';
         
+        const linkedRecurso = u.agenda_recurso ? `<div style="font-size:10px;color:var(--accent)">📅 ${u.agenda_recurso.nombre}</div>` : '';
+        
         return `
         <tr>
             <td>
                 <div style="font-weight:600;font-size:13px">${u.nombre}</div>
                 <div class="mono" style="font-size:10px;color:var(--t2)">${u.email}</div>
+                ${linkedRecurso}
             </td>
             <td><span class="badge ${bdgColor}" style="text-transform:uppercase">${u.rol}</span></td>
             <td><span class="badge ${stColor}">${stText}</span></td>
@@ -143,6 +165,7 @@ function editarUsuario(u) {
     document.getElementById('muPass').required = false;
     document.getElementById('muPassLabel').textContent = 'Contraseña (dejar en blanco para mantener)';
     document.getElementById('muRol').value = u.rol;
+    document.getElementById('muRecurso').value = u.agenda_recurso ? u.agenda_recurso.id : '';
     openModal('mUsuario');
 }
 
@@ -157,7 +180,8 @@ async function guardarUsuario(e) {
     const payload = {
         nombre: document.getElementById('muNombre').value,
         email: document.getElementById('muLogin').value,
-        rol: document.getElementById('muRol').value
+        rol: document.getElementById('muRol').value,
+        recurso_id: document.getElementById('muRecurso').value || null
     };
     
     if (pwd) payload.password = pwd;

@@ -66,9 +66,16 @@ class ConfigRubroController extends Controller
 
         $config->update(['modulos_activos' => array_unique($modulos)]);
 
+        // Si se activó M08, inicializar recursos automáticamente
+        if ($moduloId === 'M08' && in_array('M08', $config->modulos_activos)) {
+            $r = app(\App\Services\AgendaAutoRegistroService::class)->inicializarTenant();
+            $mensaje .= ". Se registraron {$r['operarios_registrados']} profesionales y {$r['productos_registrados']} recursos de renta.";
+        }
+
         return response()->json([
             'message' => $mensaje,
-            'modulos' => $config->modulos_activos
+            'modulos' => $config->modulos_activos,
+            'agenda'  => ($moduloId === 'M08') ? ($r ?? null) : null
         ]);
     }
 

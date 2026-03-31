@@ -74,7 +74,7 @@ const token = localStorage.getItem('ba_token') || '';
 window.api = async function(method, path, body) {
   const res = await fetch(path, {
     method,
-    credentials: 'same-origin', // Clave para que Sanctum SPA Auth funcione
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -85,7 +85,16 @@ window.api = async function(method, path, body) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Error ${res.status}`);
+    let msg = err.message || `Error ${res.status}`;
+    if (res.status === 422 && err.errors) {
+       // Extract first error for each field
+       const details = Object.values(err.errors).map(e => e[0]).join(', ');
+       msg += ': ' + details;
+    }
+    const error = new Error(msg);
+    error.status = res.status;
+    error.data = err;
+    throw error;
   }
   return res.json().catch(() => ({}));
 };

@@ -11,7 +11,7 @@
                 <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
-                <input type="text" id="searchVenta" placeholder="Folio, cliente..." oninput="filtrarVentas()">
+                <input type="text" id="searchVenta" placeholder="Folio, {{ strtolower($rubroConfig->label_clientes) }}..." oninput="filtrarVentas()">
             </div>
             <select id="filtroEstado" onchange="filtrarVentas()" class="mono" style="min-width:130px;">
                 <option value="">Todos los estados</option>
@@ -30,8 +30,8 @@
                     <tr>
                         <th>Folio</th>
                         <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Cajero</th>
+                        <th>{{ $rubroConfig->label_clientes }}</th>
+                        <th>{{ $rubroConfig->label_operarios }}</th>
                         <th>Tipo Pago</th>
                         <th class="num">Items</th>
                         <th class="num">Total</th>
@@ -107,8 +107,8 @@ function renderVentas() {
             <td class="mono" style="font-size:12px;">#${String(v.id).padStart(4,'0')}</td>
             <td style="font-size:12px;color:var(--t2);">${new Date(v.created_at).toLocaleString('es-CL')}</td>
             <td>${v.cliente?.nombre ?? '<span style="color:var(--t2)">—</span>'}</td>
-            <td style="color:var(--t2);font-size:12px;">${v.cajero?.nombre ?? '—'}</td>
-            <td style="text-transform:capitalize;">${v.tipo_pago ?? '—'}</td>
+            <td style="color:var(--t2);font-size:12px;">${v.usuario?.nombre ?? v.cajero?.nombre ?? '—'}</td>
+            <td style="text-transform:capitalize;">${v.tipo_pago?.nombre ?? (typeof v.tipo_pago === 'string' ? v.tipo_pago : '—')}</td>
             <td class="num">${v.items_count ?? v.items?.length ?? '—'}</td>
             <td class="num mono">${fmt(v.total)}</td>
             <td><span class="badge ${estadoBadge[v.estado] ?? 'badge-gray'}">${v.estado?.replace('_',' ') ?? '—'}</span></td>
@@ -130,12 +130,12 @@ async function verVenta(id) {
         document.getElementById('modalVentaBody').innerHTML = `
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                 <div>
-                    <div class="label">Cliente</div>
+                    <div class="label">{{ $rubroConfig->label_clientes }}</div>
                     <div style="margin-top:4px;">${v.cliente?.nombre ?? '—'}</div>
                 </div>
                 <div>
                     <div class="label">Tipo de Pago</div>
-                    <div style="margin-top:4px;text-transform:capitalize;">${v.tipo_pago ?? '—'}</div>
+                    <div style="margin-top:4px;text-transform:capitalize;">${v.tipo_pago?.nombre ?? (typeof v.tipo_pago === 'string' ? v.tipo_pago : '—')}</div>
                 </div>
             </div>
             <div class="label" style="margin-bottom:8px;">Items</div>
@@ -146,9 +146,9 @@ async function verVenta(id) {
                         ${(v.items ?? []).map(i => `
                         <tr>
                             <td>${i.producto?.nombre ?? '—'}</td>
-                            <td class="num mono">${i.cantidad}</td>
+                            <td class="num mono">${parseFloat(i.cantidad).toLocaleString('es-CL')}</td>
                             <td class="num mono">${fmt(i.precio_unitario)}</td>
-                            <td class="num mono">${fmt(i.subtotal)}</td>
+                            <td class="num mono">${fmt(i.total_item || (i.cantidad * i.precio_unitario))}</td>
                         </tr>`).join('')}
                     </tbody>
                 </table>

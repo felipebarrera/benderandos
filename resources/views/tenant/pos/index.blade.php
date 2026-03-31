@@ -528,7 +528,7 @@ function renderProds(list) {
     <div class="prod${ss?' nostock':''}" onclick="addItem(${p.id})">
       <div class="prod-body">${th}${thProd}<div class="prod-nombre">${p.nombre}</div><div class="prod-codigo">${p.codigo||''}</div></div>
       <div class="prod-right">
-        <div class="prod-precio text-tx">${fmt(p.precio)}</div>
+        <div class="prod-precio text-tx">${fmt(p.valor_venta ?? p.precio ?? 0)}</div>
         ${p.tipo!=='servicio' && st ? `<span class="prod-stk ${sc}">${st}</span>` : ''}
       </div>
       <button class="prod-add" onclick="event.stopPropagation();addItem(${p.id})">+</button>
@@ -539,6 +539,7 @@ function renderProds(list) {
 /* ── CARRO / LÓGICA CORE ── */
 function addItem(id) {
   const p = PRODS.find(x => x.id === id); if (!p) return;
+  const pPrecio = p.valor_venta ?? p.precio ?? 0;
   
   let addQty = 1;
   let extData = {};
@@ -595,21 +596,21 @@ function renderCart() {
   el.innerHTML = cart.map(i => `
     <div class="ci">
       <div class="ci-name">${i.nombre}</div>
-      <div class="ci-sub">${fmt(i.precio * i.qty)}</div>
+      <div class="ci-sub">${fmt((i.valor_venta ?? i.precio ?? 0) * i.qty)}</div>
       <div class="ci-ctrl">
         <button class="qbtn" onclick="chgQty(${i.cart_index||i.id},-1)">−</button>
         <span class="qnum">${Number.isInteger(i.qty) ? i.qty : i.qty.toFixed(2)}</span>
         <button class="qbtn" onclick="chgQty(${i.cart_index||i.id},1)">+</button>
         <button class="ci-del" onclick="delItem(${i.cart_index||i.id})">✕</button>
       </div>
-      <div class="ci-unit">${fmt(i.precio)} c/u</div>
+      <div class="ci-unit">${fmt(i.valor_venta ?? i.precio ?? 0)} c/u</div>
     </div>`).join('');
   recalc(); updateStrip();
 }
 
 /* ── TOTALES Y MODAL ── */
 function recalc() {
-  const sub  = cart.reduce((s,i) => s + i.precio*i.qty, 0);
+  const sub  = cart.reduce((s,i) => s + (i.valor_venta ?? i.precio ?? 0)*i.qty, 0);
   const dv   = parseFloat(document.getElementById('discVal').value) || 0;
   const dt   = document.getElementById('discType').value;
   const disc = dt==='pct' ? sub*(dv/100) : Math.min(dv,sub);
@@ -688,7 +689,7 @@ async function confirmarVenta() {
             const itemData = {
                 producto_id: i.id,
                 cantidad: i.qty,
-                precio_unitario: i.precio,
+                precio_unitario: i.valor_venta ?? i.precio ?? 0,
                 notas_item: null
             };
             if (i.inicio_renta) itemData.inicio_renta = i.inicio_renta;
@@ -782,24 +783,35 @@ function renderTicket(venta) {
     const cajero = '{{ auth()->user()->nombre ?? "Cajero" }}';
     const fecha = new Date().toLocaleString('es-CL');
     const total = fmt(venta.total ?? 0);
+    const cliente = clienteActual ? clienteActual.nombre : '--';
+    const pago = (payMethod || 'efectivo').toUpperCase();
     
     let items = '';
-    (venta.items ?? cart).forEach(i => {
-        const nombre = i.producto?.nombre ?? i.nombre ?? '';
-        const qty = i.cantidad ?? i.qty;
-        const precio = i.precio_unitario ?? i.precio;
-        items += `${nombre.substring(0,22).padEnd(22)} ${qty} x ${String(precio).padStart(7)}\n`;
+    const itemsList = venta.items ?? cart;
+    itemsList.forEach(i => {
+        const nombre = (i.producto?.nombre ?? i.nombre ?? '').substring(0, 18).padEnd(18);
+        const qty = parseFloat(i.cantidad ?? i.qty ?? 0);
+        const precio = parseFloat(i.precio_unitario ?? i.valor_venta ?? i.precio ?? 0);
+        const sub = qty * precio;
+        
+        items += `${nombre} ${qty.toFixed(1).padStart(4)} x ${String(Math.round(precio)).padStart(6)} = ${fmt(sub).padStart(8)}\n`;
     });
     const folio = venta.id ? String(venta.id).padStart(6, '0') : 'Borrador';
     
     document.getElementById('ticketPreview').innerHTML = `
 <div style="text-align:center; font-weight:700; font-size:14px;">${emp}</div>
 <div style="text-align:center; font-size:11px; color:#666;">${fecha}</div>
-<div style="text-align:center; font-size:11px; color:#666;">Cajero: ${cajero} | Folio: #${folio}</div>
+<div style="text-align:center; font-size:11px; color:#666;">Folio: #${folio}</div>
 <div style="margin:10px 0; border-top:1px dashed #aaa;"></div>
-<pre style="font-family:inherit; white-space:pre-wrap; font-size:11px;">${items}</pre>
+<div style="font-size:11px; color:#333;">
+  <div><b>Cliente:</b> ${cliente}</div>
+  <div><b>Pago:</b> ${pago}</div>
+  <div><b>Cajero:</b> ${cajero}</div>
+</div>
 <div style="margin:10px 0; border-top:1px dashed #aaa;"></div>
-<div style="display:flex;justify-content:space-between;font-weight:700;"><span>TOTAL</span><span>${total}</span></div>
+<pre style="font-family:inherit; white-space:pre-wrap; font-size:11px; margin:0;">${items}</pre>
+<div style="margin:10px 0; border-top:1px dashed #aaa;"></div>
+<div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;"><span>TOTAL</span><span>${total}</span></div>
 <div style="text-align:center; font-size:10px; color:#888; margin-top:14px;">¡Gracias por su compra!</div>`;
 }
 function printTicket() {

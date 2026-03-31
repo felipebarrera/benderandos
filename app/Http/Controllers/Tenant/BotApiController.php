@@ -152,4 +152,59 @@ class BotApiController extends Controller
             'telegram'    => $config->portal_telegram_url,
         ]);
     }
+    /**
+     * Consultar disponibilidad de agenda para el bot.
+     */
+    public function disponibilidad(Request $request, \App\Services\AgendaService $svc)
+    {
+        $data = $request->validate([
+            'recurso_id' => 'nullable|exists:agenda_recursos,id',
+            'fecha'      => 'nullable|date_format:Y-m-d',
+        ]);
+
+        $fecha = $data['fecha'] ?? now()->toDateString();
+        $agenda = $svc->getAgendaDia($fecha, $data['recurso_id'] ?? null);
+
+        return response()->json($agenda);
+    }
+
+    /**
+     * Reservar cita desde el bot.
+     */
+    public function reservarCita(Request $request, \App\Services\AgendaService $svc)
+    {
+        $data = $request->validate([
+            'telefono'           => 'required',
+            'nombre'             => 'required|string',
+            'agenda_recurso_id'  => 'required|exists:agenda_recursos,id',
+            'agenda_servicio_id' => 'required|exists:agenda_servicios,id',
+            'fecha'              => 'required|date_format:Y-m-d',
+            'hora_inicio'        => 'required|date_format:H:i',
+        ]);
+
+        try {
+            $srv = \App\Models\Tenant\AgendaServicio::find($data['agenda_servicio_id']);
+            $horaFin = \Carbon\Carbon::parse($data['hora_inicio'])->addMinutes($srv->duracion_min)->format('H:i');
+
+            $cita = $svc->crearCita([
+                'agenda_recurso_id'  => $data['agenda_recurso_id'],
+                'agenda_servicio_id' => $data['agenda_servicio_id'],
+                'fecha'              => $data['fecha'],
+                'hora_inicio'        => $data['hora_inicio'],
+                'hora_fin'           => $horaFin,
+                'paciente_nombre'    => $data['nombre'],
+                'paciente_telefono'  => $data['telefono'],
+                'origen'             => 'bot',
+            ]);
+
+            return response()->json([
+                'message' => 'Cita reservada exitosamente',
+                'cita_id' => $cita->id,
+                'fecha'   => $cita->fecha,
+                'hora'    => substr($cita->hora_inicio, 0, 5),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al reservar: ' . $e->getMessage()], 500);
+        }
+    }
 }

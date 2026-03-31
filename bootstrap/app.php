@@ -45,6 +45,31 @@ return Application::configure(basePath: dirname(__DIR__))
             'module'     => \App\Http\Middleware\CheckModuleAccess::class,
         ]);
     })
+    ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->call(function () {
+             // Procesar cada tenant para enviar recordatorios
+             \App\Models\Central\Tenant::all()->runForEach(function () {
+                $config = \App\Models\Tenant\AgendaConfig::first();
+                if (!$config || !$config->confirmacion_wa_activa) return;
+
+                $horas = $config->recordatorio_horas_antes ?? 24;
+                $target = now()->addHours($horas);
+
+                $citas = \App\Models\Tenant\AgendaCita::where('estado', 'confirmada')
+                    ->where('recordatorio_enviado', false)
+                    ->where('fecha', '<=', $target->toDateString())
+                    ->get()
+                    ->filter(function($cita) use ($target) {
+                        $citaDateTime = \Carbon\Carbon::parse($cita->fecha->format('Y-m-d') . ' ' . $cita->hora_inicio);
+                        return $citaDateTime->isPast() === false && $citaDateTime->lessThanOrEqualTo($target);
+                    });
+
+                foreach ($citas as $cita) {
+                    dispatch(new \App\Jobs\RecordatorioCitaJob($cita->id));
+                }
+             });
+        })->hourly();
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

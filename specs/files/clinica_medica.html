@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Clínica Médica</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080a;
+  --s1: #111115;
+  --s2: #18181e;
+  --s3: #1e1e26;
+  --b1: #252530;
+  --b2: #32323f;
+  --text: #e8e8f0;
+  --t2: #8888a0;
+  --t3: #4a4a60;
+  --accent: #3dd9eb;
+  --accent-dim: rgba(61,217,235,0.12);
+  --accent-mid: rgba(61,217,235,0.25);
+  --ok: #00e5a0;
+  --warn: #f5c518;
+  --err: #ff3f5b;
+  --info: #3dd9eb;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --r: 10px;
+  --nav-h: 54px;
+  --sidebar-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow: hidden; }
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+  background: var(--s1); border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; gap: 0; z-index: 100;
+  padding: 0 16px; justify-content: space-between;
+}
+.nav-brand { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 1px; }
+.nav-center { display: flex; align-items: center; gap: 0; }
+.nav-tab {
+  padding: 0 18px; height: var(--nav-h); background: none; border: none;
+  color: var(--t2); font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: var(--s2); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.role-badge {
+  padding: 4px 10px; border-radius: 20px; font-family: var(--mono);
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-mid);
+}
+.role-select {
+  background: var(--s2); border: 1px solid var(--b2); color: var(--t2);
+  font-family: var(--mono); font-size: 11px; padding: 4px 8px; border-radius: 6px;
+  cursor: pointer; outline: none;
+}
+.role-select:focus { border-color: var(--accent); }
+
+/* ── LAYOUT ── */
+.layout {
+  display: flex; padding-top: var(--nav-h); height: 100vh;
+}
+.sidebar {
+  width: var(--sidebar-w); background: var(--s1); border-right: 1px solid var(--b1);
+  display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+  padding: 12px 0;
+}
+.sidebar-section { padding: 0 12px; margin-bottom: 4px; }
+.sidebar-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); padding: 10px 4px 6px; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; color: var(--t2); cursor: pointer;
+  transition: all 0.12s; border: 1px solid transparent; margin-bottom: 2px;
+  background: none;
+}
+.sidebar-item:hover { color: var(--text); background: var(--s2); }
+.sidebar-item.active { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-mid); font-weight: 600; }
+.sidebar-item .icon { font-size: 15px; width: 20px; text-align: center; }
+.sidebar-item .badge-count {
+  margin-left: auto; background: var(--err); color: #fff;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+.sidebar-item .badge-ok {
+  margin-left: auto; background: rgba(0,229,160,0.15); color: var(--ok);
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.view { display: none; padding: 0; min-height: calc(100vh - var(--nav-h)); }
+.view.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--b1);
+  background: var(--s1); display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 50;
+}
+.page-title { font-size: 17px; font-weight: 700; }
+.page-sub { font-size: 12px; color: var(--t2); margin-top: 2px; }
+.btn {
+  padding: 8px 16px; border-radius: var(--r); border: none;
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-outline { background: none; color: var(--t2); border: 1px solid var(--b2); }
+.btn-outline:hover { color: var(--text); border-color: var(--b1); background: var(--s2); }
+.btn-ghost { background: none; color: var(--t2); border: none; padding: 6px 10px; }
+.btn-ghost:hover { color: var(--text); background: var(--s2); border-radius: 6px; }
+.btn-ok { background: rgba(0,229,160,0.15); color: var(--ok); border: 1px solid rgba(0,229,160,0.3); }
+.btn-ok:hover { background: rgba(0,229,160,0.25); }
+.btn-warn { background: rgba(245,197,24,0.12); color: var(--warn); border: 1px solid rgba(245,197,24,0.3); }
+.btn-err { background: rgba(255,63,91,0.1); color: var(--err); border: 1px solid rgba(255,63,91,0.3); }
+.btn-err:hover { background: rgba(255,63,91,0.2); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-xs { padding: 3px 8px; font-size: 11px; border-radius: 6px; }
+
+/* ── CONTENT GRID ── */
+.content { padding: 20px 24px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* ── CARDS ── */
+.card { background: var(--s1); border: 1px solid var(--b1); border-radius: var(--r); }
+.card-header { padding: 14px 16px; border-bottom: 1px solid var(--b1); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: var(--t2); text-transform: uppercase; }
+.card-body { padding: 16px; }
+
+/* ── KPI ── */
+.kpi-card { background: var(--s1); border: 1px solid var(--b1); border-radius: var(--r); padding: 16px; }
+.kpi-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t2); margin-bottom: 8px; }
+.kpi-val { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1; }
+.kpi-delta { font-size: 11px; color: var(--t2); margin-top: 4px; font-family: var(--mono); }
+.kpi-accent { border-top: 3px solid var(--accent); }
+
+/* ── AGENDA ── */
+.agenda-layout { display: grid; grid-template-columns: 260px 1fr; gap: 0; height: calc(100vh - var(--nav-h) - 73px); }
+.agenda-sidebar { background: var(--s1); border-right: 1px solid var(--b1); overflow-y: auto; }
+.agenda-main { overflow-y: auto; }
+.agenda-date-header { padding: 12px 16px; border-bottom: 1px solid var(--b1); display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.agenda-date-title { font-size: 14px; font-weight: 700; }
+.agenda-date-sub { font-size: 11px; color: var(--t2); }
+.prof-selector { padding: 12px; }
+.prof-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); margin-bottom: 8px; }
+.prof-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px;
+  cursor: pointer; transition: all 0.12s; margin-bottom: 4px; border: 1px solid transparent;
+}
+.prof-item:hover { background: var(--s2); }
+.prof-item.active { background: var(--accent-dim); border-color: var(--accent-mid); }
+.prof-avatar {
+  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0;
+}
+.prof-name { font-size: 13px; font-weight: 500; }
+.prof-esp { font-size: 10px; color: var(--t2); }
+.prof-citas { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--t2); }
+
+/* ── TIME SLOTS ── */
+.time-grid { padding: 0; }
+.time-row {
+  display: grid; grid-template-columns: 60px 1fr; border-bottom: 1px solid var(--b1);
+  min-height: 64px; align-items: stretch;
+}
+.time-label { padding: 8px 12px; font-family: var(--mono); font-size: 11px; color: var(--t3); text-align: right; border-right: 1px solid var(--b1); display: flex; align-items: flex-start; padding-top: 10px; }
+.time-slot { padding: 4px 8px; cursor: pointer; transition: background 0.1s; }
+.time-slot:hover { background: var(--s2); }
+.time-slot.has-cita { cursor: default; padding: 0; }
+.cita-block {
+  margin: 3px; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  transition: all 0.15s; border-left: 3px solid; position: relative;
+}
+.cita-block:hover { filter: brightness(1.1); }
+.cita-block.confirmada { background: rgba(61,217,235,0.1); border-left-color: var(--accent); }
+.cita-block.espera { background: rgba(245,197,24,0.08); border-left-color: var(--warn); }
+.cita-block.en-consulta { background: rgba(0,229,160,0.1); border-left-color: var(--ok); }
+.cita-block.cancelada { background: rgba(255,63,91,0.06); border-left-color: var(--err); opacity: 0.7; }
+.cita-block.atendida { background: var(--s2); border-left-color: var(--t3); opacity: 0.6; }
+.cita-hora { font-family: var(--mono); font-size: 10px; font-weight: 600; }
+.cita-paciente { font-size: 13px; font-weight: 600; margin-top: 2px; }
+.cita-servicio { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.cita-estado-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.cita-actions { position: absolute; top: 6px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+.cita-block:hover .cita-actions { opacity: 1; }
+.cita-action-btn {
+  width: 22px; height: 22px; border-radius: 4px; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 11px;
+  background: var(--b2); color: var(--t2); transition: all 0.1s;
+}
+.cita-action-btn:hover { background: var(--accent); color: #000; }
+.libre-slot {
+  display: flex; align-items: center; justify-content: center; height: 56px;
+  color: var(--t3); font-size: 11px; cursor: pointer; transition: all 0.15s;
+  border-radius: 6px; margin: 4px 8px; border: 1px dashed transparent;
+}
+.libre-slot:hover { color: var(--accent); border-color: var(--accent-mid); background: var(--accent-dim); }
+
+/* ── BADGE ── */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; font-family: var(--mono); letter-spacing: 0.5px; }
+.badge-accent { background: var(--accent-dim); color: var(--accent); }
+.badge-ok { background: rgba(0,229,160,0.1); color: var(--ok); }
+.badge-warn { background: rgba(245,197,24,0.1); color: var(--warn); }
+.badge-err { background: rgba(255,63,91,0.08); color: var(--err); }
+.badge-muted { background: var(--s3); color: var(--t2); }
+.badge-info { background: rgba(61,217,235,0.1); color: var(--info); }
+
+/* ── TABLA ── */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { text-align: left; padding: 10px 14px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--t2); border-bottom: 1px solid var(--b1); }
+.table td { padding: 12px 14px; border-bottom: 1px solid var(--b1); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--s2); }
+.table .mono { font-family: var(--mono); }
+
+/* ── PACIENTE DETAIL (scoped al modal, NO en sidebar global) ── */
+.paciente-panel {
+  width: 400px; background: var(--s1); border-left: 1px solid var(--b1);
+  display: flex; flex-direction: column; flex-shrink: 0;
+  height: calc(100vh - var(--nav-h));
+  position: relative; /* Importante: NO fixed, NO absolute global */
+}
+.paciente-panel.hidden { display: none; }
+.pac-header { padding: 16px; border-bottom: 1px solid var(--b1); display: flex; align-items: center; justify-content: space-between; }
+.pac-avatar-wrap { display: flex; align-items: center; gap: 12px; }
+.pac-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-dim); border: 2px solid var(--accent-mid); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--accent); }
+.pac-name { font-size: 16px; font-weight: 700; }
+.pac-rut { font-family: var(--mono); font-size: 11px; color: var(--t2); margin-top: 2px; }
+.pac-tabs { display: flex; border-bottom: 1px solid var(--b1); }
+.pac-tab { flex: 1; padding: 10px; background: none; border: none; color: var(--t2); font-family: var(--sans); font-size: 12px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; text-align: center; }
+.pac-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.pac-content { flex: 1; overflow-y: auto; padding: 16px; }
+.pac-section-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; margin-top: 16px; }
+.pac-section-title:first-child { margin-top: 0; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--b1); font-size: 13px; }
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--t2); font-size: 12px; }
+.info-val { font-weight: 500; text-align: right; }
+.nota-cifrada {
+  background: var(--s2); border: 1px solid var(--b2); border-radius: var(--r);
+  padding: 14px; margin-bottom: 12px; position: relative;
+}
+.nota-cifrada-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.lock-icon { font-size: 12px; }
+.nota-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+.nota-fecha { font-family: var(--mono); font-size: 10px; color: var(--t3); margin-left: auto; }
+.nota-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+.nota-autor { font-size: 10px; color: var(--t3); margin-top: 6px; font-family: var(--mono); }
+.nota-textarea {
+  width: 100%; background: var(--s2); border: 1.5px solid var(--b2); border-radius: 8px;
+  color: var(--text); font-family: var(--sans); font-size: 13px; padding: 12px;
+  resize: none; outline: none; min-height: 100px; transition: border-color 0.2s; line-height: 1.6;
+}
+.nota-textarea:focus { border-color: var(--accent); }
+
+/* Servicios en consulta */
+.servicio-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; background: var(--s2); border: 1px solid var(--b1);
+  border-radius: 8px; margin-bottom: 6px;
+}
+.servicio-name { font-size: 13px; font-weight: 500; }
+.servicio-code { font-family: var(--mono); font-size: 10px; color: var(--t2); margin-top: 2px; }
+.servicio-precio { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+
+/* ── RECEPCION VIEW: lista de citas del día ── */
+.cita-list-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  border-bottom: 1px solid var(--b1); cursor: pointer; transition: background 0.12s;
+}
+.cita-list-item:hover { background: var(--s2); }
+.cita-list-item.selected { background: var(--accent-dim); }
+.cita-list-hora { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--accent); width: 45px; flex-shrink: 0; }
+.cita-list-info { flex: 1; min-width: 0; }
+.cita-list-name { font-size: 14px; font-weight: 600; }
+.cita-list-detail { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.cita-list-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--s1); border: 1px solid var(--b1); border-radius: 14px;
+  width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+  transform: translateY(10px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header { padding: 20px 20px 14px; border-bottom: 1px solid var(--b1); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close { background: none; border: none; color: var(--t2); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.1s; }
+.modal-close:hover { color: var(--text); background: var(--s2); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--b1); display: flex; gap: 10px; justify-content: flex-end; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 11px; font-weight: 700; color: var(--t2); letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%; background: var(--s2); border: 1.5px solid var(--b2); border-radius: 8px;
+  color: var(--text); font-family: var(--sans); font-size: 13px; padding: 10px 12px;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-select {
+  width: 100%; background: var(--s2); border: 1.5px solid var(--b2); border-radius: 8px;
+  color: var(--text); font-family: var(--sans); font-size: 13px; padding: 10px 12px;
+  outline: none; cursor: pointer;
+}
+.form-select:focus { border-color: var(--accent); }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── CHECKOUT ── */
+.checkout-section { padding: 14px 16px; border-bottom: 1px solid var(--b1); }
+.checkout-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--b1); }
+.checkout-item:last-child { border-bottom: none; }
+.checkout-total { display: flex; justify-content: space-between; padding: 14px 16px; font-weight: 700; font-size: 16px; background: var(--s2); }
+.checkout-total .mono { font-family: var(--mono); color: var(--accent); }
+.pay-method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; }
+.pay-method-btn {
+  padding: 12px 8px; border: 1.5px solid var(--b2); border-radius: var(--r);
+  background: var(--s2); color: var(--t2); font-family: var(--sans); font-size: 12px;
+  font-weight: 600; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.pay-method-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.pay-method-btn.selected { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+/* ── AGENDA SEMANA ── */
+.week-header { display: grid; grid-template-columns: 60px repeat(6, 1fr); border-bottom: 1px solid var(--b1); background: var(--s1); position: sticky; top: 0; z-index: 10; }
+.week-day { padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 600; border-right: 1px solid var(--b1); }
+.week-day.today { color: var(--accent); }
+.week-day .day-num { font-family: var(--mono); font-size: 20px; font-weight: 700; display: block; }
+.week-day .day-name { font-size: 10px; color: var(--t2); text-transform: uppercase; letter-spacing: 1px; }
+.week-grid { display: grid; grid-template-columns: 60px repeat(6, 1fr); }
+.week-time-label { font-family: var(--mono); font-size: 10px; color: var(--t3); text-align: right; padding: 6px 8px; border-right: 1px solid var(--b1); border-bottom: 1px solid var(--b1); }
+.week-cell { border-right: 1px solid var(--b1); border-bottom: 1px solid var(--b1); min-height: 48px; padding: 2px; cursor: pointer; transition: background 0.1s; position: relative; }
+.week-cell:hover { background: var(--s2); }
+.week-event { border-radius: 5px; padding: 4px 6px; font-size: 11px; font-weight: 600; cursor: pointer; border-left: 3px solid; margin: 1px; }
+.week-event.confirmada { background: rgba(61,217,235,0.12); border-left-color: var(--accent); color: var(--accent); }
+.week-event.espera { background: rgba(245,197,24,0.1); border-left-color: var(--warn); color: var(--warn); }
+.week-event.en-consulta { background: rgba(0,229,160,0.12); border-left-color: var(--ok); color: var(--ok); }
+
+/* ── ALERTA ── */
+.alert-bar {
+  padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px;
+  border-radius: 8px; margin-bottom: 14px;
+}
+.alert-bar.warn { background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.2); color: var(--warn); }
+.alert-bar.info { background: rgba(61,217,235,0.08); border: 1px solid rgba(61,217,235,0.2); color: var(--info); }
+.alert-bar.ok { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); color: var(--ok); }
+.alert-bar.err { background: rgba(255,63,91,0.08); border: 1px solid rgba(255,63,91,0.2); color: var(--err); }
+
+/* ── HISTORIAL TABLA ── */
+.hx-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--b1); font-size: 12px; }
+.hx-row:last-child { border-bottom: none; }
+.hx-fecha { font-family: var(--mono); color: var(--t2); width: 80px; flex-shrink: 0; }
+.hx-desc { flex: 1; }
+.hx-monto { font-family: var(--mono); color: var(--accent); text-align: right; flex-shrink: 0; }
+
+/* ── DASHBOARD ── */
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr) 2fr; gap: 14px; padding: 20px 24px 14px; border-bottom: 1px solid var(--b1); }
+.dash-section { padding: 20px 24px; }
+.dash-section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); margin-bottom: 14px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t3); }
+
+/* ── SEPARATOR ── */
+.sep { height: 1px; background: var(--b1); margin: 12px 0; }
+
+/* ── DIVIDER TAG ── */
+.div-tag { text-align: center; position: relative; margin: 14px 0; }
+.div-tag::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--b1); }
+.div-tag span { position: relative; background: var(--s1); padding: 0 10px; font-size: 10px; color: var(--t3); font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; }
+
+/* ── TOOLTIP (simple) ── */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+  background: var(--s3); color: var(--text); font-size: 11px; padding: 4px 8px; border-radius: 6px;
+  white-space: nowrap; z-index: 500; border: 1px solid var(--b2); pointer-events: none;
+}
+
+/* ── VIEW AGENDA layout ── */
+.agenda-view-wrap { display: flex; height: calc(100vh - var(--nav-h) - 73px); }
+.agenda-col-left { width: 260px; flex-shrink: 0; border-right: 1px solid var(--b1); display: flex; flex-direction: column; background: var(--s1); }
+.agenda-col-center { flex: 1; overflow-y: auto; }
+.agenda-col-right { width: 400px; flex-shrink: 0; border-left: 1px solid var(--b1); display: flex; flex-direction: column; }
+.agenda-col-right.hidden { display: none; }
+
+/* Horario libre add */
+.add-slot-hint { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--t3); padding: 6px 8px; cursor: pointer; border-radius: 6px; margin: 3px; border: 1px dashed transparent; transition: all 0.15s; }
+.add-slot-hint:hover { color: var(--accent); border-color: var(--accent-mid); background: var(--accent-dim); }
+
+/* Busqueda pacientes */
+.search-input {
+  width: 100%; background: var(--s2); border: 1.5px solid var(--b2);
+  border-radius: 8px; color: var(--text); font-family: var(--sans); font-size: 13px;
+  padding: 9px 12px 9px 36px; outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--t3); font-size: 14px; pointer-events: none; }
+
+/* Pacientes lista recepcion */
+.pac-search-result {
+  padding: 10px 14px; border-bottom: 1px solid var(--b1);
+  cursor: pointer; transition: background 0.1s; display: flex; align-items: center; gap: 10px;
+}
+.pac-search-result:hover { background: var(--s2); }
+
+/* Estado consultorio */
+.consultorio-status { padding: 12px 16px; border-bottom: 1px solid var(--b1); }
+.estado-pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; font-family: var(--mono);
+}
+.estado-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div style="display:flex;align-items:center;gap:20px;">
+    <span class="nav-brand">⚕ BENDERAND</span>
+    <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">Clínica Demo</span>
+  </div>
+  <div class="nav-center" id="topNavTabs">
+    <!-- Tabs se renderizan por rol -->
+  </div>
+  <div class="nav-right">
+    <select class="role-select" onchange="switchRole(this.value)" id="roleSelect">
+      <option value="recepcionista">Recepcionista</option>
+      <option value="medico">Médico</option>
+      <option value="admin">Admin</option>
+    </select>
+    <span class="role-badge" id="roleBadge">Recepcionista</span>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Se rellena por JS según rol -->
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: AGENDA (compartida pero con capacidades por rol) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-agenda">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📅 Agenda del Día</div>
+          <div class="page-sub" id="agendaDateSub">Lunes 31 de Marzo, 2026</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-outline btn-sm" onclick="prevDay()">← Anterior</button>
+          <button class="btn btn-outline btn-sm" onclick="goToday()" style="color:var(--accent);border-color:var(--accent-mid);">Hoy</button>
+          <button class="btn btn-outline btn-sm" onclick="nextDay()">Siguiente →</button>
+          <div id="agendaNewCitaBtn"></div>
+        </div>
+      </div>
+
+      <div class="agenda-view-wrap">
+        <!-- Col izq: profesionales + mini info -->
+        <div class="agenda-col-left">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--b1);">
+            <div class="prof-label">Profesionales</div>
+          </div>
+          <div style="overflow-y:auto;flex:1;" id="profList">
+            <!-- JS fill -->
+          </div>
+          <div style="padding:12px;border-top:1px solid var(--b1);">
+            <div class="dash-section-title" style="margin-bottom:10px;">Resumen hoy</div>
+            <div style="display:flex;flex-direction:column;gap:6px;" id="agendaResumen">
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t2);">Total citas</span>
+                <span class="badge badge-accent" style="font-family:var(--mono);">8</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t2);">Atendidas</span>
+                <span class="badge badge-ok">3</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t2);">En espera</span>
+                <span class="badge badge-warn">2</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t2);">Pendientes</span>
+                <span class="badge badge-muted">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col centro: time grid -->
+        <div class="agenda-col-center" id="agendaTimeGrid">
+          <!-- JS fill -->
+        </div>
+
+        <!-- Col der: detalle paciente SCOPED a esta vista -->
+        <div class="agenda-col-right hidden" id="agendaPacientePanel">
+          <!-- JS fill cuando se hace click en una cita -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: RECEPCIÓN (lista citas + check-in) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-recepcion">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🪑 Recepción</div>
+          <div class="page-sub">Registro de llegada y gestión de sala de espera</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="openModal('modalNuevaCita')">+ Nueva cita</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalBuscarPac')">🔍 Buscar Paciente</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:380px 1fr;height:calc(100vh - var(--nav-h) - 73px);">
+        <!-- Lista citas del día -->
+        <div style="border-right:1px solid var(--b1);overflow-y:auto;background:var(--s1);">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--b1);">
+            <div class="search-wrap">
+              <span class="search-icon">🔍</span>
+              <input class="search-input" placeholder="Buscar paciente o RUT..." oninput="filterCitasRecep(this.value)">
+            </div>
+          </div>
+          <div id="citasRecepList">
+            <!-- JS fill -->
+          </div>
+        </div>
+
+        <!-- Panel derecho: detalle cita seleccionada o vacío -->
+        <div style="overflow-y:auto;" id="recepDetallePanel">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--t3);gap:12px;">
+            <div style="font-size:48px;opacity:0.3;">🪑</div>
+            <div style="font-size:14px;">Selecciona una cita para ver detalles</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: CONSULTA (solo médico/profesional) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-consulta">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🩺 Consulta Activa</div>
+          <div class="page-sub" id="consultaPacSub">Selecciona un paciente en espera para iniciar</div>
+        </div>
+        <div style="display:flex;gap:8px;" id="consultaHeaderActions">
+          <!-- JS fill según estado -->
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:300px 1fr 360px;height:calc(100vh - var(--nav-h) - 73px);">
+        <!-- Cola de espera -->
+        <div style="border-right:1px solid var(--b1);background:var(--s1);overflow-y:auto;">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--b1);">
+            <div class="prof-label">En espera ahora</div>
+          </div>
+          <div id="colaEspera">
+            <!-- JS fill -->
+          </div>
+          <div style="padding:12px 14px;border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);margin-top:8px;">
+            <div class="prof-label">Próximas citas</div>
+          </div>
+          <div id="proximasCitas">
+            <!-- JS fill -->
+          </div>
+        </div>
+
+        <!-- Centro: notas clínicas -->
+        <div style="overflow-y:auto;padding:20px 24px;" id="consultaMain">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--t3);gap:12px;">
+            <div style="font-size:48px;opacity:0.3;">🩺</div>
+            <div style="font-size:14px;">Selecciona un paciente para iniciar consulta</div>
+          </div>
+        </div>
+
+        <!-- Servicios y cobro -->
+        <div style="border-left:1px solid var(--b1);display:flex;flex-direction:column;background:var(--s1);">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--b1);">
+            <div class="prof-label">Prestaciones de esta consulta</div>
+          </div>
+          <div style="flex:1;overflow-y:auto;" id="consultaServicios">
+            <div style="padding:16px;color:var(--t3);font-size:12px;text-align:center;margin-top:20px;">Inicia una consulta para agregar prestaciones</div>
+          </div>
+          <div id="consultaFooter" style="border-top:1px solid var(--b1);">
+            <!-- cobro -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: PACIENTES (admin + recepcionista) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-pacientes">
+      <div class="page-header">
+        <div>
+          <div class="page-title">👥 Pacientes</div>
+          <div class="page-sub">Base de datos de pacientes registrados</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="">Exportar</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalNuevoPac')">+ Nuevo Paciente</button>
+        </div>
+      </div>
+      <div style="padding:16px 24px;">
+        <div class="search-wrap" style="max-width:400px;margin-bottom:16px;">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" placeholder="Buscar por nombre, RUT, teléfono..." oninput="filterPacientes(this.value)">
+        </div>
+        <div class="card">
+          <table class="table" id="pacientesTable">
+            <thead>
+              <tr>
+                <th>Paciente</th><th>RUT</th><th>Teléfono</th><th>Última visita</th><th>Dr. tratante</th><th>Estado</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="pacientesBody">
+              <!-- JS fill -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: DASHBOARD (admin) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📊 Dashboard</div>
+          <div class="page-sub">Resumen del día — Marzo 2026</div>
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="kpi-card kpi-accent">
+          <div class="kpi-label">Consultas hoy</div>
+          <div class="kpi-val" style="color:var(--accent);">8</div>
+          <div class="kpi-delta">↑ 2 vs ayer</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ingresos hoy</div>
+          <div class="kpi-val">$480K</div>
+          <div class="kpi-delta" style="color:var(--ok);">↑ 12% vs lunes</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pacientes atendidos</div>
+          <div class="kpi-val">5</div>
+          <div class="kpi-delta" style="color:var(--warn);">3 en espera</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Boletas emitidas</div>
+          <div class="kpi-val">5</div>
+          <div class="kpi-delta">DTE automático ✓</div>
+        </div>
+        <div class="kpi-card" style="background:var(--s2);">
+          <div class="kpi-label">Pendientes cobro</div>
+          <div class="kpi-val" style="color:var(--warn);">$120K</div>
+          <div class="kpi-delta" style="color:var(--warn);">2 pacientes sin cobrar</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 24px 24px;">
+        <!-- Citas por profesional -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Consultas por profesional</span></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prof-avatar" style="background:rgba(61,217,235,0.15);color:var(--accent);font-size:12px;">DR</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;">Dra. Rodríguez</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                    <div style="flex:1;height:4px;background:var(--b2);border-radius:2px;">
+                      <div style="width:75%;height:100%;background:var(--accent);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-family:var(--mono);font-size:11px;color:var(--t2);">3/4</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prof-avatar" style="background:rgba(0,229,160,0.15);color:var(--ok);font-size:12px;">DM</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;">Dr. Morales</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                    <div style="flex:1;height:4px;background:var(--b2);border-radius:2px;">
+                      <div style="width:50%;height:100%;background:var(--ok);border-radius:2px;"></div>
+                    </div>
+                    <span style="font-family:var(--mono);font-size:11px;color:var(--t2);">2/4</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="prof-avatar" style="background:rgba(192,132,252,0.15);color:#c084fc;font-size:12px;">DV</div>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:600;">Dr. Vargas</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                    <div style="flex:1;height:4px;background:var(--b2);border-radius:2px;">
+                      <div style="width:0%;height:100%;background:#c084fc;border-radius:2px;"></div>
+                    </div>
+                    <span style="font-family:var(--mono);font-size:11px;color:var(--t2);">0/0 🔴 ausente</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Últimas actividades -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Últimas actividades</span></div>
+          <div class="card-body" style="padding:0;">
+            <div class="hx-row" style="padding:10px 16px;">
+              <div class="hx-fecha">14:23</div>
+              <div class="hx-desc"><span class="badge badge-ok" style="margin-right:6px;">Cobrado</span> Ana Molina — Consulta + Rx</div>
+              <div class="hx-monto">$85.000</div>
+            </div>
+            <div class="hx-row" style="padding:10px 16px;">
+              <div class="hx-fecha">13:45</div>
+              <div class="hx-desc"><span class="badge badge-accent" style="margin-right:6px;">Llegó</span> Pedro Soto — Check-in</div>
+              <div class="hx-monto">—</div>
+            </div>
+            <div class="hx-row" style="padding:10px 16px;">
+              <div class="hx-fecha">13:10</div>
+              <div class="hx-desc"><span class="badge badge-ok" style="margin-right:6px;">DTE</span> Boleta Honor. #482 — $60.000</div>
+              <div class="hx-monto">$60.000</div>
+            </div>
+            <div class="hx-row" style="padding:10px 16px;">
+              <div class="hx-fecha">12:30</div>
+              <div class="hx-desc"><span class="badge badge-warn" style="margin-right:6px;">Agenda</span> Nueva cita Dr. Morales 15:00</div>
+              <div class="hx-monto">—</div>
+            </div>
+            <div class="hx-row" style="padding:10px 16px;">
+              <div class="hx-fecha">11:55</div>
+              <div class="hx-desc"><span class="badge badge-err" style="margin-right:6px;">Canceló</span> Luis Pinto — Cita 12:00</div>
+              <div class="hx-monto">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: HONORARIOS / COBROS -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-cobros">
+      <div class="page-header">
+        <div>
+          <div class="page-title">💳 Cobros y Honorarios</div>
+          <div class="page-sub">Documentos tributarios emitidos hoy</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm">Libro IVA</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalNuevoCobro')">+ Emitir boleta</button>
+        </div>
+      </div>
+      <div style="padding:20px 24px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="kpi-card kpi-accent">
+            <div class="kpi-label">Ingresos hoy</div>
+            <div class="kpi-val" style="color:var(--accent);">$480.000</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Boletas hon.</div>
+            <div class="kpi-val">5</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sin cobrar</div>
+            <div class="kpi-val" style="color:var(--warn);">$120.000</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Timbres SII</div>
+            <div class="kpi-val">4.318</div>
+            <div class="kpi-delta">disponibles</div>
+          </div>
+        </div>
+        <div class="card">
+          <table class="table">
+            <thead>
+              <tr><th>#</th><th>Paciente</th><th>Médico</th><th>Prestación</th><th>Total</th><th>Estado DTE</th><th>Hora</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--t2);">HON-482</td>
+                <td><strong>Ana Molina</strong></td>
+                <td>Dra. Rodríguez</td>
+                <td>Consulta + Radiografía</td>
+                <td class="mono" style="color:var(--accent);">$85.000</td>
+                <td><span class="badge badge-ok">✓ ACE SII</span></td>
+                <td class="mono" style="color:var(--t2);">14:23</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--t2);">HON-481</td>
+                <td><strong>María Soto</strong></td>
+                <td>Dr. Morales</td>
+                <td>Consulta general</td>
+                <td class="mono" style="color:var(--accent);">$60.000</td>
+                <td><span class="badge badge-ok">✓ ACE SII</span></td>
+                <td class="mono" style="color:var(--t2);">13:10</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--t2);">HON-480</td>
+                <td><strong>Carlos Pérez</strong></td>
+                <td>Dra. Rodríguez</td>
+                <td>Control post-op</td>
+                <td class="mono" style="color:var(--accent);">$55.000</td>
+                <td><span class="badge badge-ok">✓ ACE SII</span></td>
+                <td class="mono" style="color:var(--t2);">11:45</td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--t2);">—</td>
+                <td><strong>Pedro Soto</strong></td>
+                <td>Dra. Rodríguez</td>
+                <td>Consulta general</td>
+                <td class="mono" style="color:var(--warn);">$60.000</td>
+                <td><span class="badge badge-warn">⏳ Pendiente</span></td>
+                <td class="mono" style="color:var(--t2);">En consulta</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- VIEW: SEMANA (admin ve toda la agenda semanal) -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="view" id="view-semana">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📆 Vista Semanal</div>
+          <div class="page-sub">Sem. 14 · 31 Mar – 5 Abr 2026</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm">← Semana</button>
+          <button class="btn btn-outline btn-sm" style="color:var(--accent);border-color:var(--accent-mid);">Esta semana</button>
+          <button class="btn btn-outline btn-sm">Semana →</button>
+        </div>
+      </div>
+      <div style="overflow:auto;height:calc(100vh - var(--nav-h) - 73px);">
+        <div id="weekGrid"><!-- JS fill --></div>
+      </div>
+    </div>
+
+    <!-- VIEW: RRHH placeholder -->
+    <div class="view" id="view-rrhh">
+      <div class="page-header"><div class="page-title">👥 RRHH</div></div>
+      <div style="padding:24px;color:var(--t2);">Módulo M21 activo — empleados, asistencia, vacaciones y liquidaciones.</div>
+    </div>
+
+    <!-- VIEW: CONFIG placeholder -->
+    <div class="view" id="view-config">
+      <div class="page-header"><div class="page-title">⚙️ Configuración</div></div>
+      <div style="padding:24px;color:var(--t2);">Módulos activos, etiquetas, SII, bot WhatsApp.</div>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODALES (todos aislados, no persisten entre vistas) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- Modal: Nueva Cita -->
+<div class="modal-overlay" id="modalNuevaCita" onclick="closeModalOutside(event,'modalNuevaCita')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">📅 Nueva Cita</div>
+      <button class="modal-close" onclick="closeModal('modalNuevaCita')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Paciente</label>
+          <input class="form-input" placeholder="Buscar por nombre o RUT...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Profesional</label>
+          <select class="form-select">
+            <option>Dra. Rodríguez — Medicina General</option>
+            <option>Dr. Morales — Traumatología</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <input class="form-input" type="date" value="2026-03-31">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hora</label>
+          <select class="form-select">
+            <option>09:00</option><option>09:30</option><option>10:00</option>
+            <option>10:30</option><option>11:00</option><option>14:00</option>
+            <option>15:00</option><option>15:30</option><option>16:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de consulta</label>
+        <select class="form-select">
+          <option>Consulta general — $60.000</option>
+          <option>Control — $45.000</option>
+          <option>Consulta + Examen — $85.000</option>
+          <option>Primera vez — $75.000</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observaciones</label>
+        <textarea class="nota-textarea" rows="2" placeholder="Motivo de consulta, indicaciones previas..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNuevaCita')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modalNuevaCita')">✓ Confirmar Cita</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Buscar Paciente -->
+<div class="modal-overlay" id="modalBuscarPac" onclick="closeModalOutside(event,'modalBuscarPac')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🔍 Buscar Paciente</div>
+      <button class="modal-close" onclick="closeModal('modalBuscarPac')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-wrap" style="margin-bottom:16px;">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" placeholder="Nombre, RUT o teléfono..." autofocus>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <div class="pac-search-result">
+          <div class="prof-avatar" style="background:var(--accent-dim);color:var(--accent);">AM</div>
+          <div><div style="font-size:13px;font-weight:600;">Ana Molina Ríos</div><div style="font-size:11px;color:var(--t2);font-family:var(--mono);">12.456.789-0 · +56 9 8123 4567</div></div>
+        </div>
+        <div class="pac-search-result">
+          <div class="prof-avatar" style="background:rgba(0,229,160,0.12);color:var(--ok);">PS</div>
+          <div><div style="font-size:13px;font-weight:600;">Pedro Soto Lara</div><div style="font-size:11px;color:var(--t2);font-family:var(--mono);">9.876.543-1 · +56 9 7234 5678</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalBuscarPac')">Cerrar</button>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('modalBuscarPac')">+ Nuevo paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nuevo Paciente -->
+<div class="modal-overlay" id="modalNuevoPac" onclick="closeModalOutside(event,'modalNuevoPac')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">👤 Nuevo Paciente</div>
+      <button class="modal-close" onclick="closeModal('modalNuevoPac')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Nombres</label>
+          <input class="form-input" placeholder="María José">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellidos</label>
+          <input class="form-input" placeholder="González Pérez">
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">RUT</label>
+          <input class="form-input" placeholder="12.345.678-9">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input class="form-input" type="date">
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Teléfono / WhatsApp</label>
+          <input class="form-input" placeholder="+56 9 1234 5678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="paciente@email.cl">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Médico tratante</label>
+        <select class="form-select">
+          <option>Dra. Rodríguez — Medicina General</option>
+          <option>Dr. Morales — Traumatología</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Previsión</label>
+        <select class="form-select">
+          <option>FONASA A</option><option>FONASA B</option><option>FONASA C</option><option>FONASA D</option>
+          <option>Isapre Cruz Blanca</option><option>Isapre Colmena</option><option>Particular</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNuevoPac')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modalNuevoPac')">✓ Registrar Paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Cobro -->
+<div class="modal-overlay" id="modalCobrar" onclick="closeModalOutside(event,'modalCobrar')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">💳 Confirmar Cobro</div>
+      <button class="modal-close" onclick="closeModal('modalCobrar')">×</button>
+    </div>
+    <div class="checkout-section">
+      <div class="checkout-item">
+        <span>Consulta general</span>
+        <span class="mono">$60.000</span>
+      </div>
+      <div class="checkout-item">
+        <span>Examen de laboratorio</span>
+        <span class="mono">$25.000</span>
+      </div>
+    </div>
+    <div class="checkout-total">
+      <span>Total a cobrar</span>
+      <span class="mono">$85.000</span>
+    </div>
+    <div class="pay-method-grid">
+      <div class="pay-method-btn" onclick="selectPago(this)">💵<br>Efectivo</div>
+      <div class="pay-method-btn selected" onclick="selectPago(this)">💳<br>Tarjeta</div>
+      <div class="pay-method-btn" onclick="selectPago(this)">📱<br>Transferencia</div>
+    </div>
+    <div style="padding:0 16px 14px;">
+      <div class="alert-bar info" style="margin-bottom:0;">
+        <span>📄</span> Se emitirá Boleta de Honorarios automáticamente vía SII
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalCobrar')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modalCobrar');showToast('✓ Cobro confirmado — Boleta HON-483 emitida','ok')">✓ Confirmar Cobro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: nueva boleta manual -->
+<div class="modal-overlay" id="modalNuevoCobro" onclick="closeModalOutside(event,'modalNuevoCobro')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">📄 Emitir Boleta de Honorarios</div>
+      <button class="modal-close" onclick="closeModal('modalNuevoCobro')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Paciente</label><input class="form-input" placeholder="Buscar..."></div>
+        <div class="form-group"><label class="form-label">RUT Paciente</label><input class="form-input" placeholder="12.345.678-9"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Descripción prestación</label><input class="form-input" value="Honorarios Médicos — Consulta General"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Monto</label><input class="form-input" type="number" placeholder="60000"></div>
+        <div class="form-group"><label class="form-label">Médico</label><select class="form-select"><option>Dra. Rodríguez</option><option>Dr. Morales</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNuevoCobro')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modalNuevoCobro');showToast('✓ Boleta HON-484 emitida al SII','ok')">✓ Emitir Boleta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;">
+  <div id="toastInner" style="padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.5);min-width:280px;"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATOS MOCK
+// ══════════════════════════════════════════════════════
+const PROFESIONALES = [
+  { id:1, nombre:'Dra. Rodríguez', esp:'Medicina General', iniciales:'DR', color:'var(--accent)', bg:'rgba(61,217,235,0.12)' },
+  { id:2, nombre:'Dr. Morales', esp:'Traumatología', iniciales:'DM', color:'var(--ok)', bg:'rgba(0,229,160,0.12)' },
+  { id:3, nombre:'Dr. Vargas', esp:'Cardiología', iniciales:'DV', color:'#c084fc', bg:'rgba(192,132,252,0.12)' },
+];
+
+const CITAS = [
+  { id:1, profId:1, hora:'09:00', paciente:'Ana Molina', rut:'12.456.789-0', servicio:'Consulta general', estado:'atendida', tel:'+56 9 8123 4567', prev:'FONASA B', edad:34 },
+  { id:2, profId:1, hora:'10:00', paciente:'Pedro Soto', rut:'9.876.543-1', servicio:'Control post-operatorio', estado:'en-consulta', tel:'+56 9 7234 5678', prev:'Isapre Colmena', edad:52 },
+  { id:3, profId:1, hora:'11:00', paciente:'María López', rut:'15.234.567-2', servicio:'Primera vez', estado:'espera', tel:'+56 9 6345 6789', prev:'FONASA A', edad:28 },
+  { id:4, profId:1, hora:'14:00', paciente:'Carlos Fuentes', rut:'8.765.432-3', servicio:'Consulta general', estado:'confirmada', tel:'+56 9 5456 7890', prev:'Particular', edad:41 },
+  { id:5, profId:1, hora:'15:00', paciente:'Laura Vega', rut:'16.345.678-4', servicio:'Consulta general', estado:'confirmada', tel:'+56 9 4567 8901', prev:'FONASA C', edad:23 },
+  { id:6, profId:2, hora:'09:30', paciente:'Roberto Díaz', rut:'11.345.678-5', servicio:'Control rodilla', estado:'atendida', tel:'+56 9 3678 9012', prev:'Isapre Cruz Blanca', edad:55 },
+  { id:7, profId:2, hora:'10:30', paciente:'Claudia Muñoz', rut:'14.456.789-6', servicio:'Fractura codo', estado:'espera', tel:'+56 9 2789 0123', prev:'FONASA D', edad:39 },
+  { id:8, profId:2, hora:'15:00', paciente:'Javier Pinto', rut:'7.654.321-7', servicio:'Consulta trauma', estado:'confirmada', tel:'+56 9 1890 1234', prev:'FONASA A', edad:47 },
+];
+
+const SERVICIOS_CAT = [
+  { codigo:'C001', nombre:'Consulta general', precio:60000 },
+  { codigo:'C002', nombre:'Control', precio:45000 },
+  { codigo:'C003', nombre:'Primera vez', precio:75000 },
+  { codigo:'R001', nombre:'Radiografía simple', precio:25000 },
+  { codigo:'R002', nombre:'Examen laboratorio', precio:18000 },
+  { codigo:'P001', nombre:'Procedimiento menor', precio:35000 },
+  { codigo:'P002', nombre:'Infiltración', precio:55000 },
+];
+
+const PACIENTES_DB = [
+  { id:1, nombre:'Ana Molina Ríos', rut:'12.456.789-0', tel:'+56 9 8123 4567', email:'ana.m@gmail.com', ult:'14/03/2026', dr:'Dra. Rodríguez', prev:'FONASA B', edad:34, estado:'activo' },
+  { id:2, nombre:'Pedro Soto Lara', rut:'9.876.543-1', tel:'+56 9 7234 5678', email:'psoto@mail.cl', ult:'31/03/2026', dr:'Dra. Rodríguez', prev:'Isapre Colmena', edad:52, estado:'activo' },
+  { id:3, nombre:'María López Veas', rut:'15.234.567-2', tel:'+56 9 6345 6789', email:'mlopez@email.com', ult:'Nuevo', dr:'Dra. Rodríguez', prev:'FONASA A', edad:28, estado:'activo' },
+  { id:4, nombre:'Carlos Fuentes Gil', rut:'8.765.432-3', tel:'+56 9 5456 7890', email:'cfuentes@empresa.cl', ult:'18/02/2026', dr:'Dra. Rodríguez', prev:'Particular', edad:41, estado:'activo' },
+  { id:5, nombre:'Roberto Díaz Moreno', rut:'11.345.678-5', tel:'+56 9 3678 9012', email:'rdiaz@mail.cl', ult:'28/03/2026', dr:'Dr. Morales', prev:'Isapre Cruz Blanca', edad:55, estado:'activo' },
+  { id:6, nombre:'Claudia Muñoz Vera', rut:'14.456.789-6', tel:'+56 9 2789 0123', email:'cmunoz@gmail.com', ult:'31/03/2026', dr:'Dr. Morales', prev:'FONASA D', edad:39, estado:'activo' },
+];
+
+// ══════════════════════════════════════════════════════
+// ROLES Y MENÚS
+// ══════════════════════════════════════════════════════
+const ROLE_CONFIG = {
+  recepcionista: {
+    label: 'Recepcionista',
+    navTabs: ['agenda','recepcion','pacientes'],
+    sidebar: [
+      { id:'agenda', icon:'📅', label:'Agenda del día' },
+      { id:'recepcion', icon:'🪑', label:'Recepción / Sala espera', badge:'2' },
+      { id:'pacientes', icon:'👥', label:'Pacientes' },
+      { separator: true },
+      { id:'cobros', icon:'💳', label:'Cobros' },
+      { id:'config', icon:'⚙️', label:'Configuración' },
+    ],
+    defaultView: 'agenda',
+  },
+  medico: {
+    label: 'Médico',
+    navTabs: ['agenda','consulta','pacientes'],
+    sidebar: [
+      { id:'agenda', icon:'📅', label:'Mi agenda' },
+      { id:'consulta', icon:'🩺', label:'Consulta activa', badge:'2' },
+      { id:'pacientes', icon:'👥', label:'Mis pacientes' },
+      { separator: true },
+      { id:'cobros', icon:'💳', label:'Mis honorarios' },
+    ],
+    defaultView: 'agenda',
+  },
+  admin: {
+    label: 'Admin',
+    navTabs: ['dashboard','agenda','semana','pacientes','cobros'],
+    sidebar: [
+      { label_section: 'PANEL' },
+      { id:'dashboard', icon:'📊', label:'Dashboard' },
+      { label_section: 'AGENDA' },
+      { id:'agenda', icon:'📅', label:'Agenda hoy' },
+      { id:'semana', icon:'📆', label:'Vista semanal' },
+      { label_section: 'CLÍNICA' },
+      { id:'pacientes', icon:'👥', label:'Pacientes' },
+      { id:'cobros', icon:'💳', label:'Cobros / SII' },
+      { label_section: 'GESTIÓN' },
+      { id:'rrhh', icon:'🏥', label:'RRHH' },
+      { id:'config', icon:'⚙️', label:'Configuración' },
+    ],
+    defaultView: 'dashboard',
+  }
+};
+
+let currentRole = 'recepcionista';
+let currentView = 'agenda';
+let selectedProfId = 1;
+let consultaPacId = null;
+let consultaServicios = [];
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+function init() {
+  renderRole(currentRole);
+}
+
+function switchRole(role) {
+  currentRole = role;
+  document.getElementById('roleBadge').textContent = ROLE_CONFIG[role].label;
+  // Cerrar panel de paciente si estaba abierto
+  closePacientePanel();
+  // Reset consulta
+  consultaPacId = null;
+  consultaServicios = [];
+  renderRole(role);
+}
+
+function renderRole(role) {
+  const cfg = ROLE_CONFIG[role];
+  renderSidebar(cfg);
+  renderNavTabs(cfg);
+  navigateTo(cfg.defaultView);
+}
+
+function renderSidebar(cfg) {
+  const el = document.getElementById('sidebar');
+  el.innerHTML = '';
+  cfg.sidebar.forEach(item => {
+    if (item.separator) { el.innerHTML += '<div style="height:1px;background:var(--b1);margin:8px 0;"></div>'; return; }
+    if (item.label_section) {
+      el.innerHTML += `<div class="sidebar-section"><div class="sidebar-label">${item.label_section}</div></div>`;
+      return;
+    }
+    const badgeHtml = item.badge ? `<span class="badge-count">${item.badge}</span>` : '';
+    el.innerHTML += `
+      <div class="sidebar-section">
+        <div class="sidebar-item" id="sb-${item.id}" onclick="navigateTo('${item.id}')">
+          <span class="icon">${item.icon}</span>
+          <span>${item.label}</span>
+          ${badgeHtml}
+        </div>
+      </div>`;
+  });
+}
+
+function renderNavTabs(cfg) {
+  const el = document.getElementById('topNavTabs');
+  const labels = { dashboard:'Dashboard', agenda:'Agenda', recepcion:'Recepción', consulta:'Consulta', pacientes:'Pacientes', cobros:'Cobros', semana:'Semana', rrhh:'RRHH', config:'Config' };
+  el.innerHTML = cfg.navTabs.map(id =>
+    `<button class="nav-tab" id="navtab-${id}" onclick="navigateTo('${id}')">${labels[id]||id}</button>`
+  ).join('');
+}
+
+function navigateTo(viewId) {
+  // CRÍTICO: al cambiar de vista, siempre cerrar panel de paciente
+  // para que no persista entre menús
+  closePacientePanel();
+
+  // Deseleccionar citas en recepción
+  document.querySelectorAll('.cita-list-item').forEach(el => el.classList.remove('selected'));
+
+  currentView = viewId;
+
+  // Update views
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('view-' + viewId);
+  if (target) target.classList.add('active');
+
+  // Update sidebar
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const sb = document.getElementById('sb-' + viewId);
+  if (sb) sb.classList.add('active');
+
+  // Update nav tabs
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  const nt = document.getElementById('navtab-' + viewId);
+  if (nt) nt.classList.add('active');
+
+  // Render view específico
+  switch(viewId) {
+    case 'agenda': renderAgenda(); break;
+    case 'recepcion': renderRecepcion(); break;
+    case 'consulta': renderConsulta(); break;
+    case 'pacientes': renderPacientes(); break;
+    case 'semana': renderSemana(); break;
+  }
+
+  // Botón Nueva Cita solo si el rol lo permite
+  const newBtn = document.getElementById('agendaNewCitaBtn');
+  if (newBtn) {
+    if (currentRole !== 'medico') {
+      newBtn.innerHTML = '<button class="btn btn-primary btn-sm" onclick="openModal(\'modalNuevaCita\')">+ Nueva cita</button>';
+    } else {
+      newBtn.innerHTML = '';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// AGENDA
+// ══════════════════════════════════════════════════════
+function renderAgenda() {
+  renderProfList();
+  renderTimeGrid();
+}
+
+function renderProfList() {
+  const el = document.getElementById('profList');
+  const citsHoy = (profId) => CITAS.filter(c => c.profId === profId).length;
+  el.innerHTML = PROFESIONALES.map(p => `
+    <div class="prof-item ${selectedProfId===p.id?'active':''}" onclick="selectProf(${p.id})">
+      <div class="prof-avatar" style="background:${p.bg};color:${p.color};">${p.iniciales}</div>
+      <div>
+        <div class="prof-name" style="${selectedProfId===p.id?'color:var(--accent);':''}">${p.nombre}</div>
+        <div class="prof-esp">${p.esp}</div>
+      </div>
+      <span class="prof-citas">${citsHoy(p.id)} citas</span>
+    </div>`).join('');
+}
+
+function selectProf(id) {
+  selectedProfId = id;
+  closePacientePanel(); // Cerrar panel al cambiar de profesional
+  renderProfList();
+  renderTimeGrid();
+}
+
+function renderTimeGrid() {
+  const el = document.getElementById('agendaTimeGrid');
+  const horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+  const colacion = '13:00';
+  const citasProf = CITAS.filter(c => c.profId === selectedProfId);
+
+  el.innerHTML = horas.map(h => {
+    const cita = citasProf.find(c => c.hora === h);
+    if (h === colacion) {
+      return `<div class="time-row">
+        <div class="time-label">${h}</div>
+        <div style="padding:8px 12px;display:flex;align-items:center;gap:8px;color:var(--t3);font-size:12px;font-style:italic;">
+          🍽️ Colación
+        </div>
+      </div>`;
+    }
+    if (cita) {
+      const estadoLabel = { confirmada:'Confirmada', espera:'En sala de espera', 'en-consulta':'En consulta', atendida:'Atendida', cancelada:'Cancelada' };
+      const dotColor = { confirmada:'var(--accent)', espera:'var(--warn)', 'en-consulta':'var(--ok)', atendida:'var(--t3)', cancelada:'var(--err)' };
+      return `<div class="time-row">
+        <div class="time-label">${h}</div>
+        <div class="time-slot has-cita">
+          <div class="cita-block ${cita.estado}" onclick="abrirCita(${cita.id})">
+            <div class="cita-hora">
+              <span class="cita-estado-dot" style="background:${dotColor[cita.estado]||'var(--t3)'}"></span>
+              ${cita.hora} · <span style="text-transform:uppercase;font-size:9px;color:${dotColor[cita.estado]}">${estadoLabel[cita.estado]||cita.estado}</span>
+            </div>
+            <div class="cita-paciente">${cita.paciente}</div>
+            <div class="cita-servicio">${cita.servicio}</div>
+            <div class="cita-actions">
+              ${currentRole !== 'medico' ? `<button class="cita-action-btn" data-tip="Check-in" onclick="event.stopPropagation();checkInCita(${cita.id})">✓</button>` : ''}
+              <button class="cita-action-btn" data-tip="Ver paciente" onclick="event.stopPropagation();abrirCita(${cita.id})">👁</button>
+              ${currentRole !== 'medico' ? `<button class="cita-action-btn" data-tip="Cancelar" style="color:var(--err);" onclick="event.stopPropagation()">✗</button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    // Libre
+    const canAdd = currentRole !== 'medico';
+    return `<div class="time-row">
+      <div class="time-label">${h}</div>
+      <div class="time-slot" onclick="${canAdd?`openModal('modalNuevaCita')`:''}">
+        ${canAdd ? `<div class="add-slot-hint">+ Agendar a las ${h}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirCita(citaId) {
+  const cita = CITAS.find(c => c.id === citaId);
+  if (!cita) return;
+  renderPacientePanel(cita);
+}
+
+function closePacientePanel() {
+  // SOLO cierra el panel de la vista AGENDA, no afecta otras vistas
+  const panel = document.getElementById('agendaPacientePanel');
+  if (panel) panel.classList.add('hidden');
+  const recepPanel = document.getElementById('recepDetallePanel');
+  // No tocar recepPanel aquí — se maneja en su propia vista
+}
+
+function renderPacientePanel(cita) {
+  const panel = document.getElementById('agendaPacientePanel');
+  if (!panel) return;
+  panel.classList.remove('hidden');
+
+  const esMedico = currentRole === 'medico';
+  const esAdmin = currentRole === 'admin';
+
+  const statusColor = { confirmada:'var(--accent)', espera:'var(--warn)', 'en-consulta':'var(--ok)', atendida:'var(--t3)', cancelada:'var(--err)' };
+  const statusLabel = { confirmada:'Confirmada', espera:'En sala de espera', 'en-consulta':'En consulta', atendida:'Atendida', cancelada:'Cancelada' };
+
+  panel.innerHTML = `
+    <div class="pac-header">
+      <div class="pac-avatar-wrap">
+        <div class="pac-avatar">${cita.paciente.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+        <div>
+          <div class="pac-name">${cita.paciente}</div>
+          <div class="pac-rut">${cita.rut} · ${cita.edad} años</div>
+        </div>
+      </div>
+      <button class="btn-ghost btn" onclick="closePacientePanel()" style="font-size:18px;padding:4px 8px;">×</button>
+    </div>
+
+    <div style="padding:10px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div>
+        <span class="badge" style="background:rgba(0,0,0,0.3);color:${statusColor[cita.estado]};border:1px solid ${statusColor[cita.estado]}40;">
+          ${statusLabel[cita.estado]||cita.estado}
+        </span>
+        <span style="margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--t2);">${cita.hora}</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${cita.estado === 'espera' && (currentRole === 'recepcionista' || esAdmin)
+          ? `<button class="btn btn-ok btn-xs" onclick="iniciarConsulta(${cita.id})">→ Iniciar consulta</button>`
+          : ''}
+        ${cita.estado === 'confirmada' && (currentRole === 'recepcionista' || esAdmin)
+          ? `<button class="btn btn-primary btn-xs" onclick="checkInCitaPanel(${cita.id})">✓ Check-in</button>`
+          : ''}
+        ${(esMedico || esAdmin) && cita.estado === 'en-consulta'
+          ? `<button class="btn btn-primary btn-xs" onclick="openModal('modalCobrar')">💳 Cobrar</button>`
+          : ''}
+      </div>
+    </div>
+
+    <div class="pac-tabs">
+      <button class="pac-tab active" onclick="switchPacTab(this,'pTab-info')">Info</button>
+      ${esMedico || esAdmin ? `<button class="pac-tab" onclick="switchPacTab(this,'pTab-notas')">🔒 Clínica</button>` : ''}
+      <button class="pac-tab" onclick="switchPacTab(this,'pTab-historial')">Historial</button>
+      ${(currentRole==='recepcionista'||esAdmin) ? `<button class="pac-tab" onclick="switchPacTab(this,'pTab-cobro')">Cobrar</button>` : ''}
+    </div>
+
+    <!-- TAB INFO -->
+    <div class="pac-content" id="pTab-info">
+      <div class="pac-section-title">Datos personales</div>
+      <div class="info-row"><span class="info-label">Teléfono</span><span class="info-val mono">${cita.tel}</span></div>
+      <div class="info-row"><span class="info-label">Previsión</span><span class="info-val">${cita.prev}</span></div>
+      <div class="info-row"><span class="info-label">Edad</span><span class="info-val mono">${cita.edad} años</span></div>
+      <div class="pac-section-title">Esta consulta</div>
+      <div class="info-row"><span class="info-label">Motivo</span><span class="info-val">${cita.servicio}</span></div>
+      <div class="info-row"><span class="info-label">Hora agendada</span><span class="info-val mono">${cita.hora}</span></div>
+      <div class="info-row"><span class="info-label">Médico</span><span class="info-val">${PROFESIONALES.find(p=>p.id===cita.profId)?.nombre}</span></div>
+      ${(currentRole==='recepcionista'||esAdmin) ? `
+      <div class="pac-section-title">Acciones rápidas</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="openModal('modalNuevaCita')">📅 Nueva cita</button>
+        <button class="btn btn-outline btn-sm">📱 Enviar WA</button>
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('pacientes')">👤 Ver ficha</button>
+      </div>` : ''}
+    </div>
+
+    <!-- TAB NOTAS CLÍNICAS (solo médico y admin) -->
+    ${esMedico || esAdmin ? `
+    <div class="pac-content" id="pTab-notas" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:8px 10px;background:rgba(61,217,235,0.06);border:1px solid var(--accent-mid);border-radius:8px;">
+        <span style="font-size:14px;">🔒</span>
+        <span style="font-size:11px;color:var(--t2);">Historia clínica cifrada — solo visible para profesionales</span>
+      </div>
+      <div class="nota-cifrada">
+        <div class="nota-cifrada-header">
+          <span class="lock-icon">🔒</span>
+          <span class="nota-label">Consulta anterior</span>
+          <span class="nota-fecha">14/03/2026</span>
+        </div>
+        <div class="nota-text">Paciente refiere dolor lumbar irradiado a pierna derecha por 3 semanas. Rx: cambios degenerativos L4-L5. Indicado: ibuprofeno 400mg c/8h por 7 días + kinesiología.</div>
+        <div class="nota-autor">Dra. Rodríguez · 14/03/2026 10:23</div>
+      </div>
+      <div class="nota-cifrada">
+        <div class="nota-cifrada-header">
+          <span class="lock-icon">🔒</span>
+          <span class="nota-label">Antecedentes</span>
+          <span class="nota-fecha">01/01/2024</span>
+        </div>
+        <div class="nota-text">HTA controlada con Enalapril 10mg. Sin alergias medicamentosas conocidas. Cirugía apendicectomía 2015.</div>
+        <div class="nota-autor">Dra. Rodríguez · 01/01/2024</div>
+      </div>
+      <div class="pac-section-title">Nueva nota de consulta</div>
+      <textarea class="nota-textarea" placeholder="Escribe las notas de esta consulta (cifradas)..." rows="4"></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="showToast('✓ Nota guardada y cifrada','ok')">🔒 Guardar nota cifrada</button>
+    </div>` : ''}
+
+    <!-- TAB HISTORIAL -->
+    <div class="pac-content" id="pTab-historial" style="display:none;">
+      <div class="pac-section-title">Últimas visitas</div>
+      <div class="hx-row">
+        <div class="hx-fecha">14/03/26</div>
+        <div class="hx-desc"><span class="badge badge-ok" style="margin-right:4px;">Atendida</span>Consulta general + Rx</div>
+        <div class="hx-monto">$85.000</div>
+      </div>
+      <div class="hx-row">
+        <div class="hx-fecha">18/01/26</div>
+        <div class="hx-desc"><span class="badge badge-ok" style="margin-right:4px;">Atendida</span>Control</div>
+        <div class="hx-monto">$45.000</div>
+      </div>
+      <div class="hx-row">
+        <div class="hx-fecha">05/10/25</div>
+        <div class="hx-desc"><span class="badge badge-ok" style="margin-right:4px;">Atendida</span>Primera vez</div>
+        <div class="hx-monto">$75.000</div>
+      </div>
+      <div class="pac-section-title" style="margin-top:16px;">Total acumulado</div>
+      <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">$205.000</div>
+    </div>
+
+    <!-- TAB COBRO -->
+    ${(currentRole==='recepcionista'||esAdmin) ? `
+    <div class="pac-content" id="pTab-cobro" style="display:none;">
+      <div class="pac-section-title">Prestaciones a cobrar</div>
+      <div class="servicio-row">
+        <div>
+          <div class="servicio-name">Consulta general</div>
+          <div class="servicio-code">C001</div>
+        </div>
+        <div class="servicio-precio">$60.000</div>
+      </div>
+      <div class="sep"></div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-bottom:14px;">
+        <span>Total</span><span style="font-family:var(--mono);color:var(--accent);">$60.000</span>
+      </div>
+      <div class="pay-method-grid" style="padding:0;margin-bottom:14px;">
+        <div class="pay-method-btn" onclick="selectPago(this)">💵<br>Efectivo</div>
+        <div class="pay-method-btn selected" onclick="selectPago(this)">💳<br>Tarjeta</div>
+        <div class="pay-method-btn" onclick="selectPago(this)">📱<br>Transf.</div>
+      </div>
+      <div class="alert-bar info" style="margin-bottom:12px;font-size:11px;">
+        <span>📄</span> Boleta de Honorarios automática (SII)
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closePacientePanel();showToast('✓ Cobro confirmado — HON-483 emitida','ok')">✓ Confirmar Cobro $60.000</button>
+    </div>` : ''}
+  `;
+}
+
+function switchPacTab(btn, tabId) {
+  const panel = document.getElementById('agendaPacientePanel') || document.getElementById('recepDetallePanel');
+  panel.querySelectorAll('.pac-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  panel.querySelectorAll('.pac-content').forEach(t => t.style.display='none');
+  const tab = document.getElementById(tabId);
+  if (tab) tab.style.display='block';
+}
+
+function checkInCita(id) {
+  const cita = CITAS.find(c=>c.id===id);
+  if (!cita) return;
+  cita.estado = 'espera';
+  renderTimeGrid();
+  showToast(`✓ Check-in realizado — ${cita.paciente} en sala de espera`, 'ok');
+}
+
+function checkInCitaPanel(id) {
+  checkInCita(id);
+  const cita = CITAS.find(c=>c.id===id);
+  renderPacientePanel(cita);
+}
+
+function iniciarConsulta(id) {
+  const cita = CITAS.find(c=>c.id===id);
+  if (!cita) return;
+  cita.estado = 'en-consulta';
+  renderTimeGrid();
+  closePacientePanel();
+  navigateTo('consulta');
+  consultaPacId = id;
+  renderConsulta();
+  showToast(`→ Consulta iniciada — ${cita.paciente}`, 'info');
+}
+
+// ══════════════════════════════════════════════════════
+// RECEPCIÓN
+// ══════════════════════════════════════════════════════
+function renderRecepcion() {
+  const el = document.getElementById('citasRecepList');
+  if (!el) return;
+  const ordenEstado = { espera:0, 'en-consulta':1, confirmada:2, atendida:3, cancelada:4 };
+  const sorted = [...CITAS].sort((a,b) => (ordenEstado[a.estado]||5) - (ordenEstado[b.estado]||5));
+
+  const statusLabel = { confirmada:'Confirmada', espera:'🟡 En sala', 'en-consulta':'🟢 En consulta', atendida:'✓ Atendida', cancelada:'✗ Canceló' };
+  const statusColor = { confirmada:'var(--t2)', espera:'var(--warn)', 'en-consulta':'var(--ok)', atendida:'var(--t3)', cancelada:'var(--err)' };
+
+  el.innerHTML = sorted.map(c => {
+    const prof = PROFESIONALES.find(p=>p.id===c.profId);
+    return `
+    <div class="cita-list-item" id="recep-cita-${c.id}" onclick="seleccionarCitaRecep(${c.id})">
+      <div class="cita-list-hora">${c.hora}</div>
+      <div class="cita-list-info">
+        <div class="cita-list-name">${c.paciente}</div>
+        <div class="cita-list-detail">${c.servicio} · ${prof?.nombre}</div>
+      </div>
+      <div>
+        <span style="font-size:11px;font-weight:600;color:${statusColor[c.estado]}">${statusLabel[c.estado]||c.estado}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function seleccionarCitaRecep(id) {
+  const cita = CITAS.find(c=>c.id===id);
+  if (!cita) return;
+
+  document.querySelectorAll('.cita-list-item').forEach(el=>el.classList.remove('selected'));
+  const item = document.getElementById('recep-cita-'+id);
+  if (item) item.classList.add('selected');
+
+  const prof = PROFESIONALES.find(p=>p.id===cita.profId);
+  const panel = document.getElementById('recepDetallePanel');
+  if (!panel) return;
+
+  const statusLabel = { confirmada:'Confirmada', espera:'En sala de espera', 'en-consulta':'En consulta', atendida:'Atendida', cancelada:'Cancelada' };
+  const statusColor = { confirmada:'var(--accent)', espera:'var(--warn)', 'en-consulta':'var(--ok)', atendida:'var(--t3)', cancelada:'var(--err)' };
+
+  panel.innerHTML = `
+    <div style="padding:20px 24px;">
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;">
+        <div class="pac-avatar" style="width:52px;height:52px;font-size:18px;">${cita.paciente.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;">${cita.paciente}</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--t2);">${cita.rut} · ${cita.edad} años</div>
+          <div style="margin-top:6px;">
+            <span class="badge" style="background:rgba(0,0,0,0.3);color:${statusColor[cita.estado]};border:1px solid ${statusColor[cita.estado]}40;">${statusLabel[cita.estado]}</span>
+            <span style="margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--t2);">${cita.hora} · ${prof?.nombre}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-bar ${cita.estado==='espera'?'warn':cita.estado==='en-consulta'?'ok':'info'}" style="margin-bottom:16px;">
+        ${cita.estado==='espera' ? '🪑 Paciente en sala de espera' : cita.estado==='en-consulta' ? '🩺 Actualmente en consulta' : cita.estado==='confirmada' ? '📅 Cita confirmada — pendiente llegada' : '✓ Consulta finalizada'}
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+        ${cita.estado==='confirmada' ? `<button class="btn btn-primary btn-sm" onclick="checkInRecep(${cita.id})">✓ Check-in / Llegó</button>` : ''}
+        ${cita.estado==='espera' ? `<button class="btn btn-ok btn-sm">→ Avisar al médico</button>` : ''}
+        ${cita.estado!=='atendida'&&cita.estado!=='en-consulta' ? `<button class="btn btn-err btn-sm">✗ Cancelar cita</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="openModal('modalNuevaCita')">📅 Nueva cita</button>
+        ${cita.estado==='atendida' ? `<button class="btn btn-primary btn-sm" onclick="openModal('modalCobrar')">💳 Cobrar</button>` : ''}
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">Datos de la cita</span></div>
+        <div class="card-body" style="padding:0;">
+          <div class="info-row" style="padding:10px 16px;"><span class="info-label">Servicio</span><span class="info-val">${cita.servicio}</span></div>
+          <div class="info-row" style="padding:10px 16px;"><span class="info-label">Teléfono</span><span class="info-val mono">${cita.tel}</span></div>
+          <div class="info-row" style="padding:10px 16px;"><span class="info-label">Previsión</span><span class="info-val">${cita.prev}</span></div>
+          <div class="info-row" style="padding:10px 16px;"><span class="info-label">Médico</span><span class="info-val">${prof?.nombre}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Últimas visitas</span></div>
+        <div class="card-body" style="padding:0;">
+          <div class="hx-row" style="padding:10px 16px;">
+            <div class="hx-fecha">14/03</div>
+            <div class="hx-desc">Consulta + Rx</div>
+            <div class="hx-monto">$85.000</div>
+          </div>
+          <div class="hx-row" style="padding:10px 16px;">
+            <div class="hx-fecha">18/01</div>
+            <div class="hx-desc">Control</div>
+            <div class="hx-monto">$45.000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function checkInRecep(id) {
+  const cita = CITAS.find(c=>c.id===id);
+  if (!cita) return;
+  cita.estado = 'espera';
+  renderRecepcion();
+  seleccionarCitaRecep(id);
+  showToast(`✓ Check-in — ${cita.paciente} en sala de espera`, 'ok');
+}
+
+function filterCitasRecep(q) {
+  // Filtro básico
+  document.querySelectorAll('.cita-list-item').forEach(el => {
+    const text = el.textContent.toLowerCase();
+    el.style.display = text.includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// CONSULTA (MÉDICO)
+// ══════════════════════════════════════════════════════
+function renderConsulta() {
+  renderColaEspera();
+  renderConsultaMain();
+}
+
+function renderColaEspera() {
+  const el = document.getElementById('colaEspera');
+  if (!el) return;
+  const espera = CITAS.filter(c => c.estado === 'espera');
+  const enConsulta = CITAS.filter(c => c.estado === 'en-consulta');
+  if (!espera.length && !enConsulta.length) {
+    el.innerHTML = '<div style="padding:16px;color:var(--t3);font-size:12px;text-align:center;">Sin pacientes en espera</div>';
+    return;
+  }
+  el.innerHTML = [...enConsulta, ...espera].map(c => `
+    <div class="cita-list-item ${consultaPacId===c.id?'selected':''}" onclick="seleccionarPacConsulta(${c.id})">
+      <div style="width:8px;height:8px;border-radius:50%;background:${c.estado==='en-consulta'?'var(--ok)':'var(--warn)'};flex-shrink:0;margin-top:4px;"></div>
+      <div class="cita-list-info">
+        <div class="cita-list-name">${c.paciente}</div>
+        <div class="cita-list-detail">${c.hora} · ${c.servicio}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Próximas
+  const proxEl = document.getElementById('proximasCitas');
+  if (!proxEl) return;
+  const proximas = CITAS.filter(c => c.estado === 'confirmada').slice(0, 3);
+  proxEl.innerHTML = proximas.map(c => `
+    <div class="cita-list-item">
+      <div class="cita-list-hora">${c.hora}</div>
+      <div class="cita-list-info">
+        <div class="cita-list-name" style="font-size:12px;">${c.paciente}</div>
+        <div class="cita-list-detail">${c.servicio}</div>
+      </div>
+    </div>
+  `).join('') || '<div style="padding:16px;color:var(--t3);font-size:12px;">Sin más citas</div>';
+}
+
+function seleccionarPacConsulta(id) {
+  consultaPacId = id;
+  consultaServicios = [];
+  renderColaEspera();
+  renderConsultaMain();
+}
+
+function renderConsultaMain() {
+  const mainEl = document.getElementById('consultaMain');
+  const servEl = document.getElementById('consultaServicios');
+  const footEl = document.getElementById('consultaFooter');
+  const subEl = document.getElementById('consultaPacSub');
+  const actEl = document.getElementById('consultaHeaderActions');
+  if (!mainEl) return;
+
+  if (!consultaPacId) {
+    mainEl.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--t3);gap:12px;">
+      <div style="font-size:48px;opacity:0.3;">🩺</div><div style="font-size:14px;">Selecciona un paciente para iniciar consulta</div></div>`;
+    if (servEl) servEl.innerHTML = '<div style="padding:16px;color:var(--t3);font-size:12px;text-align:center;">Inicia una consulta para agregar prestaciones</div>';
+    if (footEl) footEl.innerHTML = '';
+    return;
+  }
+
+  const cita = CITAS.find(c=>c.id===consultaPacId);
+  if (!cita) return;
+
+  if (subEl) subEl.textContent = `${cita.paciente} · ${cita.hora} · ${cita.servicio}`;
+  if (actEl) actEl.innerHTML = `<button class="btn btn-ok btn-sm" onclick="openModal('modalCobrar')">💳 Finalizar y cobrar</button>`;
+
+  mainEl.innerHTML = `
+    <div class="alert-bar info" style="margin-bottom:16px;">
+      <span>🩺</span> Consulta activa — ${cita.paciente} · ${cita.hora}
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="pac-avatar">${cita.paciente.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;">${cita.paciente}</div>
+        <div style="font-size:12px;color:var(--t2);font-family:var(--mono);">${cita.rut} · ${cita.edad} años · ${cita.prev}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header"><span class="card-title">Antecedentes relevantes</span></div>
+      <div class="card-body" style="font-size:12px;color:var(--t2);">
+        HTA controlada · Sin alergias conocidas · Cirugía 2015
+      </div>
+    </div>
+
+    <div class="pac-section-title">🔒 Notas clínicas (cifradas)</div>
+
+    <div class="nota-cifrada" style="margin-bottom:12px;">
+      <div class="nota-cifrada-header">
+        <span class="lock-icon">🔒</span>
+        <span class="nota-label">Consulta anterior</span>
+        <span class="nota-fecha">14/03/2026</span>
+      </div>
+      <div class="nota-text">Dolor lumbar irradiado a pierna derecha. Rx L4-L5. Indicado: ibuprofeno 400mg.</div>
+      <div class="nota-autor">Dra. Rodríguez · 14/03/2026</div>
+    </div>
+
+    <div class="pac-section-title">Nueva nota de consulta</div>
+    <textarea class="nota-textarea" id="notaConsulta" placeholder="Anamnesis, diagnóstico, indicaciones..." rows="5"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-primary btn-sm" onclick="guardarNota()">🔒 Guardar nota cifrada</button>
+      <button class="btn btn-outline btn-sm">+ Diagnóstico CIE-10</button>
+    </div>
+  `;
+
+  // Servicios
+  if (servEl) {
+    const defaultServ = { codigo:'C001', nombre:'Consulta general', precio:60000 };
+    if (!consultaServicios.length) consultaServicios = [defaultServ];
+    renderConsultaServs(servEl);
+  }
+}
+
+function renderConsultaServs(el) {
+  const total = consultaServicios.reduce((s,x)=>s+x.precio,0);
+  el.innerHTML = consultaServicios.map((s,i) => `
+    <div class="servicio-row" style="margin:8px 8px 0;">
+      <div>
+        <div class="servicio-name">${s.nombre}</div>
+        <div class="servicio-code">${s.codigo}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="servicio-precio">$${s.precio.toLocaleString('es-CL')}</span>
+        <button class="btn-ghost btn btn-xs" onclick="quitarServicio(${i})" style="color:var(--err);padding:2px 6px;">×</button>
+      </div>
+    </div>`).join('') +
+    `<div style="padding:8px;">
+      <select class="form-select" style="font-size:12px;" onchange="agregarServicio(this)">
+        <option value="">+ Agregar prestación...</option>
+        ${SERVICIOS_CAT.map(s=>`<option value="${s.codigo}|${s.nombre}|${s.precio}">${s.nombre} — $${s.precio.toLocaleString('es-CL')}</option>`).join('')}
+      </select>
+    </div>`;
+
+  const footEl = document.getElementById('consultaFooter');
+  if (footEl) footEl.innerHTML = `
+    <div style="padding:12px 16px;border-top:1px solid var(--b1);">
+      <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:12px;">
+        <span>Total</span><span style="font-family:var(--mono);color:var(--accent);">$${total.toLocaleString('es-CL')}</span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="openModal('modalCobrar')">💳 Finalizar y cobrar</button>
+    </div>`;
+}
+
+function agregarServicio(sel) {
+  if (!sel.value) return;
+  const [codigo,nombre,precio] = sel.value.split('|');
+  consultaServicios.push({codigo,nombre,precio:parseInt(precio)});
+  sel.value = '';
+  const el = document.getElementById('consultaServicios');
+  if (el) renderConsultaServs(el);
+}
+
+function quitarServicio(i) {
+  consultaServicios.splice(i,1);
+  const el = document.getElementById('consultaServicios');
+  if (el) renderConsultaServs(el);
+}
+
+function guardarNota() {
+  showToast('🔒 Nota guardada y cifrada (AES-256)', 'ok');
+}
+
+// ══════════════════════════════════════════════════════
+// PACIENTES
+// ══════════════════════════════════════════════════════
+function renderPacientes() {
+  const tbody = document.getElementById('pacientesBody');
+  if (!tbody) return;
+  tbody.innerHTML = PACIENTES_DB.map(p => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prof-avatar" style="background:var(--accent-dim);color:var(--accent);width:32px;height:32px;font-size:11px;">${p.nombre.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+          <div>
+            <div style="font-weight:600;">${p.nombre}</div>
+            <div style="font-size:11px;color:var(--t2);">${p.email}</div>
+          </div>
+        </div>
+      </td>
+      <td class="mono" style="color:var(--t2);">${p.rut}</td>
+      <td class="mono">${p.tel}</td>
+      <td style="color:var(--t2);">${p.ult}</td>
+      <td>${p.dr}</td>
+      <td><span class="badge badge-ok">Activo</span></td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-outline btn-xs" onclick="openModal('modalNuevaCita')">📅</button>
+          <button class="btn btn-outline btn-xs">👁</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterPacientes(q) {
+  document.querySelectorAll('#pacientesBody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// SEMANA
+// ══════════════════════════════════════════════════════
+function renderSemana() {
+  const el = document.getElementById('weekGrid');
+  if (!el) return;
+  const dias = ['', 'Lun 31', 'Mar 1', 'Mié 2', 'Jue 3', 'Vie 4', 'Sáb 5'];
+  const horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+
+  const sampleEvents = {
+    '09:00_1': [{pac:'Ana M.',est:'atendida'},{pac:'Roberto D.',est:'atendida'}],
+    '10:00_1': [{pac:'Pedro S.',est:'en-consulta'}],
+    '11:00_1': [{pac:'María L.',est:'espera'}],
+    '09:30_2': [{pac:'Claudia M.',est:'confirmada'}],
+    '14:00_3': [{pac:'Carlos F.',est:'confirmada'}],
+    '10:00_4': [{pac:'Laura V.',est:'confirmada'}],
+    '09:00_5': [{pac:'Javier P.',est:'confirmada'}],
+  };
+
+  el.innerHTML = `
+    <div class="week-header">
+      ${dias.map((d,i) => `<div class="week-day ${i===1?'today':''}">${i===0?'':`<span class="day-num">${d.split(' ')[1]}</span><span class="day-name">${d.split(' ')[0]}</span>`}</div>`).join('')}
+    </div>
+    <div class="week-grid">
+      ${horas.map(h => `
+        <div class="week-time-label">${h}</div>
+        ${[1,2,3,4,5,6].map(d => {
+          const key = `${h}_${d}`;
+          const evs = sampleEvents[key] || [];
+          return `<div class="week-cell" onclick="openModal('modalNuevaCita')">
+            ${evs.map(e=>`<div class="week-event ${e.est}" onclick="event.stopPropagation();">${e.pac}</div>`).join('')}
+          </div>`;
+        }).join('')}
+      `).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// MODALES
+// ══════════════════════════════════════════════════════
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+}
+function closeModalOutside(e, id) {
+  if (e.target.classList.contains('modal-overlay')) closeModal(id);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+function selectPago(el) {
+  el.closest('.pay-method-grid').querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  const inner = document.getElementById('toastInner');
+  const colors = { ok:'rgba(0,229,160,0.15)', info:'rgba(61,217,235,0.15)', warn:'rgba(245,197,24,0.12)', err:'rgba(255,63,91,0.12)' };
+  const textCol = { ok:'var(--ok)', info:'var(--info)', warn:'var(--warn)', err:'var(--err)' };
+  inner.style.background = colors[type] || colors.info;
+  inner.style.color = textCol[type] || textCol.info;
+  inner.style.border = `1px solid ${textCol[type]||textCol.info}40`;
+  inner.textContent = msg;
+  t.style.opacity = '1';
+  t.style.pointerEvents = 'all';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity='0'; t.style.pointerEvents='none'; }, 3500);
+}
+
+// ══════════════════════════════════════════════════════
+// FECHA / NAVEGACIÓN AGENDA
+// ══════════════════════════════════════════════════════
+let agendaOffset = 0;
+const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function updateAgendaDate() {
+  const base = new Date(2026, 2, 31);
+  base.setDate(base.getDate() + agendaOffset);
+  const sub = document.getElementById('agendaDateSub');
+  if (sub) sub.textContent = `${DIAS[base.getDay()]} ${base.getDate()} de ${MESES[base.getMonth()]}, ${base.getFullYear()}`;
+}
+function prevDay() { agendaOffset--; updateAgendaDate(); }
+function nextDay() { agendaOffset++; updateAgendaDate(); }
+function goToday() { agendaOffset = 0; updateAgendaDate(); }
+
+// ══════════════════════════════════════════════════════
+// ARRANQUE
+// ══════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

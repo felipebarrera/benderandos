@@ -108,5 +108,10 @@ class TenantDemoDataSeeder extends Seeder
                 ]
             );
         }
+
+        // 9. Agenda Demo (M08)
+        if (in_array('M08', $modulos)) {
+            $this->call(Tenant\AgendaDemoSeeder::class);
+        }
     }
 }

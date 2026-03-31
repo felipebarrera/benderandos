@@ -17,7 +17,8 @@ class VentaController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $ventas = Venta::with(['cliente', 'usuario', 'tipoPago'])
+        $ventas = Venta::with(['cliente', 'usuario', 'cajero', 'tipoPago'])
+            ->withCount('items')
             ->orderByDesc('created_at')
             ->paginate($request->input('per_page', 30));
 
@@ -26,7 +27,7 @@ class VentaController extends Controller
 
     public function show($id): JsonResponse
     {
-        $venta = Venta::with(['items.producto', 'cliente', 'usuario', 'tipoPago'])
+        $venta = Venta::with(['items.producto', 'cliente', 'usuario', 'cajero', 'tipoPago'])
             ->findOrFail($id);
 
         return response()->json($venta);

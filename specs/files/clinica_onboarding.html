@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BenderAnd — Onboarding Clínica</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080a;
+  --s1: #111115;
+  --s2: #18181e;
+  --s3: #1e1e26;
+  --b1: #252530;
+  --b2: #32323f;
+  --text: #e8e8f0;
+  --t2: #8888a0;
+  --t3: #4a4a60;
+  --accent: #3dd9eb;
+  --accent-dim: rgba(61,217,235,0.10);
+  --accent-mid: rgba(61,217,235,0.22);
+  --ok: #00e5a0;
+  --warn: #f5c518;
+  --err: #ff3f5b;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --r: 10px;
+  --nav-h: 54px;
+  --drawer-w: 460px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+
+/* ── NAV ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+  background: var(--s1); border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; z-index: 200;
+}
+.nav-brand { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-user { font-size: 12px; color: var(--t2); }
+.nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-dim); border: 1.5px solid var(--accent-mid); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--accent); cursor: pointer; }
+
+/* ── PROGRESS BADGE EN NAV ── */
+.progress-badge {
+  display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 8px;
+  border-radius: 20px; background: var(--s2); border: 1px solid var(--b2);
+  cursor: pointer; transition: all 0.15s;
+}
+.progress-badge:hover { border-color: var(--accent-mid); background: var(--accent-dim); }
+.progress-ring { position: relative; width: 28px; height: 28px; }
+.progress-ring svg { transform: rotate(-90deg); }
+.progress-ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--text); }
+.progress-badge-label { font-size: 12px; font-weight: 600; color: var(--t2); }
+.progress-badge-label span { color: var(--accent); }
+
+/* ── LAYOUT PRINCIPAL ── */
+.main { padding-top: var(--nav-h); display: flex; height: 100vh; }
+.sidebar {
+  width: 200px; flex-shrink: 0; background: var(--s1); border-right: 1px solid var(--b1);
+  padding: 16px 0; overflow-y: auto;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 16px;
+  font-size: 13px; color: var(--t2); cursor: pointer; transition: all 0.12s;
+  border-right: 2px solid transparent;
+}
+.sb-item:hover { color: var(--text); background: var(--s2); }
+.sb-item.active { color: var(--accent); background: var(--accent-dim); border-right-color: var(--accent); font-weight: 600; }
+.sb-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3); padding: 12px 16px 4px; }
+.content-area { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ── DRAWER ── */
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+.drawer {
+  position: fixed; top: 0; right: calc(-1 * var(--drawer-w) - 20px); width: var(--drawer-w);
+  height: 100vh; background: var(--bg); border-left: 1px solid var(--b1);
+  z-index: 400; transition: right 0.4s cubic-bezier(0.77,0.2,0.05,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.drawer.open { right: 0; }
+
+/* ── DRAWER HEADER (gradiente como AgendaPro) ── */
+.drawer-header {
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #0d2028 0%, #1a2f3a 100%);
+  display: flex; align-items: center; gap: 16px; position: relative;
+  border-bottom: 1px solid rgba(61,217,235,0.15);
+}
+.drawer-close {
+  position: absolute; top: 12px; right: 12px;
+  background: none; border: none; color: rgba(255,255,255,0.5);
+  font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+  transition: all 0.15s;
+}
+.drawer-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+/* Ring de progreso grande */
+.big-ring { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.big-ring svg { transform: rotate(-90deg); }
+.big-ring-text {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; font-family: var(--mono); font-size: 13px;
+  font-weight: 700; color: #fff;
+}
+.drawer-header-text h3 { font-size: 18px; font-weight: 700; color: #fff; }
+.drawer-header-text p { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+
+/* ── STEPS LIST ── */
+.steps-container { flex: 1; overflow-y: auto; padding: 16px; }
+.step-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; border-radius: var(--r);
+  border: 1px solid var(--b1); background: var(--s1);
+  margin-bottom: 8px; transition: all 0.2s; cursor: default;
+}
+.step-item.pending { cursor: pointer; }
+.step-item.pending:hover { border-color: var(--accent-mid); background: var(--accent-dim); }
+.step-item.completed { opacity: 0.65; }
+.step-item.active-step { border-color: var(--accent-mid); background: var(--accent-dim); }
+
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; transition: all 0.2s;
+  margin-top: 1px;
+}
+.step-circle.done { background: rgba(0,229,160,0.15); color: var(--ok); border: 1.5px solid rgba(0,229,160,0.3); }
+.step-circle.todo { background: var(--s2); color: var(--t3); border: 1.5px solid var(--b2); }
+.step-circle.current { background: var(--accent-dim); color: var(--accent); border: 1.5px solid var(--accent-mid); }
+.step-circle.skipped { background: var(--s2); color: var(--t3); border: 1.5px dashed var(--b2); }
+
+.step-body { flex: 1; min-width: 0; }
+.step-title { font-size: 14px; font-weight: 600; }
+.step-title.done { text-decoration: line-through; color: var(--t2); }
+.step-desc { font-size: 12px; color: var(--t2); margin-top: 3px; line-height: 1.5; }
+.step-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.step-time { font-family: var(--mono); font-size: 10px; color: var(--t3); }
+.step-required { font-size: 10px; font-weight: 700; color: var(--warn); padding: 1px 6px; border-radius: 4px; background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.2); }
+
+.step-actions { display: flex; gap: 6px; margin-top: 10px; }
+.btn-step-go {
+  padding: 6px 14px; border-radius: 6px; border: none;
+  background: var(--accent); color: #000; font-family: var(--sans);
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: filter 0.15s;
+}
+.btn-step-go:hover { filter: brightness(1.1); }
+.btn-step-skip {
+  padding: 6px 12px; border-radius: 6px;
+  border: 1px solid var(--b2); background: none; color: var(--t2);
+  font-family: var(--sans); font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.btn-step-skip:hover { color: var(--text); border-color: var(--t3); }
+.btn-step-done {
+  padding: 6px 12px; border-radius: 6px;
+  border: 1px solid rgba(0,229,160,0.3); background: rgba(0,229,160,0.1); color: var(--ok);
+  font-family: var(--sans); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.btn-step-done:hover { background: rgba(0,229,160,0.2); }
+
+/* ── DISCOVER SECTION (como AgendaPro) ── */
+.discover-section { padding: 12px 16px; border-top: 1px solid var(--b1); }
+.discover-title { font-size: 11px; color: var(--t2); margin-bottom: 10px; }
+.discover-cards { display: flex; gap: 8px; }
+.discover-card {
+  flex: 1; border: 1px solid var(--b1); border-radius: var(--r);
+  padding: 12px; background: var(--s1); opacity: 0.7; transition: opacity 0.15s;
+}
+.discover-card:hover { opacity: 1; border-color: var(--b2); }
+.discover-card-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.discover-card-desc { font-size: 10px; color: var(--t2); line-height: 1.4; }
+.discover-card-btn {
+  margin-top: 8px; padding: 4px 10px; border-radius: 6px; font-size: 10px;
+  background: none; border: 1px solid var(--b2); color: var(--t2);
+  cursor: not-allowed; font-family: var(--sans); font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.discover-card-time { font-family: var(--mono); font-size: 9px; color: var(--t3); }
+
+/* ── HELP ROW ── */
+.help-row {
+  padding: 12px 16px; border-top: 1px solid var(--b1);
+}
+.help-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: var(--r); border: 1px solid var(--b1);
+  background: var(--s1); color: var(--t2); cursor: pointer; transition: all 0.15s;
+  font-family: var(--sans); font-size: 13px;
+}
+.help-btn:hover { border-color: var(--accent-mid); color: var(--text); }
+.help-left { display: flex; align-items: center; gap: 12px; }
+.help-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+/* ── PANEL CONFIGURACIÓN PROFESIONALES ── */
+.config-panel {
+  background: var(--s1); border: 1px solid var(--b1); border-radius: var(--r);
+  margin-bottom: 20px;
+}
+.config-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.config-title { font-size: 15px; font-weight: 700; }
+.config-subtitle { font-size: 12px; color: var(--t2); margin-top: 2px; }
+
+/* ── PROF CARD ── */
+.prof-grid { display: flex; flex-direction: column; gap: 0; }
+.prof-card {
+  padding: 16px 20px; border-bottom: 1px solid var(--b1);
+  display: flex; align-items: flex-start; gap: 14px; transition: background 0.1s;
+}
+.prof-card:last-child { border-bottom: none; }
+.prof-card:hover { background: var(--s2); }
+.prof-avatar-big {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; border: 2px solid;
+}
+.prof-info { flex: 1; min-width: 0; }
+.prof-name-big { font-size: 15px; font-weight: 700; }
+.prof-esp-big { font-size: 12px; color: var(--t2); margin-top: 1px; }
+.prof-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.prof-tag {
+  padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 600;
+  font-family: var(--mono); border: 1px solid;
+}
+
+/* Permisos toggle */
+.perms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.perm-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--s2); border-radius: 7px; border: 1px solid var(--b1); }
+.perm-label { font-size: 11px; color: var(--t2); }
+.toggle { width: 34px; height: 18px; border-radius: 9px; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; border: none; }
+.toggle.on { background: var(--accent); }
+.toggle.off { background: var(--b2); }
+.toggle::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; top: 3px; transition: left 0.2s; }
+.toggle.on::after { left: 19px; }
+.toggle.off::after { left: 3px; }
+
+.prof-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.btn-xs {
+  padding: 5px 10px; border-radius: 6px; font-family: var(--sans); font-size: 11px;
+  font-weight: 600; cursor: pointer; border: 1px solid var(--b2);
+  background: none; color: var(--t2); transition: all 0.15s; white-space: nowrap;
+}
+.btn-xs:hover { color: var(--text); border-color: var(--t3); background: var(--s3); }
+.btn-xs.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+.btn-xs.primary:hover { filter: brightness(1.1); }
+.btn-xs.danger { color: var(--err); border-color: rgba(255,63,91,0.3); }
+.btn-xs.danger:hover { background: rgba(255,63,91,0.1); }
+
+/* Horario visual */
+.horario-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-top: 8px; }
+.horario-day {
+  text-align: center; border-radius: 6px; padding: 5px 3px;
+  font-size: 9px; font-weight: 700; border: 1px solid var(--b2);
+}
+.horario-day.activo { background: var(--accent-dim); border-color: var(--accent-mid); color: var(--accent); }
+.horario-day.inactivo { background: var(--s2); color: var(--t3); }
+.horario-day .htime { font-family: var(--mono); font-size: 8px; font-weight: 400; color: var(--t2); margin-top: 2px; }
+
+/* ── ADD PROF FORM ── */
+.add-prof-card {
+  padding: 20px; border-top: 1px solid var(--b1);
+  background: var(--s2);
+}
+.add-prof-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; color: var(--accent); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-size: 10px; font-weight: 700; color: var(--t2); letter-spacing: 0.5px; text-transform: uppercase; }
+.form-input {
+  background: var(--s1); border: 1.5px solid var(--b2); border-radius: 7px;
+  color: var(--text); font-family: var(--sans); font-size: 13px;
+  padding: 8px 11px; outline: none; transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-select {
+  background: var(--s1); border: 1.5px solid var(--b2); border-radius: 7px;
+  color: var(--text); font-family: var(--sans); font-size: 13px;
+  padding: 8px 11px; outline: none; cursor: pointer; width: 100%;
+}
+.form-select:focus { border-color: var(--accent); }
+
+/* Color picker */
+.color-picker-row { display: flex; gap: 6px; align-items: center; margin-bottom: 10px; }
+.color-dot {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0;
+}
+.color-dot.selected { border-color: var(--text); transform: scale(1.2); }
+
+/* Días horario toggle */
+.dias-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.dia-btn {
+  padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+  cursor: pointer; border: 1.5px solid var(--b2); background: var(--s1);
+  color: var(--t2); transition: all 0.15s; font-family: var(--mono);
+}
+.dia-btn.on { background: var(--accent-dim); border-color: var(--accent-mid); color: var(--accent); }
+
+/* ── ALERT ── */
+.alert {
+  padding: 10px 14px; border-radius: 8px; font-size: 12px;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.alert.info { background: rgba(61,217,235,0.08); border: 1px solid rgba(61,217,235,0.2); color: var(--accent); }
+.alert.ok { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); color: var(--ok); }
+.alert.warn { background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.2); color: var(--warn); }
+
+/* ── KPI ── */
+.kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.kpi { background: var(--s1); border: 1px solid var(--b1); border-radius: var(--r); padding: 14px 16px; }
+.kpi-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--t2); margin-bottom: 6px; }
+.kpi-val { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+.kpi-sub { font-size: 11px; color: var(--t2); margin-top: 3px; font-family: var(--mono); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5); min-width: 260px;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s; transform: translateY(0);
+}
+.toast.show { opacity: 1; pointer-events: all; }
+.toast.ok { background: rgba(0,229,160,0.12); border: 1px solid rgba(0,229,160,0.3); color: var(--ok); }
+.toast.info { background: rgba(61,217,235,0.12); border: 1px solid rgba(61,217,235,0.3); color: var(--accent); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+
+/* ── SECCION TITULO ── */
+.section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-title { font-size: 16px; font-weight: 700; }
+.section-sub { font-size: 12px; color: var(--t2); margin-top: 2px; }
+
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; font-family: var(--mono); }
+.badge-accent { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-mid); }
+.badge-ok { background: rgba(0,229,160,0.1); color: var(--ok); }
+.badge-warn { background: rgba(245,197,24,0.1); color: var(--warn); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <span>⚕</span> BENDERAND
+    <span style="color:var(--t3);font-weight:400;margin-left:4px;">· Clínica Demo</span>
+  </div>
+  <div class="nav-right">
+    <!-- Botón que abre el drawer -->
+    <div class="progress-badge" onclick="openDrawer()">
+      <div class="progress-ring">
+        <svg width="28" height="28" viewBox="0 0 28 28">
+          <circle cx="14" cy="14" r="11" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3"/>
+          <circle cx="14" cy="14" r="11" fill="none" stroke="var(--accent)" stroke-width="3"
+            stroke-dasharray="69.1" stroke-dashoffset="55.3" stroke-linecap="round"
+            id="navRingCircle"/>
+        </svg>
+        <div class="progress-ring-text" id="navRingText">2/7</div>
+      </div>
+      <div class="progress-badge-label">Primeros pasos · <span id="navPercent">29%</span></div>
+    </div>
+    <div class="nav-user">Dr. Admin · admin</div>
+    <div class="nav-avatar">DA</div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="main">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-label">Clínica</div>
+    <div class="sb-item" onclick="showView('dashboard')">📊 Dashboard</div>
+    <div class="sb-item" onclick="showView('agenda')">📅 Agenda</div>
+    <div class="sb-item active" onclick="showView('config')">⚙️ Configuración</div>
+    <div class="sb-label" style="margin-top:8px;">Admin</div>
+    <div class="sb-item" onclick="showView('usuarios')">👥 Profesionales</div>
+    <div class="sb-item" onclick="showView('cobros')">💳 Cobros / SII</div>
+    <div class="sb-item" onclick="showView('bot')">📱 WhatsApp Bot</div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content-area" id="mainContent">
+
+    <!-- ═══ VISTA: CONFIG PROFESIONALES ═══ -->
+    <div id="view-config">
+      <div class="alert info">
+        <span>🚀</span>
+        <span>Tu clínica está en configuración inicial. Completa los primeros pasos para activar todos los módulos. <strong style="cursor:pointer;text-decoration:underline;" onclick="openDrawer()">Ver checklist →</strong></span>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi" style="border-top:3px solid var(--accent);">
+          <div class="kpi-label">Profesionales activos</div>
+          <div class="kpi-val" style="color:var(--accent);">2</div>
+          <div class="kpi-sub">de 3 configurados</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Servicios creados</div>
+          <div class="kpi-val">5</div>
+          <div class="kpi-sub">consultas + procedimientos</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Configuración</div>
+          <div class="kpi-val" style="color:var(--warn);">29%</div>
+          <div class="kpi-sub">2 de 7 pasos completos</div>
+        </div>
+      </div>
+
+      <!-- Panel Profesionales -->
+      <div class="config-panel">
+        <div class="config-header">
+          <div>
+            <div class="config-title">Profesionales de la clínica</div>
+            <div class="config-subtitle">Configura horarios, visibilidad y permisos de cada médico</div>
+          </div>
+          <button class="btn-xs primary" onclick="toggleAddForm()">+ Agregar profesional</button>
+        </div>
+
+        <div class="prof-grid" id="profGrid">
+          <!-- Profesional 1 -->
+          <div class="prof-card">
+            <div class="prof-avatar-big" style="background:rgba(61,217,235,0.12);color:#3dd9eb;border-color:rgba(61,217,235,0.3);">DR</div>
+            <div class="prof-info">
+              <div class="prof-name-big">Dra. Camila Rodríguez</div>
+              <div class="prof-esp-big">Medicina General · crodriguez@clinica.cl</div>
+              <div class="prof-tags">
+                <span class="prof-tag" style="background:rgba(0,229,160,0.1);color:var(--ok);border-color:rgba(0,229,160,0.25);">✓ Activa</span>
+                <span class="prof-tag" style="background:var(--s2);color:var(--t2);border-color:var(--b2);">30 min/cita</span>
+                <span class="prof-tag" style="background:var(--s2);color:var(--t2);border-color:var(--b2);">Código: 123456</span>
+              </div>
+              <!-- Horario visual -->
+              <div class="horario-grid" style="margin-top:10px;">
+                <div class="horario-day activo">Lun<div class="htime">9-18</div></div>
+                <div class="horario-day activo">Mar<div class="htime">9-18</div></div>
+                <div class="horario-day activo">Mié<div class="htime">9-18</div></div>
+                <div class="horario-day activo">Jue<div class="htime">9-18</div></div>
+                <div class="horario-day activo">Vie<div class="htime">9-14</div></div>
+                <div class="horario-day inactivo">Sáb<div class="htime">—</div></div>
+                <div class="horario-day inactivo">Dom<div class="htime">—</div></div>
+              </div>
+              <!-- Permisos -->
+              <div class="perms-grid" style="margin-top:10px;">
+                <div class="perm-row">
+                  <span class="perm-label">Ver solo su agenda</span>
+                  <button class="toggle on" onclick="togglePerm(this)" title="Aislamiento activo"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Portal web visible</span>
+                  <button class="toggle on" onclick="togglePerm(this)"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Notas cifradas</span>
+                  <button class="toggle on" onclick="togglePerm(this)"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Cobrar honorarios</span>
+                  <button class="toggle off" onclick="togglePerm(this)"></button>
+                </div>
+              </div>
+            </div>
+            <div class="prof-actions">
+              <button class="btn-xs primary" onclick="editProf(1)">Editar</button>
+              <button class="btn-xs" onclick="">Horario</button>
+              <button class="btn-xs" onclick="">Servicios</button>
+              <button class="btn-xs danger" onclick="">Desactivar</button>
+            </div>
+          </div>
+
+          <!-- Profesional 2 -->
+          <div class="prof-card">
+            <div class="prof-avatar-big" style="background:rgba(0,229,160,0.12);color:var(--ok);border-color:rgba(0,229,160,0.3);">DM</div>
+            <div class="prof-info">
+              <div class="prof-name-big">Dr. Felipe Morales</div>
+              <div class="prof-esp-big">Traumatología · fmorales@clinica.cl</div>
+              <div class="prof-tags">
+                <span class="prof-tag" style="background:rgba(0,229,160,0.1);color:var(--ok);border-color:rgba(0,229,160,0.25);">✓ Activo</span>
+                <span class="prof-tag" style="background:var(--s2);color:var(--t2);border-color:var(--b2);">45 min/cita</span>
+                <span class="prof-tag" style="background:rgba(245,197,24,0.1);color:var(--warn);border-color:rgba(245,197,24,0.3);">SII pendiente</span>
+              </div>
+              <div class="horario-grid" style="margin-top:10px;">
+                <div class="horario-day inactivo">Lun<div class="htime">—</div></div>
+                <div class="horario-day activo" style="background:rgba(0,229,160,0.08);border-color:rgba(0,229,160,0.2);color:var(--ok);">Mar<div class="htime">10-17</div></div>
+                <div class="horario-day inactivo">Mié<div class="htime">—</div></div>
+                <div class="horario-day activo" style="background:rgba(0,229,160,0.08);border-color:rgba(0,229,160,0.2);color:var(--ok);">Jue<div class="htime">10-17</div></div>
+                <div class="horario-day inactivo">Vie<div class="htime">—</div></div>
+                <div class="horario-day inactivo">Sáb<div class="htime">—</div></div>
+                <div class="horario-day inactivo">Dom<div class="htime">—</div></div>
+              </div>
+              <div class="perms-grid" style="margin-top:10px;">
+                <div class="perm-row">
+                  <span class="perm-label">Ver solo su agenda</span>
+                  <button class="toggle on" onclick="togglePerm(this)"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Portal web visible</span>
+                  <button class="toggle on" onclick="togglePerm(this)"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Notas cifradas</span>
+                  <button class="toggle on" onclick="togglePerm(this)"></button>
+                </div>
+                <div class="perm-row">
+                  <span class="perm-label">Cobrar honorarios</span>
+                  <button class="toggle off" onclick="togglePerm(this)"></button>
+                </div>
+              </div>
+            </div>
+            <div class="prof-actions">
+              <button class="btn-xs primary" onclick="editProf(2)">Editar</button>
+              <button class="btn-xs" onclick="">Horario</button>
+              <button class="btn-xs" onclick="">Servicios</button>
+              <button class="btn-xs danger" onclick="">Desactivar</button>
+            </div>
+          </div>
+
+          <!-- Profesional 3 — pendiente configuración -->
+          <div class="prof-card" style="background:var(--s2);">
+            <div class="prof-avatar-big" style="background:var(--s3);color:var(--t3);border-color:var(--b2);">DV</div>
+            <div class="prof-info">
+              <div class="prof-name-big" style="color:var(--t2);">Dr. Andrés Vargas</div>
+              <div class="prof-esp-big">Cardiología · avargas@clinica.cl</div>
+              <div class="prof-tags">
+                <span class="prof-tag" style="background:rgba(255,63,91,0.08);color:var(--err);border-color:rgba(255,63,91,0.25);">Sin configurar</span>
+                <span class="prof-tag" style="background:var(--s3);color:var(--t3);border-color:var(--b2);">Sin horario</span>
+              </div>
+              <div class="alert warn" style="margin-top:10px;margin-bottom:0;font-size:11px;">
+                <span>⚠️</span> Este profesional no tiene horario ni servicios configurados. No aparece en la agenda.
+              </div>
+            </div>
+            <div class="prof-actions">
+              <button class="btn-xs primary" onclick="setupProf3()">Configurar</button>
+              <button class="btn-xs danger" onclick="">Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario agregar profesional -->
+        <div class="add-prof-card" id="addProfForm" style="display:none;">
+          <div class="add-prof-title">+ Nuevo profesional</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="form-label">Nombre completo</div>
+              <input class="form-input" placeholder="Dra. María Soto">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Especialidad</div>
+              <input class="form-input" placeholder="Pediatría">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="form-label">Email (login)</div>
+              <input class="form-input" type="email" placeholder="msoto@clinica.cl">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Código prestador SII</div>
+              <input class="form-input" placeholder="654321">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <div class="form-label">Duración cita (min)</div>
+              <select class="form-select">
+                <option>15</option><option selected>30</option><option>45</option><option>60</option><option>90</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Título</div>
+              <select class="form-select">
+                <option>Dr.</option><option>Dra.</option><option>Lic.</option><option>Prof.</option><option>—</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Color en agenda</div>
+              <div class="color-picker-row" style="padding:6px 0;">
+                <div class="color-dot selected" style="background:#3dd9eb;" onclick="selectColor(this,'#3dd9eb')"></div>
+                <div class="color-dot" style="background:#00e5a0;" onclick="selectColor(this,'#00e5a0')"></div>
+                <div class="color-dot" style="background:#c084fc;" onclick="selectColor(this,'#c084fc')"></div>
+                <div class="color-dot" style="background:#f5c518;" onclick="selectColor(this,'#f5c518')"></div>
+                <div class="color-dot" style="background:#ff6b35;" onclick="selectColor(this,'#ff6b35')"></div>
+                <div class="color-dot" style="background:#ff3f5b;" onclick="selectColor(this,'#ff3f5b')"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-label" style="margin-bottom:6px;">Días de atención</div>
+          <div class="dias-row">
+            <div class="dia-btn on" onclick="toggleDia(this)">Lun</div>
+            <div class="dia-btn on" onclick="toggleDia(this)">Mar</div>
+            <div class="dia-btn on" onclick="toggleDia(this)">Mié</div>
+            <div class="dia-btn on" onclick="toggleDia(this)">Jue</div>
+            <div class="dia-btn on" onclick="toggleDia(this)">Vie</div>
+            <div class="dia-btn" onclick="toggleDia(this)">Sáb</div>
+            <div class="dia-btn" onclick="toggleDia(this)">Dom</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="form-label">Hora inicio</div>
+              <input class="form-input" type="time" value="09:00">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Hora fin</div>
+              <input class="form-input" type="time" value="18:00">
+            </div>
+          </div>
+
+          <div class="form-label" style="margin-bottom:8px;">Permisos de visibilidad</div>
+          <div class="perms-grid" style="margin-bottom:14px;">
+            <div class="perm-row">
+              <span class="perm-label">Ver solo su agenda</span>
+              <button class="toggle on" onclick="togglePerm(this)" title="Aislamiento: médico ve solo sus citas"></button>
+            </div>
+            <div class="perm-row">
+              <span class="perm-label">Visible en portal web</span>
+              <button class="toggle on" onclick="togglePerm(this)"></button>
+            </div>
+            <div class="perm-row">
+              <span class="perm-label">Notas clínicas cifradas</span>
+              <button class="toggle on" onclick="togglePerm(this)"></button>
+            </div>
+            <div class="perm-row">
+              <span class="perm-label">Puede cobrar</span>
+              <button class="toggle off" onclick="togglePerm(this)"></button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;">
+            <button class="btn-xs primary" style="padding:8px 18px;font-size:13px;" onclick="addProf()">✓ Agregar profesional</button>
+            <button class="btn-xs" style="padding:8px 14px;font-size:13px;" onclick="toggleAddForm()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /main -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- DRAWER DE ONBOARDING -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+
+  <!-- Header con ring grande -->
+  <div class="drawer-header">
+    <div class="big-ring">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+        <circle cx="32" cy="32" r="26" fill="none" stroke="var(--accent)" stroke-width="5"
+          stroke-dasharray="163.4" stroke-dashoffset="116" stroke-linecap="round"
+          id="bigRingCircle"/>
+      </svg>
+      <div class="big-ring-text" id="bigRingText">2/7</div>
+    </div>
+    <div class="drawer-header-text">
+      <h3>Primeros pasos</h3>
+      <p id="drawerSubtitle">Has completado 2 de 7 tareas</p>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps-container" id="stepsContainer">
+    <!-- Se rellena por JS -->
+  </div>
+
+  <!-- Descubrir más -->
+  <div class="discover-section">
+    <div class="discover-title">Completa los primeros pasos y descubre más herramientas</div>
+    <div class="discover-cards">
+      <div class="discover-card">
+        <div class="discover-card-title">Bot WhatsApp</div>
+        <div class="discover-card-desc">Tus pacientes agendan horas 24/7 por WhatsApp automáticamente.</div>
+        <div class="discover-card-btn">
+          <span>Descubrir</span>
+          <span class="discover-card-time">5 min</span>
+        </div>
+      </div>
+      <div class="discover-card">
+        <div class="discover-card-title">Portal pacientes</div>
+        <div class="discover-card-desc">Tus pacientes ven historial y reservan desde tu sitio web.</div>
+        <div class="discover-card-btn">
+          <span>Descubrir</span>
+          <span class="discover-card-time">2 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ayuda -->
+  <div class="help-row">
+    <button class="help-btn">
+      <div class="help-left">
+        <div class="help-icon">💬</div>
+        <span>Chatea con soporte técnico</span>
+      </div>
+      <span style="font-size:16px;">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATOS DE STEPS
+// ══════════════════════════════════════════════
+const STEPS = [
+  {
+    id: 'crear_cuenta',
+    titulo: 'Crea tu cuenta en BenderAnd',
+    desc: 'Tu clínica ya está registrada en el sistema.',
+    tiempo: '—',
+    requerido: true,
+    estado: 'completado',
+    icono: '✓',
+  },
+  {
+    id: 'agregar_profesionales',
+    titulo: 'Agrega tus profesionales',
+    desc: 'Crea los usuarios médicos que atenderán en tu clínica. Cada uno tendrá acceso solo a sus propias citas y notas.',
+    tiempo: '3 min',
+    requerido: true,
+    estado: 'completado',
+    icono: '✓',
+    accion: () => { closeDrawer(); showToast('Configurando profesionales...','info'); },
+    accion_label: 'Ir a Profesionales',
+  },
+  {
+    id: 'configurar_horarios',
+    titulo: 'Configura horarios de atención',
+    desc: 'Define los días y horas disponibles de cada médico. Esto define los slots que aparecen en la agenda.',
+    tiempo: '5 min',
+    requerido: true,
+    estado: 'pendiente',
+    icono: '3',
+    accion: () => { closeDrawer(); showToast('Ve a Profesionales → Editar para configurar horarios','info'); },
+    accion_label: 'Configurar horarios',
+  },
+  {
+    id: 'crear_servicios',
+    titulo: 'Crea tus servicios',
+    desc: 'Agrega las consultas, procedimientos y exámenes. Son los productos que se cobran en cada consulta.',
+    tiempo: '5 min',
+    requerido: true,
+    estado: 'pendiente',
+    icono: '4',
+    accion_label: 'Ir a Servicios',
+  },
+  {
+    id: 'primera_cita',
+    titulo: 'Agenda tu primera cita de prueba',
+    desc: 'Prueba el flujo completo: agenda una cita, haz check-in y cobra una boleta de honorarios.',
+    tiempo: '2 min',
+    requerido: false,
+    estado: 'pendiente',
+    icono: '5',
+    accion_label: 'Abrir agenda',
+  },
+  {
+    id: 'configurar_sii',
+    titulo: 'Configura facturación SII',
+    desc: 'Sube tu certificado digital para emitir boletas de honorarios automáticas al confirmar cada cobro.',
+    tiempo: '10 min',
+    requerido: false,
+    estado: 'pendiente',
+    icono: '6',
+    accion_label: 'Configurar SII',
+  },
+  {
+    id: 'activar_whatsapp',
+    titulo: 'Activa el bot de WhatsApp',
+    desc: 'Los pacientes pueden agendar horas directamente por WhatsApp, 24/7, sin intervención humana.',
+    tiempo: '5 min',
+    requerido: false,
+    estado: 'pendiente',
+    icono: '7',
+    accion_label: 'Activar WhatsApp',
+  },
+];
+
+// ══════════════════════════════════════════════
+// RENDERIZAR STEPS
+// ══════════════════════════════════════════════
+function renderSteps() {
+  const container = document.getElementById('stepsContainer');
+  const completados = STEPS.filter(s => s.estado === 'completado').length;
+  const total = STEPS.length;
+  const pct = Math.round((completados / total) * 100);
+
+  // Update rings y textos
+  document.getElementById('navRingText').textContent = `${completados}/${total}`;
+  document.getElementById('bigRingText').textContent = `${completados}/${total}`;
+  document.getElementById('drawerSubtitle').textContent = `Has completado ${completados} de ${total} tareas`;
+  document.getElementById('navPercent').textContent = `${pct}%`;
+
+  // Nav ring (circunferencia = 69.1 para r=11)
+  const navOffset = 69.1 - (69.1 * completados / total);
+  const navCircle = document.getElementById('navRingCircle');
+  if (navCircle) navCircle.style.strokeDashoffset = navOffset;
+
+  // Big ring (circunferencia = 163.4 para r=26)
+  const bigOffset = 163.4 - (163.4 * completados / total);
+  const bigCircle = document.getElementById('bigRingCircle');
+  if (bigCircle) bigCircle.style.strokeDashoffset = bigOffset;
+
+  container.innerHTML = STEPS.map((step, i) => {
+    const isDone = step.estado === 'completado';
+    const isSkipped = step.estado === 'saltado';
+    const isPending = step.estado === 'pendiente';
+    // Primer step pendiente = el actual sugerido
+    const isCurrent = isPending && STEPS.findIndex(s => s.estado === 'pendiente') === i;
+
+    let circleClass = isDone ? 'done' : isSkipped ? 'skipped' : isCurrent ? 'current' : 'todo';
+    let circleIcon = isDone ? '✓' : isSkipped ? '—' : (i + 1);
+
+    return `
+      <div class="step-item ${isDone?'completed':''} ${isCurrent?'active-step':''} ${isPending&&!isCurrent?'':''}"
+           id="step-${step.id}">
+        <div class="step-circle ${circleClass}">${circleIcon}</div>
+        <div class="step-body">
+          <div class="step-title ${isDone?'done':''}">${step.titulo}</div>
+          <div class="step-desc">${step.desc}</div>
+          <div class="step-meta">
+            <span class="step-time">⏱ ${step.tiempo}</span>
+            ${step.requerido ? `<span class="step-required">Requerido</span>` : ''}
+            ${isDone ? `<span style="font-size:10px;color:var(--ok);font-weight:700;">✓ Completado</span>` : ''}
+            ${isSkipped ? `<span style="font-size:10px;color:var(--t3);">Saltado</span>` : ''}
+          </div>
+          ${(isPending || isCurrent) && step.accion_label ? `
+          <div class="step-actions">
+            <button class="btn-step-go" onclick="ejecutarStep('${step.id}')">${step.accion_label}</button>
+            <button class="btn-step-done" onclick="marcarCompleto('${step.id}')">✓ Ya lo hice</button>
+            ${!step.requerido ? `<button class="btn-step-skip" onclick="saltarStep('${step.id}')">Saltar</button>` : ''}
+          </div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ejecutarStep(id) {
+  const step = STEPS.find(s => s.id === id);
+  if (step?.accion) {
+    step.accion();
+  } else {
+    showToast(`Abriendo configuración: ${step?.titulo}`, 'info');
+  }
+  // Simular que lo está haciendo
+  setTimeout(() => marcarCompleto(id), 1500);
+}
+
+function marcarCompleto(id) {
+  const step = STEPS.find(s => s.id === id);
+  if (step) {
+    step.estado = 'completado';
+    renderSteps();
+    showToast(`✓ "${step.titulo}" completado`, 'ok');
+  }
+}
+
+function saltarStep(id) {
+  const step = STEPS.find(s => s.id === id);
+  if (step) {
+    step.estado = 'saltado';
+    renderSteps();
+    showToast(`Paso saltado — puedes retomarlo después`, 'info');
+  }
+}
+
+// ══════════════════════════════════════════════
+// DRAWER
+// ══════════════════════════════════════════════
+function openDrawer() {
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// ══════════════════════════════════════════════
+// PROFESIONALES
+// ══════════════════════════════════════════════
+function toggleAddForm() {
+  const form = document.getElementById('addProfForm');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  if (form.style.display === 'block') {
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function addProf() {
+  showToast('✓ Profesional agregado correctamente', 'ok');
+  toggleAddForm();
+  marcarCompleto('agregar_profesionales');
+}
+
+function togglePerm(btn) {
+  const isOn = btn.classList.contains('on');
+  btn.classList.toggle('on', !isOn);
+  btn.classList.toggle('off', isOn);
+  showToast(isOn ? 'Permiso desactivado' : 'Permiso activado', 'ok');
+}
+
+function toggleDia(btn) {
+  btn.classList.toggle('on');
+}
+
+function selectColor(dot, color) {
+  dot.closest('.color-picker-row').querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  dot.classList.add('selected');
+}
+
+function editProf(id) {
+  toggleAddForm();
+  showToast(`Editando profesional #${id}`, 'info');
+}
+
+function setupProf3() {
+  toggleAddForm();
+  showToast('Configurando Dr. Vargas...', 'info');
+}
+
+// ══════════════════════════════════════════════
+// VIEWS (placeholder)
+// ══════════════════════════════════════════════
+function showView(v) {
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  showToast(`Navegando a: ${v}`, 'info');
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+renderSteps();
+
+// Abrir el drawer automáticamente la primera vez (simula primer login)
+setTimeout(() => openDrawer(), 600);
+</script>
+</body>
+</html>

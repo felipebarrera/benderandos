@@ -58,4 +58,11 @@ class Cliente extends Model
                      ->orWhere('rut', 'ilike', "%{$termino}%")
                      ->orWhere('codigo_rapido', (int) $termino);
     }
+
+    public function agendaCitas()
+    {
+        return $this->hasMany(AgendaCita::class, 'cliente_id')
+                    ->orderBy('fecha', 'desc')
+                    ->orderBy('hora_inicio', 'desc');
+    }
 }

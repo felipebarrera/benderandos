@@ -121,12 +121,79 @@ class WebPanelController extends Controller
 
     /* ── Operario Views ────────────────────────────────────── */
 
-    public function operario(): \Illuminate\View\View
+    public function operario()
     {
+        $usuario = auth()->user();
+
+        // Si M08 activo y usuario tiene recurso de agenda → vista profesional
+        $rubroConfig = RubroConfig::first();
+        $tieneM08    = in_array('M08', $rubroConfig?->modulos_activos ?? []);
+
+        if ($tieneM08) {
+            $recurso = \App\Models\Tenant\AgendaRecurso::where('usuario_id', $usuario->id)
+                ->where('activo', true)
+                ->first();
+
+            if ($recurso) {
+                return redirect('/profesional');
+            }
+        }
+
         /** @var \Illuminate\Support\Collection<int, Producto> $productos */
         $productos = Producto::activos()->get();
         $familias = $productos->pluck('familia')->filter()->unique()->values();
 
         return view('tenant.operario.index', compact('productos', 'familias'));
+    }
+
+    /**
+     * Vista profesional: médico, dentista, psicólogo, abogado, técnico con M08.
+     * Muestra agenda personal + pacientes + historial + seguimiento.
+     */
+    public function profesional()
+    {
+        $usuario = auth()->user();
+
+        // Obtener o crear recurso automáticamente
+        $recurso = \App\Models\Tenant\AgendaRecurso::with(['servicios','horarios'])
+            ->where('usuario_id', $usuario->id)
+            ->where('activo', true)
+            ->first();
+
+        if (!$recurso) {
+            $usuarioModel = \App\Models\Tenant\Usuario::find($usuario->id);
+            if ($usuarioModel) {
+                $recurso = app(\App\Services\AgendaAutoRegistroService::class)->registrarOperario($usuarioModel);
+                if ($recurso) $recurso->load(['servicios','horarios']);
+            }
+        }
+
+        if (!$recurso) {
+            return redirect('/operario')->with('info', 'Tu usuario no tiene agenda configurada. Pide al administrador que te vincule.');
+        }
+
+        $rubroConfig   = \App\Models\Tenant\RubroConfig::first();
+        $labelCliente  = $rubroConfig?->label_cliente ?? 'Paciente';
+        $labelOperario = $rubroConfig?->label_operario ?? 'Profesional';
+
+        return view('tenant.profesional.index', compact(
+            'recurso', 'usuario', 'rubroConfig', 'labelCliente', 'labelOperario'
+        ));
+    }
+
+    public function recepcionIndex()
+    {
+        $usuario = auth()->user();
+        if (!in_array($usuario->rol, ['admin', 'super_admin', 'cajero', 'recepcionista'])) {
+            abort(403, 'No tienes permiso para ver la recepción.');
+        }
+
+        $profesionales = \App\Models\Tenant\AgendaRecurso::where('activo', true)
+            ->whereNotNull('usuario_id')
+            ->select('id', 'nombre', 'color_hex as color')
+            ->get()
+            ->toArray();
+
+        return view('tenant.recepcion.agenda', compact('profesionales'));
     }
 }
