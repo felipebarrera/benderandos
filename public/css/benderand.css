@@ -798,3 +798,19 @@ body:has(.app-shell) {
   height: 100vh;
   overflow: hidden;
 }
+
+/* Fix: pos-shell en móvil con bottom nav */
+@media (max-width: 1023px) {
+  .pos-shell {
+    height: calc(100vh - 52px - 60px); /* topbar + mobile-nav */
+    overflow: hidden;
+  }
+  .pos-cart {
+    max-height: 42vh;
+    min-height: 220px;
+  }
+  .pos-catalog {
+    min-height: 0;
+    flex: 1;
+  }
+}

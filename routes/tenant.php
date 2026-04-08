@@ -46,6 +46,7 @@ use App\Http\Controllers\Tenant\Api\TokenController;
 use App\Http\Controllers\Tenant\PortalPublicoController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckTenantStatus;
+use App\Http\Controllers\Tenant\RecepcionDirectaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -235,6 +236,26 @@ Route::middleware([
             Route::post('/api/productos', [ProductoController::class, 'store']);
             Route::put('/api/productos/{id}', [ProductoController::class, 'update']);
             Route::post('/api/productos/{id}/ajuste-stock', [ProductoController::class, 'ajusteStock']);
+            // ── Recepciones Directas (sin OC) ────────────────────────────────
+            // Operario puede crear/agregar/cerrar. Admin/cajero puede pagar.
+            Route::get('/api/recepciones-directas/pendientes-count',
+                [RecepcionDirectaController::class, 'pendientesCount']);
+            Route::get('/api/recepciones-directas',
+                [RecepcionDirectaController::class, 'index']);
+            Route::post('/api/recepciones-directas',
+                [RecepcionDirectaController::class, 'store']);
+            Route::post('/api/recepciones-directas/{id}/items',
+                [RecepcionDirectaController::class, 'agregarItem']);
+            Route::delete('/api/recepciones-directas/{id}/items/{itemId}',
+                [RecepcionDirectaController::class, 'quitarItem']);
+            Route::post('/api/recepciones-directas/{id}/cerrar',
+                [RecepcionDirectaController::class, 'cerrar']);
+            Route::post('/api/recepciones-directas/{id}/pagar',
+                [RecepcionDirectaController::class, 'pagar']);
+            Route::post('/api/recepciones-directas/{id}/anular',
+                [RecepcionDirectaController::class, 'anular']);
+            Route::get('/recepcion-directa', [WebPanelController::class, 'recepcionDirectaIndex'])
+                ->name('recepcion.directa');
         });
 
         // ── UNIVERSAL / ONBOARDING ──

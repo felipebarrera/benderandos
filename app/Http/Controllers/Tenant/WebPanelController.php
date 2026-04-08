@@ -103,6 +103,11 @@ class WebPanelController extends Controller
         return view('tenant.admin.config', compact('tenant', 'config'));
     }
 
+    public function recepcionDirectaIndex()
+    {
+        return view('tenant.admin.recepcion-directa');
+    }
+
     /* ── POS Views ─────────────────────────────────────────── */
 
     public function pos(): \Illuminate\View\View
