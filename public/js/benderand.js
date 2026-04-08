@@ -85,6 +85,12 @@ window.api = async function(method, path, body) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    
+    if (res.status === 401) {
+      window.location.href = '/auth/login/web';
+      return;
+    }
+
     let msg = err.message || `Error ${res.status}`;
     if (res.status === 422 && err.errors) {
        // Extract first error for each field

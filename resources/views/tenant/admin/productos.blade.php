@@ -149,7 +149,9 @@ function renderProds(lista) {
     }
     
     tbody.innerHTML = lista.map(p => {
-        const stockCls = p.cantidad <= (p.cantidad_minima||0) ? 'text-err' : '';
+        const qty = parseFloat(p.cantidad) || 0;
+        const qtyMin = parseFloat(p.cantidad_minima) || 0;
+        const stockCls = qty <= qtyMin ? "text-err" : "";
         return `
         <tr>
             <td>
@@ -158,7 +160,7 @@ function renderProds(lista) {
             </td>
             <td><span class="badge badge-gray">${p.familia || 'General'}</span></td>
             <td class="num" style="color:var(--accent);font-weight:700">${fmt(p.valor_venta)}</td>
-            <td class="num ${stockCls}">${p.tipo_producto === 'servicio' ? '—' : p.cantidad}</td>
+            <td class="num ${stockCls}">${p.tipo_producto === 'servicio' ? '—' : qty}</td>
             <td>
                 ${['admin','super_admin','bodega'].includes(window.AppConfig.rol) ? 
                 `<button class="btn btn-secondary btn-sm" onclick='editarProd(${JSON.stringify(p).replace(/'/g, "&apos;")})'>✏️</button>` : '—'}

@@ -63,4 +63,4 @@ Route::group(['prefix' => 'central', 'as' => 'central.'], function () {
     });
 
 // Alias for Laravel's default 'login' route
-Route::get('/login', [App\Http\Controllers\Central\CentralAuthController::class , 'showLogin'])->name('login');
+Route::get('/login', [App\Http\Controllers\Central\CentralAuthController::class , 'showLogin'])->name('central.login');

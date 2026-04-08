@@ -44,6 +44,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'jwt.bridge' => \App\Http\Middleware\JwtBridgeMiddleware::class,
             'module'     => \App\Http\Middleware\CheckModuleAccess::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn (\Illuminate\Http\Request $request) => 
+            (tenancy()->initialized ?? false) ? '/auth/login/web' : '/central/login'
+        );
     })
     ->withSchedule(function (Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->call(function () {
@@ -71,5 +75,17 @@ return Application::configure(basePath: dirname(__DIR__))
         })->hourly();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Unauthenticated.',
+                    'error'   => 'sesion_expirada',
+                ], 401);
+            }
+            $esTenant = tenancy()->initialized ?? false;
+            if ($esTenant) {
+                return redirect()->guest('/auth/login/web');
+            }
+            return redirect()->guest('/central/login');
+        });
     })->create();
